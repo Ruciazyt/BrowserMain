@@ -4,7 +4,7 @@ body {
   margin: 0;
   font-family: nunito_for_arco, Helvetica Neue, Helvetica, PingFang SC,
     Hiragino Sans GB, Microsoft YaHei, 微软雅黑, Arial, sans-serif;
-  background: url('./assets/bg1.png') no-repeat fixed;
+  background: url('./assets/bg2.jpg') no-repeat fixed;
   background-size:cover;
   z-index: -1;
   font-size:14px;
@@ -29,39 +29,5 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-}
-.searchBar{
-  height: 46px;
-  width:554px;
-}
-
-.inputForm {
-  position: relative;
-}
-
-.queryTypeSelector {
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-}
-
-.queryBar{
-  height:46px;
-  width: 508px;
-  line-height: 4rem;
-  padding-left: 5rem;
-  padding-right: 3.5rem;
-  border: none;
-  border-radius: 2px 0 0 2px;
-  outline: 0;
-  font-size: 1.2rem;
-}
-
-.queryButton{
-  height:46px;
-  width: 46px;
-  border: none;
-  border-radius:0 2px 2px 0
 }
 
