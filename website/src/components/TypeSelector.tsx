@@ -1,8 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Select } from 'antd';
+import { IonIcon, addIcons } from 'react-svg-ionicons';
+import bundle from 'react-svg-ionicons/bundles/all';
 import styles from './TypeSelector.module.css';
 import '../global.less';
 
+addIcons(bundle);
 const { Option } = Select;
 
 const typeList = [
@@ -33,6 +36,11 @@ const TypeSelector = () => {
     queryName: '',
     queryId: '',
   });
+  const [isClearShow, setIsClearShow] = useState({
+    display: 'none',
+  });
+  const inputValue = useRef<HTMLInputElement>(null);
+  // 搜索引擎切换
   const handleChange = (_: any, options: { detail: any }) => {
     const data = options.detail;
     setSubmitAction({
@@ -42,6 +50,19 @@ const TypeSelector = () => {
       queryId: data.queryId,
     });
     localStorage.setItem('searchData', JSON.stringify(data));
+  };
+  // input值清除
+  const handleClearClick = () => {
+    inputValue.current!.value = '';
+    setIsClearShow({ display: 'none' });
+  };
+  // 监听input值变化
+  const handleInputChange = () => {
+    if (inputValue.current?.value === '') {
+      setIsClearShow({ display: 'none' });
+    } else {
+      setIsClearShow({ display: 'inline' });
+    }
   };
   useEffect(() => {
     const localData = localStorage.getItem('searchData');
@@ -89,8 +110,16 @@ const TypeSelector = () => {
           id={submitAction.queryId}
           className={styles.queryBar}
           autoFocus={true}
+          onChange={handleInputChange}
+          ref={inputValue}
           autoComplete="off"></input>
         <input type="submit" style={{ display: 'none' }} value=" " />
+        <IonIcon
+          name="close-circle-outline"
+          className={styles.btn_clear}
+          style={isClearShow}
+          onClick={handleClearClick}
+        />
       </form>
     </div>
   );
