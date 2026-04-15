@@ -1,0 +1,26 @@
+.container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+}
+
+.time {
+  font-family: var(--font-led);
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--led-amber);
+  text-shadow:
+    0 0 8px var(--led-amber),
+    0 0 16px var(--led-amber-glow),
+    0 0 32px rgba(255, 149, 0, 0.2);
+  letter-spacing: 3px;
+}
+
+.date {
+  font-family: var(--font-led);
+  font-size: 12px;
+  color: var(--text-primary);
+  letter-spacing: 1px;
+  margin-top: 2px;
+}

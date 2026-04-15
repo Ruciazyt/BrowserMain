@@ -1,0 +1,29 @@
+.container {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
+  gap: 12px;
+  padding: 16px;
+}
+
+.empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--text-dim);
+}
+
+.emptyTitle {
+  font-size: 15px;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+}
+
+.emptyHint {
+  font-size: 13px;
+}
+
+.draggingOver {
+  outline: 2px dashed var(--led-amber);
+  outline-offset: 4px;
+  border-radius: var(--radius-lg);
+}
