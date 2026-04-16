@@ -14,6 +14,7 @@ interface ShortcutGridProps {
 export default function ShortcutGrid({ shortcuts, onDelete, onUpdate, onReorder, onAdd }: ShortcutGridProps) {
   const [dragIndex, setDragIndex] = useState<number | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
+  const [dropPosition, setDropPosition] = useState<'before' | 'after' | null>(null);
 
   const handleDragStart = (index: number) => {
     setDragIndex(index);
@@ -22,28 +23,36 @@ export default function ShortcutGrid({ shortcuts, onDelete, onUpdate, onReorder,
   const handleDragEnd = () => {
     setDragIndex(null);
     setDragOverIndex(null);
+    setDropPosition(null);
   };
 
-  const handleDragOver = (index: number) => {
+  const handleDragOver = (index: number, offsetX: number, tileWidth: number) => {
     setDragOverIndex(index);
+    setDropPosition(offsetX < tileWidth / 2 ? 'before' : 'after');
   };
 
   const handleDragLeave = () => {
     setDragOverIndex(null);
+    setDropPosition(null);
   };
 
   const handleDrop = () => {
     if (dragIndex === null || dragOverIndex === null || dragIndex === dragOverIndex) {
       setDragIndex(null);
       setDragOverIndex(null);
+      setDropPosition(null);
       return;
     }
+    const insertIndex = dropPosition === 'after' ? dragOverIndex + 1 : dragOverIndex;
+    // Adjust if dragging forward (dragIndex < insertIndex)
+    const finalIndex = dragIndex < insertIndex ? insertIndex - 1 : insertIndex;
     const newOrder = [...shortcuts];
     const [removed] = newOrder.splice(dragIndex, 1);
-    newOrder.splice(dragOverIndex, 0, removed);
+    newOrder.splice(finalIndex, 0, removed);
     onReorder(newOrder);
     setDragIndex(null);
     setDragOverIndex(null);
+    setDropPosition(null);
   };
 
   if (shortcuts.length === 0) {
@@ -75,6 +84,7 @@ export default function ShortcutGrid({ shortcuts, onDelete, onUpdate, onReorder,
           index={i}
           isDragging={dragIndex === i}
           isDragOver={dragOverIndex === i}
+          dropPosition={dragIndex !== null && dragOverIndex === i ? dropPosition : null}
           onDragStart={handleDragStart}
           onDragEnd={handleDragEnd}
           onDragOver={handleDragOver}

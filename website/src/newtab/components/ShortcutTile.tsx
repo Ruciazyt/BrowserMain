@@ -17,9 +17,10 @@ interface ShortcutTileProps {
   index: number;
   isDragging: boolean;
   isDragOver: boolean;
+  dropPosition?: 'before' | 'after' | null;
   onDragStart: (index: number) => void;
   onDragEnd: () => void;
-  onDragOver: (index: number) => void;
+  onDragOver: (index: number, offsetX: number, tileWidth: number) => void;
   onDragLeave: () => void;
   onDrop: () => void;
 }
@@ -31,6 +32,7 @@ export default function ShortcutTile({
   index,
   isDragging,
   isDragOver,
+  dropPosition,
   onDragStart,
   onDragEnd,
   onDragOver,
@@ -128,13 +130,13 @@ export default function ShortcutTile({
   return (
     <>
       <div
-        className={`${styles.container} ${isDragging ? styles.dragging : ''} ${isDragOver ? styles.dragOver : ''}`}
+        className={`${styles.container} ${isDragging ? styles.dragging : ''} ${isDragOver ? styles.dragOver : ''} ${dropPosition === 'before' ? styles.dropBefore : ''} ${dropPosition === 'after' ? styles.dropAfter : ''}`}
         onClick={handleClick}
         onContextMenu={handleContextMenu}
         draggable
         onDragStart={() => onDragStart(index)}
         onDragEnd={onDragEnd}
-        onDragOver={(e) => { e.preventDefault(); onDragOver(index); }}
+        onDragOver={(e) => { e.preventDefault(); const tileWidth = e.currentTarget.getBoundingClientRect().width; onDragOver(index, e.nativeEvent.offsetX, tileWidth); }}
         onDragLeave={onDragLeave}
         onDrop={onDrop}
       >
