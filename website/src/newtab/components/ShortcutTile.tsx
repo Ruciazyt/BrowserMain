@@ -115,7 +115,7 @@ export default function ShortcutTile({
   }, [showContextMenu, editMode]);
 
   const navigateToShortcut = () => {
-    if (editMode) return;
+    if (editMode || showContextMenu) return;
     chrome.tabs.create({ url: shortcut.url, active: true });
   };
 
@@ -152,7 +152,8 @@ export default function ShortcutTile({
     setShowContextMenu(true);
   };
 
-  const handleEdit = () => {
+  const handleEdit = (e: React.MouseEvent) => {
+    e.stopPropagation();
     setShowContextMenu(false);
     setEditTitle(shortcut.title);
     setEditUrl(shortcut.url);
@@ -238,7 +239,7 @@ export default function ShortcutTile({
           className={styles.contextMenu}
           style={{ left: contextMenuPos.x, top: contextMenuPos.y }}
         >
-          <button className={styles.contextMenuItem} onClick={handleEdit}>
+          <button className={styles.contextMenuItem} onClick={(e) => handleEdit(e)}>
             ✏️ Edit
           </button>
           <button className={styles.contextMenuItem} onClick={(e) => { e.stopPropagation(); onDelete(shortcut.id); setShowContextMenu(false); }}>
