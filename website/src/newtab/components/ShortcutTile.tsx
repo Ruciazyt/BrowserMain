@@ -23,6 +23,8 @@ interface ShortcutTileProps {
   onDragOver: (index: number, offsetX: number, tileWidth: number) => void;
   onDragLeave: () => void;
   onDrop: () => void;
+  onMoveLeft?: (index: number) => void;
+  onMoveRight?: (index: number) => void;
 }
 
 export default function ShortcutTile({
@@ -38,13 +40,34 @@ export default function ShortcutTile({
   onDragOver,
   onDragLeave,
   onDrop,
+  onMoveLeft,
+  onMoveRight,
 }: ShortcutTileProps) {
   const [showContextMenu, setShowContextMenu] = useState(false);
   const [contextMenuPos, setContextMenuPos] = useState({ x: 0, y: 0 });
   const [editMode, setEditMode] = useState(false);
   const [editTitle, setEditTitle] = useState(shortcut.title);
   const [editUrl, setEditUrl] = useState(shortcut.url);
+  const [keyboardFocus, setKeyboardFocus] = useState(false);
   const contextMenuRef = useRef<HTMLDivElement>(null);
+
+  // Keyboard navigation for reorder
+  useEffect(() => {
+    if (!keyboardFocus) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        onMoveLeft?.(index);
+      } else if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        onMoveRight?.(index);
+      } else if (e.key === 'Escape') {
+        setKeyboardFocus(false);
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [keyboardFocus, index, onMoveLeft, onMoveRight]);
 
   // Close context menu on outside click or Escape
   useEffect(() => {
@@ -130,7 +153,7 @@ export default function ShortcutTile({
   return (
     <>
       <div
-        className={`${styles.container} ${isDragging ? styles.dragging : ''} ${isDragOver ? styles.dragOver : ''} ${dropPosition === 'before' ? styles.dropBefore : ''} ${dropPosition === 'after' ? styles.dropAfter : ''}`}
+        className={`${styles.container} ${isDragging ? styles.dragging : ''} ${isDragOver ? styles.dragOver : ''} ${dropPosition === 'before' ? styles.dropBefore : ''} ${dropPosition === 'after' ? styles.dropAfter : ''} ${keyboardFocus ? styles.keyboardFocus : ''}`}
         onClick={handleClick}
         onContextMenu={handleContextMenu}
         draggable
@@ -139,6 +162,9 @@ export default function ShortcutTile({
         onDragOver={(e) => { e.preventDefault(); const tileWidth = e.currentTarget.getBoundingClientRect().width; onDragOver(index, e.nativeEvent.offsetX, tileWidth); }}
         onDragLeave={onDragLeave}
         onDrop={onDrop}
+        tabIndex={0}
+        onFocus={() => setKeyboardFocus(true)}
+        onBlur={() => setKeyboardFocus(false)}
       >
         <div className={styles.iconWrapper}>
           {shortcut.favicon ? (
@@ -161,6 +187,9 @@ export default function ShortcutTile({
         >
           ×
         </button>
+        {keyboardFocus && (
+          <div className={styles.keyboardHint}>← → to move · Esc to exit</div>
+        )}
       </div>
 
       {showContextMenu && (

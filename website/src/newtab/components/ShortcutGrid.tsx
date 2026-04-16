@@ -55,6 +55,20 @@ export default function ShortcutGrid({ shortcuts, onDelete, onUpdate, onReorder,
     setDropPosition(null);
   };
 
+  const handleMoveLeft = (fromIndex: number) => {
+    if (fromIndex <= 0) return;
+    const newOrder = [...shortcuts];
+    [newOrder[fromIndex - 1], newOrder[fromIndex]] = [newOrder[fromIndex], newOrder[fromIndex - 1]];
+    onReorder(newOrder);
+  };
+
+  const handleMoveRight = (fromIndex: number) => {
+    if (fromIndex >= shortcuts.length - 1) return;
+    const newOrder = [...shortcuts];
+    [newOrder[fromIndex], newOrder[fromIndex + 1]] = [newOrder[fromIndex + 1], newOrder[fromIndex]];
+    onReorder(newOrder);
+  };
+
   if (shortcuts.length === 0) {
     return (
       <div className={styles.container}>
@@ -90,6 +104,8 @@ export default function ShortcutGrid({ shortcuts, onDelete, onUpdate, onReorder,
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
+          onMoveLeft={handleMoveLeft}
+          onMoveRight={handleMoveRight}
         />
       ))}
       {onAdd && (

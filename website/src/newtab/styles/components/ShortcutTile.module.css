@@ -206,6 +206,29 @@
   transition: background var(--transition);
 }
 
+.container.keyboardFocus {
+  border-color: var(--led-amber);
+  box-shadow: 0 0 8px 2px rgba(255, 149, 0, 0.4), 0 0 16px 4px rgba(255, 149, 0, 0.2);
+  transform: translateY(-2px);
+}
+
+.keyboardHint {
+  position: absolute;
+  bottom: -28px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(26, 26, 46, 0.95);
+  border: 1px solid var(--led-amber);
+  border-radius: var(--radius-sm);
+  padding: 3px 8px;
+  font-size: 10px;
+  color: var(--led-amber);
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 20;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
 .cancelBtn:hover {
   background: rgba(125, 211, 232, 0.1);
 }
