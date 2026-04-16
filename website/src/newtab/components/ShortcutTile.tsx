@@ -14,11 +14,29 @@ interface ShortcutTileProps {
   shortcut: Shortcut;
   onDelete: (id: string) => void;
   onUpdate: (id: string, updates: Partial<Shortcut>) => void;
+  index: number;
+  isDragging: boolean;
+  isDragOver: boolean;
+  onDragStart: (index: number) => void;
+  onDragEnd: () => void;
+  onDragOver: (index: number) => void;
+  onDragLeave: () => void;
+  onDrop: () => void;
 }
 
-export default function ShortcutTile({ shortcut, onDelete, onUpdate }: ShortcutTileProps) {
-  const [dragging, setDragging] = useState(false);
-  const [dragOver, setDragOver] = useState(false);
+export default function ShortcutTile({
+  shortcut,
+  onDelete,
+  onUpdate,
+  index,
+  isDragging,
+  isDragOver,
+  onDragStart,
+  onDragEnd,
+  onDragOver,
+  onDragLeave,
+  onDrop,
+}: ShortcutTileProps) {
   const [showContextMenu, setShowContextMenu] = useState(false);
   const [contextMenuPos, setContextMenuPos] = useState({ x: 0, y: 0 });
   const [editMode, setEditMode] = useState(false);
@@ -110,15 +128,15 @@ export default function ShortcutTile({ shortcut, onDelete, onUpdate }: ShortcutT
   return (
     <>
       <div
-        className={`${styles.container} ${dragging ? styles.dragging : ''} ${dragOver ? styles.dragOver : ''}`}
+        className={`${styles.container} ${isDragging ? styles.dragging : ''} ${isDragOver ? styles.dragOver : ''}`}
         onClick={handleClick}
         onContextMenu={handleContextMenu}
         draggable
-        onDragStart={() => setDragging(true)}
-        onDragEnd={() => setDragging(false)}
-        onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
-        onDragLeave={() => setDragOver(false)}
-        onDrop={() => setDragOver(false)}
+        onDragStart={() => onDragStart(index)}
+        onDragEnd={onDragEnd}
+        onDragOver={(e) => { e.preventDefault(); onDragOver(index); }}
+        onDragLeave={onDragLeave}
+        onDrop={onDrop}
       >
         <div className={styles.iconWrapper}>
           {shortcut.favicon ? (

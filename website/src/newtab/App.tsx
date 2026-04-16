@@ -18,7 +18,7 @@ const SettingsIcon = () => (
 );
 
 export default function App() {
-  const { shortcuts, loading: shortcutsLoading, removeShortcut, updateShortcut } = useShortcuts();
+  const { shortcuts, loading: shortcutsLoading, removeShortcut, updateShortcut, reorderShortcuts } = useShortcuts();
   const { settings, loading: settingsLoading } = useSettings();
   const [settingsOpen, setSettingsOpen] = useState(false);
 
@@ -58,7 +58,7 @@ export default function App() {
 
         <LEDDisplay />
 
-        <ShortcutGrid shortcuts={shortcuts} onDelete={removeShortcut} onUpdate={updateShortcut} />
+        <ShortcutGrid shortcuts={shortcuts} onDelete={removeShortcut} onUpdate={updateShortcut} onReorder={reorderShortcuts} />
       </div>
 
       <button

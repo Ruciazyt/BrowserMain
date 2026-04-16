@@ -27,3 +27,7 @@
   outline-offset: 4px;
   border-radius: var(--radius-lg);
 }
+
+.dragging {
+  opacity: 0.5;
+}
