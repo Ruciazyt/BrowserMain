@@ -46,7 +46,7 @@ export default function AddShortcutDialog({ open, url, title, favicon, onClose }
 
     setSaving(true);
     try {
-      await addShortcut(trimmedTitle || trimmedUrl, trimmedUrl, favicon);
+      await addShortcut(trimmedTitle || trimmedUrl, trimmedUrl, faviconUrl);
       setSaved(true);
       setTimeout(() => {
         onClose();
@@ -77,9 +77,9 @@ export default function AddShortcutDialog({ open, url, title, favicon, onClose }
         {/* Body */}
         <div className={styles.body}>
           {/* Favicon preview */}
-          {favicon && (
+          {faviconUrl && (
             <div className={styles.faviconRow}>
-              <img src={favicon} alt="" className={styles.faviconImg} />
+              <img src={faviconUrl} alt="" className={styles.faviconImg} />
               <span className={styles.faviconHint}>Current page</span>
             </div>
           )}
