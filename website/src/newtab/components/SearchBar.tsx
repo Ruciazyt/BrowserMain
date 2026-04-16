@@ -55,6 +55,12 @@ export default function SearchBar({ defaultEngine = 'google' }: SearchBarProps) 
     return () => document.removeEventListener('keydown', handleKeydown);
   }, []);
 
+  // Sync engine state when defaultEngine prop changes (e.g., user changed setting)
+  useEffect(() => {
+    const found = SEARCH_ENGINES.find((e) => e.id === defaultEngine);
+    if (found) setEngine(found);
+  }, [defaultEngine]);
+
   const navigateTo = (url: string) => {
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       if (tabs[0]?.id) {
