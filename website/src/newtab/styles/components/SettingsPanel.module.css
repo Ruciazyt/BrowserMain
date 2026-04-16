@@ -282,3 +282,25 @@
   color: var(--led-amber);
   margin-top: 4px;
 }
+
+.importBtn {
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--led-amber);
+  border: 1px solid var(--led-amber);
+  background: rgba(255, 149, 0, 0.1);
+  transition: all var(--transition);
+}
+
+.importBtn:hover {
+  background: rgba(255, 149, 0, 0.2);
+  box-shadow: 0 0 12px var(--led-amber-soft);
+}
+
+.aboutVersion {
+  font-size: 12px;
+  color: var(--text-dim);
+  margin-bottom: 4px;
+}

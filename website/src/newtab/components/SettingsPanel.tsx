@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useSettings } from '../hooks/useSettings';
 import { SEARCH_ENGINES } from '../utils/engines';
+import BookmarkImport from './BookmarkImport';
 import styles from '../styles/components/SettingsPanel.module.css';
 
 interface SettingsPanelProps {
@@ -36,6 +37,7 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
   const [gradientTo, setGradientTo] = useState(settings.background.gradientTo || '#1a3a5c');
   const [gradientDirection, setGradientDirection] = useState(settings.background.gradientDirection || 'to right top');
   const [imageUrl, setImageUrl] = useState(settings.background.imageUrl || '');
+  const [showBookmarkImport, setShowBookmarkImport] = useState(false);
 
   const handleBgType = (type: 'solid' | 'gradient' | 'image') => {
     setBgType(type);
@@ -63,138 +65,142 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
         </div>
 
         <div className={styles.body}>
-          <div className={styles.section}>
-            <div className={styles.sectionTitle}>Search Engine</div>
-            <div className={styles.engineList}>
-              {SEARCH_ENGINES.map((eng) => (
-                <div
-                  key={eng.id}
-                  className={`${styles.engineItem} ${eng.id === settings.defaultEngine ? styles.selected : ''}`}
-                  onClick={() => updateEngine(eng.id)}
-                >
-                  <span dangerouslySetInnerHTML={{ __html: eng.icon }} />
-                  <span className={styles.engineName}>{eng.name}</span>
-                  {eng.id === settings.defaultEngine && (
-                    <span className={styles.checkmark}><CheckIcon /></span>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className={styles.section}>
-            <div className={styles.sectionTitle}>Background</div>
-            <div className={styles.bgTypeGrid}>
-              <button
-                className={`${styles.bgTypeBtn} ${bgType === 'solid' ? styles.active : ''}`}
-                onClick={() => handleBgType('solid')}
-              >
-                Solid
-              </button>
-              <button
-                className={`${styles.bgTypeBtn} ${bgType === 'gradient' ? styles.active : ''}`}
-                onClick={() => handleBgType('gradient')}
-              >
-                Gradient
-              </button>
-              <button
-                className={`${styles.bgTypeBtn} ${bgType === 'image' ? styles.active : ''}`}
-                onClick={() => handleBgType('image')}
-              >
-                Image
-              </button>
-            </div>
-            {bgType === 'solid' && (
-              <div className={styles.colorRow}>
-                <span className={styles.colorLabel}>Color</span>
-                <input
-                  type="color"
-                  className={styles.colorInput}
-                  value={solidColor}
-                  onChange={(e) => {
-                    setSolidColor(e.target.value);
-                    updateBackground({ type: 'solid', color: e.target.value });
-                  }}
-                />
-              </div>
-            )}
-            {bgType === 'gradient' && (
-              <div className={styles.gradientSection}>
-                <div className={styles.colorRow}>
-                  <span className={styles.colorLabel}>From</span>
-                  <input
-                    type="color"
-                    className={styles.colorInput}
-                    value={gradientFrom}
-                    onChange={(e) => {
-                      setGradientFrom(e.target.value);
-                      updateBackground({ type: 'gradient', gradientFrom: e.target.value, gradientTo, gradientDirection });
-                    }}
-                  />
-                  <span className={styles.colorLabel} style={{ marginLeft: 12 }}>To</span>
-                  <input
-                    type="color"
-                    className={styles.colorInput}
-                    value={gradientTo}
-                    onChange={(e) => {
-                      setGradientTo(e.target.value);
-                      updateBackground({ type: 'gradient', gradientFrom, gradientTo: e.target.value, gradientDirection });
-                    }}
-                  />
-                </div>
-                <div className={styles.directionRow}>
-                  {GRADIENT_DIRECTIONS.map((dir) => (
-                    <button
-                      key={dir.value}
-                      className={`${styles.directionBtn} ${gradientDirection === dir.value ? styles.active : ''}`}
-                      onClick={() => {
-                        setGradientDirection(dir.value);
-                        updateBackground({ type: 'gradient', gradientFrom, gradientTo, gradientDirection: dir.value });
-                      }}
+          {showBookmarkImport ? (
+            <BookmarkImport onBack={() => setShowBookmarkImport(false)} />
+          ) : (
+            <>
+              <div className={styles.section}>
+                <div className={styles.sectionTitle}>Search Engine</div>
+                <div className={styles.engineList}>
+                  {SEARCH_ENGINES.map((eng) => (
+                    <div
+                      key={eng.id}
+                      className={`${styles.engineItem} ${eng.id === settings.defaultEngine ? styles.selected : ''}`}
+                      onClick={() => updateEngine(eng.id)}
                     >
-                      {dir.label}
-                    </button>
+                      <span dangerouslySetInnerHTML={{ __html: eng.icon }} />
+                      <span className={styles.engineName}>{eng.name}</span>
+                      {eng.id === settings.defaultEngine && (
+                        <span className={styles.checkmark}><CheckIcon /></span>
+                      )}
+                    </div>
                   ))}
                 </div>
               </div>
-            )}
-            {bgType === 'image' && (
-              <div className={styles.imageRow}>
-                <input
-                  type="text"
-                  className={styles.imageInput}
-                  placeholder="Image URL..."
-                  value={imageUrl}
-                  onChange={(e) => setImageUrl(e.target.value)}
-                />
+
+              <div className={styles.section}>
+                <div className={styles.sectionTitle}>Background</div>
+                <div className={styles.bgTypeGrid}>
+                  <button
+                    className={`${styles.bgTypeBtn} ${bgType === 'solid' ? styles.active : ''}`}
+                    onClick={() => handleBgType('solid')}
+                  >
+                    Solid
+                  </button>
+                  <button
+                    className={`${styles.bgTypeBtn} ${bgType === 'gradient' ? styles.active : ''}`}
+                    onClick={() => handleBgType('gradient')}
+                  >
+                    Gradient
+                  </button>
+                  <button
+                    className={`${styles.bgTypeBtn} ${bgType === 'image' ? styles.active : ''}`}
+                    onClick={() => handleBgType('image')}
+                  >
+                    Image
+                  </button>
+                </div>
+                {bgType === 'solid' && (
+                  <div className={styles.colorRow}>
+                    <span className={styles.colorLabel}>Color</span>
+                    <input
+                      type="color"
+                      className={styles.colorInput}
+                      value={solidColor}
+                      onChange={(e) => {
+                        setSolidColor(e.target.value);
+                        updateBackground({ type: 'solid', color: e.target.value });
+                      }}
+                    />
+                  </div>
+                )}
+                {bgType === 'gradient' && (
+                  <div className={styles.gradientSection}>
+                    <div className={styles.colorRow}>
+                      <span className={styles.colorLabel}>From</span>
+                      <input
+                        type="color"
+                        className={styles.colorInput}
+                        value={gradientFrom}
+                        onChange={(e) => {
+                          setGradientFrom(e.target.value);
+                          updateBackground({ type: 'gradient', gradientFrom: e.target.value, gradientTo, gradientDirection });
+                        }}
+                      />
+                      <span className={styles.colorLabel} style={{ marginLeft: 12 }}>To</span>
+                      <input
+                        type="color"
+                        className={styles.colorInput}
+                        value={gradientTo}
+                        onChange={(e) => {
+                          setGradientTo(e.target.value);
+                          updateBackground({ type: 'gradient', gradientFrom, gradientTo: e.target.value, gradientDirection });
+                        }}
+                      />
+                    </div>
+                    <div className={styles.directionRow}>
+                      {GRADIENT_DIRECTIONS.map((dir) => (
+                        <button
+                          key={dir.value}
+                          className={`${styles.directionBtn} ${gradientDirection === dir.value ? styles.active : ''}`}
+                          onClick={() => {
+                            setGradientDirection(dir.value);
+                            updateBackground({ type: 'gradient', gradientFrom, gradientTo, gradientDirection: dir.value });
+                          }}
+                        >
+                          {dir.label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {bgType === 'image' && (
+                  <div className={styles.imageRow}>
+                    <input
+                      type="text"
+                      className={styles.imageInput}
+                      placeholder="Image URL..."
+                      value={imageUrl}
+                      onChange={(e) => setImageUrl(e.target.value)}
+                    />
+                    <button
+                      className={styles.applyBtn}
+                      onClick={() => updateBackground({ type: 'image', imageUrl })}
+                    >
+                      Apply
+                    </button>
+                  </div>
+                )}
+              </div>
+
+              <div className={styles.section}>
+                <div className={styles.sectionTitle}>Bookmarks</div>
                 <button
-                  className={styles.applyBtn}
-                  onClick={() => updateBackground({ type: 'image', imageUrl })}
+                  className={styles.importBtn}
+                  style={{ width: '100%', marginTop: 4 }}
+                  onClick={() => setShowBookmarkImport(true)}
                 >
-                  Apply
+                  Import Bookmarks
                 </button>
               </div>
-            )}
-          </div>
 
-          <div className={styles.section}>
-            <div className={styles.sectionTitle}>Bookmarks</div>
-            <button
-              className="btn-ghost"
-              style={{ width: '100%', marginTop: 4 }}
-              onClick={() => {
-                // Bookmark import placeholder
-                alert('Bookmark import coming soon!');
-              }}
-            >
-              Import Bookmarks
-            </button>
-          </div>
-        </div>
-
-        <div className={styles.aboutSection}>
-          BrowserMain v0.1.0
-          <div className={styles.version}>LED MATRIX UI</div>
+              <div className={styles.section}>
+                <div className={styles.sectionTitle}>About</div>
+                <div className={styles.aboutVersion}>BrowserMain v0.1.0</div>
+                <div className={styles.version}>LED MATRIX UI</div>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </>
