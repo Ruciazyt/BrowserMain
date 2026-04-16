@@ -251,6 +251,38 @@
   box-shadow: 0 0 8px rgba(255, 149, 0, 0.3);
 }
 
+.uploadBtn {
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--led-amber);
+  border: 1px solid var(--led-amber);
+  background: rgba(255, 149, 0, 0.1);
+  cursor: pointer;
+  transition: all var(--transition);
+  white-space: nowrap;
+}
+
+.uploadBtn:hover {
+  background: rgba(255, 149, 0, 0.25);
+  box-shadow: 0 0 8px rgba(255, 149, 0, 0.4);
+}
+
+.imagePreview {
+  margin-top: 10px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  border: 1px solid var(--text-dim);
+  height: 60px;
+}
+
+.imagePreview img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 .colorInput {
   width: 40px;
   height: 30px;

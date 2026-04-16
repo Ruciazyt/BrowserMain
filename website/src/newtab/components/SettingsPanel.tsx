@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useSettings } from '../hooks/useSettings';
 import { SEARCH_ENGINES } from '../utils/engines';
 import BookmarkImport from './BookmarkImport';
@@ -37,7 +37,22 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
   const [gradientTo, setGradientTo] = useState(settings.background.gradientTo || '#1a3a5c');
   const [gradientDirection, setGradientDirection] = useState(settings.background.gradientDirection || 'to right top');
   const [imageUrl, setImageUrl] = useState(settings.background.imageUrl || '');
+  const [imagePreview, setImagePreview] = useState(settings.background.imageUrl || '');
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [showBookmarkImport, setShowBookmarkImport] = useState(false);
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const dataUrl = ev.target?.result as string;
+      setImagePreview(dataUrl);
+      setImageUrl(dataUrl);
+      updateBackground({ type: 'image', imageUrl: dataUrl });
+    };
+    reader.readAsDataURL(file);
+  };
 
   const handleBgType = (type: 'solid' | 'gradient' | 'image') => {
     setBgType(type);
@@ -171,8 +186,17 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
                       className={styles.imageInput}
                       placeholder="Image URL..."
                       value={imageUrl}
-                      onChange={(e) => setImageUrl(e.target.value)}
+                      onChange={(e) => {
+                        setImageUrl(e.target.value);
+                        setImagePreview(e.target.value);
+                      }}
                     />
+                    <button
+                      className={styles.uploadBtn}
+                      onClick={() => fileInputRef.current?.click()}
+                    >
+                      Upload
+                    </button>
                     <button
                       className={styles.applyBtn}
                       onClick={() => updateBackground({ type: 'image', imageUrl })}
@@ -181,6 +205,18 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
                     </button>
                   </div>
                 )}
+                {bgType === 'image' && imagePreview && (
+                  <div className={styles.imagePreview}>
+                    <img src={imagePreview} alt="Background preview" />
+                  </div>
+                )}
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  style={{ display: 'none' }}
+                  onChange={handleFileUpload}
+                />
               </div>
 
               <div className={styles.section}>

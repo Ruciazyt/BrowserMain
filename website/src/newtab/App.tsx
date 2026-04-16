@@ -43,6 +43,17 @@ export default function App() {
     return () => chrome.runtime.onMessage.removeListener(listener);
   }, []);
 
+  // ESC key to close settings panel
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && settingsOpen) {
+        setSettingsOpen(false);
+      }
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [settingsOpen]);
+
   if (shortcutsLoading || settingsLoading) {
     return (
       <div className={styles.page} style={{ justifyContent: 'center' }}>
