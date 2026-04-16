@@ -41,7 +41,8 @@
   align-items: center;
   justify-content: space-between;
   padding: 20px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid rgba(255, 149, 0, 0.3);
+  box-shadow: 0 2px 12px rgba(255, 149, 0, 0.1);
 }
 
 .title {
@@ -81,10 +82,23 @@
 .sectionTitle {
   font-size: 11px;
   font-weight: 600;
-  color: var(--text-dim);
+  color: var(--led-amber);
   text-transform: uppercase;
   letter-spacing: 1px;
   margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sectionTitle::before {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--led-amber);
+  box-shadow: 0 0 4px var(--led-amber);
 }
 
 .engineList {
@@ -111,6 +125,7 @@
 .engineItem.selected {
   background: rgba(255, 149, 0, 0.1);
   border-color: var(--led-amber);
+  box-shadow: 0 0 8px rgba(255, 149, 0, 0.2);
 }
 
 .engineItem svg {
@@ -154,6 +169,7 @@
   background: rgba(255, 149, 0, 0.15);
   border-color: var(--led-amber);
   color: var(--led-amber);
+  box-shadow: 0 0 8px rgba(255, 149, 0, 0.3);
 }
 
 .colorRow {
@@ -313,6 +329,8 @@
   font-family: var(--font-led);
   color: var(--led-amber);
   margin-top: 4px;
+  text-shadow: 0 0 8px rgba(255, 149, 0, 0.6), 0 0 16px rgba(255, 149, 0, 0.3);
+  letter-spacing: 2px;
 }
 
 .importBtn {
