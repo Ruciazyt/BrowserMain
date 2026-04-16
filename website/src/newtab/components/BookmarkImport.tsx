@@ -110,9 +110,10 @@ function FolderItem({ node, depth, selectedIds, toggleFolder, expandedIds, toggl
 
 interface BookmarkImportProps {
   onBack: () => void;
+  onImported?: () => void;
 }
 
-export default function BookmarkImport({ onBack }: BookmarkImportProps) {
+export default function BookmarkImport({ onBack, onImported }: BookmarkImportProps) {
   const { fetchBookmarkTree, importBookmarks, loading, importing } = useBookmarkImport();
   const [tree, setTree] = useState<BMTreeNode[]>([]);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
@@ -158,6 +159,7 @@ export default function BookmarkImport({ onBack }: BookmarkImportProps) {
     if (selectedIds.size === 0) return;
     const res = await importBookmarks(selectedIds, tree);
     setResult(res);
+    onImported?.();
   };
 
   const handleBack = () => {

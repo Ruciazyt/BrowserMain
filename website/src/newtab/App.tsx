@@ -19,7 +19,7 @@ const SettingsIcon = () => (
 );
 
 export default function App() {
-  const { shortcuts, loading: shortcutsLoading, removeShortcut, updateShortcut, reorderShortcuts } = useShortcuts();
+  const { shortcuts, loading: shortcutsLoading, removeShortcut, updateShortcut, reorderShortcuts, refreshShortcuts } = useShortcuts();
   const { settings, loading: settingsLoading } = useSettings();
   const [settingsOpen, setSettingsOpen] = useState(false);
 
@@ -110,7 +110,7 @@ export default function App() {
         <SettingsIcon />
       </button>
 
-      <SettingsPanel open={settingsOpen} onClose={() => setSettingsOpen(false)} />
+      <SettingsPanel open={settingsOpen} onClose={() => setSettingsOpen(false)} onBookmarkImportComplete={refreshShortcuts} />
 
       <AddShortcutDialog
         open={addDialogOpen}

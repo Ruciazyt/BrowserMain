@@ -43,6 +43,11 @@ export function useShortcuts() {
     setShortcuts(newOrder);
   }, []);
 
+  const refreshShortcuts = useCallback(async () => {
+    const data = await getShortcuts();
+    setShortcuts(data);
+  }, []);
+
   return {
     shortcuts,
     loading,
@@ -50,5 +55,6 @@ export function useShortcuts() {
     removeShortcut,
     updateShortcut,
     reorderShortcuts,
+    refreshShortcuts,
   };
 }

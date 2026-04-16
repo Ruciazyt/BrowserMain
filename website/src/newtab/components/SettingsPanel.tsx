@@ -7,6 +7,7 @@ import styles from '../styles/components/SettingsPanel.module.css';
 interface SettingsPanelProps {
   open: boolean;
   onClose: () => void;
+  onBookmarkImportComplete?: () => void;
 }
 
 const CloseIcon = () => (
@@ -29,7 +30,7 @@ const GRADIENT_DIRECTIONS = [
   { label: '↖', value: 'to left top' },
 ];
 
-export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
+export default function SettingsPanel({ open, onClose, onBookmarkImportComplete }: SettingsPanelProps) {
   const { settings, updateEngine, updateBackground } = useSettings();
   const [bgType, setBgType] = useState(settings.background.type);
   const [solidColor, setSolidColor] = useState(settings.background.color || '#0a0a0f');
@@ -81,7 +82,7 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
 
         <div className={styles.body}>
           {showBookmarkImport ? (
-            <BookmarkImport onBack={() => setShowBookmarkImport(false)} />
+            <BookmarkImport onBack={() => setShowBookmarkImport(false)} onImported={onBookmarkImportComplete} />
           ) : (
             <>
               <div className={styles.section}>
