@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import styles from '../styles/components/Clock.module.css';
 
+const DECORATIVE_DOTS = [1, 0, 1, 0, 1, 0, 1, 0];
+
 export default function Clock() {
   const [time, setTime] = useState('');
   const [date, setDate] = useState('');
@@ -23,9 +25,16 @@ export default function Clock() {
   }, []);
 
   return (
-    <div className={styles.container}>
-      <div className={styles.time}>{time}</div>
-      <div className={styles.date}>{date}</div>
+    <div className={styles.panel}>
+      <div className={styles.dotRow}>
+        {DECORATIVE_DOTS.map((on, i) => (
+          <div key={i} className={`${styles.dot} ${on ? '' : styles.dotOff}`} />
+        ))}
+      </div>
+      <div className={styles.container}>
+        <div className={styles.time}>{time}</div>
+        <div className={styles.date}>{date}</div>
+      </div>
     </div>
   );
 }
