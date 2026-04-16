@@ -71,6 +71,8 @@ export default function App() {
         ? settings.background.color
         : settings.background.type === 'gradient'
         ? `linear-gradient(${settings.background.gradientDirection || '135deg'}, ${settings.background.gradientFrom || '#0a0a0f'}, ${settings.background.gradientTo || '#1a1a2e'})`
+        : settings.background.type === 'image'
+        ? 'none'
         : undefined,
       backgroundImage: settings.background.type === 'image' && settings.background.imageUrl
         ? `url(${settings.background.imageUrl})`
