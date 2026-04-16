@@ -1,4 +1,19 @@
+@keyframes amberPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+@keyframes amberGlow {
+  0%, 100% {
+    box-shadow: 0 0 6px #ff9500, 0 0 12px rgba(255, 149, 0, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 10px #ff9500, 0 0 20px rgba(255, 149, 0, 0.5);
+  }
+}
+
 .container {
+  position: relative;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -9,6 +24,48 @@
   transition: all var(--transition);
   max-width: 560px;
   margin: 0 auto;
+}
+
+/* LED amber corner accents - top-left */
+.container::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  width: 16px;
+  height: 16px;
+  border-top: 2px solid transparent;
+  border-left: 2px solid transparent;
+  border-top-left-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+/* LED amber corner accents - bottom-right */
+.container::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  right: -2px;
+  width: 16px;
+  height: 16px;
+  border-bottom: 2px solid transparent;
+  border-right: 2px solid transparent;
+  border-bottom-right-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.container:focus-within::before {
+  border-top-color: var(--led-amber);
+  border-left-color: var(--led-amber);
+  box-shadow: 0 0 8px #ff9500, 0 0 16px rgba(255, 149, 0, 0.3);
+  animation: amberGlow 2s ease-in-out infinite;
+}
+
+.container:focus-within::after {
+  border-bottom-color: var(--led-amber);
+  border-right-color: var(--led-amber);
+  box-shadow: 0 0 8px #ff9500, 0 0 16px rgba(255, 149, 0, 0.3);
+  animation: amberGlow 2s ease-in-out infinite 0.5s;
 }
 
 .container:focus-within {
