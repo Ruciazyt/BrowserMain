@@ -49,6 +49,7 @@ export default function ShortcutTile({
   const [editTitle, setEditTitle] = useState(shortcut.title);
   const [editUrl, setEditUrl] = useState(shortcut.url);
   const [keyboardFocus, setKeyboardFocus] = useState(false);
+  const [faviconError, setFaviconError] = useState(false);
   const contextMenuRef = useRef<HTMLDivElement>(null);
 
   // Keyboard navigation for reorder
@@ -167,12 +168,13 @@ export default function ShortcutTile({
         onBlur={() => setKeyboardFocus(false)}
       >
         <div className={styles.iconWrapper}>
-          {shortcut.favicon ? (
+          {shortcut.favicon && !faviconError ? (
             <img
               src={shortcut.favicon}
               alt=""
               onError={(e) => {
                 (e.target as HTMLImageElement).style.display = 'none';
+                setFaviconError(true);
               }}
             />
           ) : (
