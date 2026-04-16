@@ -23,6 +23,7 @@ export default function App() {
   const { shortcuts, loading: shortcutsLoading, removeShortcut, updateShortcut, reorderShortcuts, refreshShortcuts } = useShortcuts();
   const { settings, loading: settingsLoading } = useSettings();
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [restartOnboardingSignal, setRestartOnboardingSignal] = useState(0);
 
   // Add shortcut dialog state
   const [addDialogOpen, setAddDialogOpen] = useState(false);
@@ -113,7 +114,7 @@ export default function App() {
         <SettingsIcon />
       </button>
 
-      <SettingsPanel open={settingsOpen} onClose={() => setSettingsOpen(false)} onBookmarkImportComplete={refreshShortcuts} />
+      <SettingsPanel open={settingsOpen} onClose={() => setSettingsOpen(false)} onBookmarkImportComplete={refreshShortcuts} onShowTour={() => setRestartOnboardingSignal(Date.now())} />
 
       <AddShortcutDialog
         open={addDialogOpen}
@@ -123,7 +124,7 @@ export default function App() {
         onClose={() => setAddDialogOpen(false)}
       />
 
-      <OnboardingGuide />
+      <OnboardingGuide restartSignal={restartOnboardingSignal} />
 
       <div className={styles.footer}>
         <span>BROWSER_MAIN</span>

@@ -354,3 +354,20 @@
   color: var(--text-dim);
   margin-bottom: 4px;
 }
+
+.showTourBtn {
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--led-amber);
+  border: 1px solid var(--led-amber);
+  background: transparent;
+  cursor: pointer;
+  transition: all var(--transition);
+}
+
+.showTourBtn:hover {
+  background: rgba(255, 149, 0, 0.15);
+  box-shadow: 0 0 12px rgba(255, 149, 0, 0.3);
+}

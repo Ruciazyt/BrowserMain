@@ -3,6 +3,10 @@ import styles from '../styles/components/OnboardingGuide.module.css';
 
 const STORAGE_KEY = 'onboardingComplete';
 
+interface OnboardingGuideProps {
+  restartSignal?: number;
+}
+
 interface Step {
   title: string;
   description: string;
@@ -70,7 +74,7 @@ const steps: Step[] = [
   },
 ];
 
-export default function OnboardingGuide() {
+export default function OnboardingGuide({ restartSignal }: OnboardingGuideProps) {
   const [visible, setVisible] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
 
@@ -81,6 +85,16 @@ export default function OnboardingGuide() {
       }
     });
   }, []);
+
+  // Restart signal: when it changes, force the onboarding to show again
+  useEffect(() => {
+    if (restartSignal && restartSignal > 0) {
+      chrome.storage.local.set({ [STORAGE_KEY]: false }, () => {
+        setVisible(true);
+        setCurrentStep(0);
+      });
+    }
+  }, [restartSignal]);
 
   const handleComplete = () => {
     chrome.storage.local.set({ [STORAGE_KEY]: true }, () => {

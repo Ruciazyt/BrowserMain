@@ -8,6 +8,7 @@ interface SettingsPanelProps {
   open: boolean;
   onClose: () => void;
   onBookmarkImportComplete?: () => void;
+  onShowTour?: () => void;
 }
 
 const CloseIcon = () => (
@@ -30,7 +31,7 @@ const GRADIENT_DIRECTIONS = [
   { label: '↖', value: 'to left top' },
 ];
 
-export default function SettingsPanel({ open, onClose, onBookmarkImportComplete }: SettingsPanelProps) {
+export default function SettingsPanel({ open, onClose, onBookmarkImportComplete, onShowTour }: SettingsPanelProps) {
   const { settings, updateEngine, updateBackground } = useSettings();
   const [bgType, setBgType] = useState(settings.background.type);
   const [solidColor, setSolidColor] = useState(settings.background.color || '#0a0a0f');
@@ -235,6 +236,13 @@ export default function SettingsPanel({ open, onClose, onBookmarkImportComplete 
                 <div className={styles.sectionTitle}>About</div>
                 <div className={styles.aboutVersion}>BrowserMain v0.1.0</div>
                 <div className={styles.version}>LED MATRIX UI</div>
+                <button
+                  className={styles.showTourBtn}
+                  onClick={onShowTour}
+                  style={{ marginTop: 12, width: '100%' }}
+                >
+                  Show Tour
+                </button>
               </div>
             </>
           )}
