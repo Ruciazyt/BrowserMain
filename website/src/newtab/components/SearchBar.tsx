@@ -56,7 +56,13 @@ export default function SearchBar({ defaultEngine = 'google' }: SearchBarProps) 
   }, []);
 
   const navigateTo = (url: string) => {
-    window.location.href = url;
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      if (tabs[0]?.id) {
+        chrome.tabs.update(tabs[0].id, { url });
+      } else {
+        window.location.href = url;
+      }
+    });
   };
 
   const handleSubmit = (e: React.FormEvent) => {
