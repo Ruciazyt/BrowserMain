@@ -128,3 +128,30 @@
   width: 18px;
   height: 18px;
 }
+
+.clearBtn {
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 149, 0, 0.15);
+  color: var(--led-amber);
+  flex-shrink: 0;
+  transition: all var(--transition);
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.clearBtn:hover {
+  background: rgba(255, 149, 0, 0.3);
+  color: var(--led-amber);
+  transform: scale(1.05);
+}
+
+.clearBtn svg {
+  width: 14px;
+  height: 14px;
+}

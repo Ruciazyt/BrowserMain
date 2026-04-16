@@ -102,6 +102,22 @@ export default function SearchBar({ defaultEngine = 'google' }: SearchBarProps) 
         value={query}
         onChange={(e) => setQuery(e.target.value)}
       />
+      {query.length > 0 && (
+        <button
+          type="button"
+          className={styles.clearBtn}
+          aria-label="Clear search"
+          onClick={() => {
+            setQuery('');
+            inputRef.current?.focus();
+          }}
+        >
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      )}
       <button type="submit" className={styles.searchBtn} aria-label="Search">
         <SearchIcon />
       </button>
