@@ -1,14 +1,14 @@
 import { useState, useCallback } from 'react';
 import { Shortcut, getShortcuts, saveShortcuts } from '../utils/storage';
 
-interface BMTreeNode {
+export interface BMTreeNode {
   id: string;
   title: string;
   url?: string;
   children?: BMTreeNode[];
 }
 
-function countBookmarks(node: BMTreeNode): number {
+export function countBookmarks(node: BMTreeNode): number {
   if (node.url) return 1;
   if (!node.children) return 0;
   return node.children.reduce((sum, child) => sum + countBookmarks(child), 0);

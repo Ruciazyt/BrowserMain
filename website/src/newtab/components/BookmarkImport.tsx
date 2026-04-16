@@ -1,25 +1,6 @@
 import { useState, useEffect } from 'react';
-import { useBookmarkImport } from '../hooks/useBookmarkImport';
+import { useBookmarkImport, BMTreeNode, countBookmarks } from '../hooks/useBookmarkImport';
 import styles from '../styles/components/BookmarkImport.module.css';
-
-interface BMTreeNode {
-  id: string;
-  title: string;
-  url?: string;
-  children?: BMTreeNode[];
-}
-
-interface FolderCheckbox {
-  id: string;
-  checked: boolean;
-  indeterminate: boolean;
-}
-
-function countBookmarks(node: BMTreeNode): number {
-  if (node.url) return 1;
-  if (!node.children) return 0;
-  return node.children.reduce((sum, child) => sum + countBookmarks(child), 0);
-}
 
 interface FolderItemProps {
   node: BMTreeNode;
