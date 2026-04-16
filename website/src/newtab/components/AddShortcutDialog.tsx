@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useShortcuts } from '../hooks/useShortcuts';
+import { getFaviconUrl } from '../utils/storage';
 import styles from '../styles/components/AddShortcutDialog.module.css';
 
 interface AddShortcutDialogProps {
@@ -13,19 +14,28 @@ interface AddShortcutDialogProps {
 export default function AddShortcutDialog({ open, url, title, favicon, onClose }: AddShortcutDialogProps) {
   const [inputUrl, setInputUrl] = useState(url);
   const [inputTitle, setInputTitle] = useState(title);
+  const [faviconUrl, setFaviconUrl] = useState(favicon || (url ? getFaviconUrl(url) : ''));
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const { addShortcut } = useShortcuts();
 
-  // Sync props → local state when dialog opens
+  // Sync props → local state when dialog opens; auto-fetch favicon if none provided
   useEffect(() => {
     if (open) {
       setInputUrl(url);
       setInputTitle(title);
       setSaved(false);
       setSaving(false);
+      // Auto-fetch favicon if none provided but URL is available
+      if (favicon) {
+        setFaviconUrl(favicon);
+      } else if (url) {
+        setFaviconUrl(getFaviconUrl(url));
+      } else {
+        setFaviconUrl('');
+      }
     }
-  }, [open, url, title]);
+  }, [open, url, title, favicon]);
 
   if (!open) return null;
 

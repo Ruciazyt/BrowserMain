@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Shortcut, getShortcuts, saveShortcuts } from '../utils/storage';
+import { Shortcut, getShortcuts, saveShortcuts, getFaviconUrl } from '../utils/storage';
 
 export function useShortcuts() {
   const [shortcuts, setShortcuts] = useState<Shortcut[]>([]);
@@ -13,11 +13,12 @@ export function useShortcuts() {
   }, []);
 
   const addShortcut = useCallback(async (title: string, url: string, favicon?: string) => {
+    const faviconUrl = favicon || getFaviconUrl(url);
     const newShortcut: Shortcut = {
       id: Date.now().toString(),
       title,
       url,
-      favicon,
+      favicon: faviconUrl,
       order: shortcuts.length,
     };
     const updated = [...shortcuts, newShortcut];

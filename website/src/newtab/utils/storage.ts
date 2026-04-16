@@ -25,6 +25,15 @@ export interface BackgroundConfig {
 const SHORTCUTS_KEY = 'browsermain_shortcuts';
 const SETTINGS_KEY = 'browsermain_settings';
 
+export function getFaviconUrl(url: string): string {
+  try {
+    const hostname = new URL(url).hostname;
+    return `https://www.google.com/s2/favicons?domain=${encodeURIComponent(hostname)}&sz=64`;
+  } catch {
+    return '';
+  }
+}
+
 export async function getShortcuts(): Promise<Shortcut[]> {
   return new Promise((resolve) => {
     chrome.storage.local.get(SHORTCUTS_KEY, (result: any) => {
