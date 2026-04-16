@@ -7,6 +7,7 @@ import LEDDisplay from './components/LEDDisplay';
 import ShortcutGrid from './components/ShortcutGrid';
 import SettingsPanel from './components/SettingsPanel';
 import AddShortcutDialog from './components/AddShortcutDialog';
+import OnboardingGuide from './components/OnboardingGuide';
 import './styles/global.css';
 import './styles/led-theme.css';
 import styles from './styles/App.module.css';
@@ -119,6 +120,8 @@ export default function App() {
         favicon={addDialogData.favicon}
         onClose={() => setAddDialogOpen(false)}
       />
+
+      <OnboardingGuide />
 
       <div className={styles.footer}>
         <span>BROWSER_MAIN</span>
