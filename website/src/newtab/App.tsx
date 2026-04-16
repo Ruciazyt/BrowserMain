@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useShortcuts } from './hooks/useShortcuts';
 import { useSettings } from './hooks/useSettings';
 import SearchBar from './components/SearchBar';
@@ -6,6 +6,7 @@ import Clock from './components/Clock';
 import LEDDisplay from './components/LEDDisplay';
 import ShortcutGrid from './components/ShortcutGrid';
 import SettingsPanel from './components/SettingsPanel';
+import AddShortcutDialog from './components/AddShortcutDialog';
 import './styles/global.css';
 import './styles/led-theme.css';
 import styles from './styles/App.module.css';
@@ -21,6 +22,26 @@ export default function App() {
   const { shortcuts, loading: shortcutsLoading, removeShortcut, updateShortcut, reorderShortcuts } = useShortcuts();
   const { settings, loading: settingsLoading } = useSettings();
   const [settingsOpen, setSettingsOpen] = useState(false);
+
+  // Add shortcut dialog state
+  const [addDialogOpen, setAddDialogOpen] = useState(false);
+  const [addDialogData, setAddDialogData] = useState({ url: '', title: '', favicon: '' });
+
+  // Listen for messages from background script (toolbar button click)
+  useEffect(() => {
+    const listener = (message: { action?: string; url?: string; title?: string; favicon?: string }) => {
+      if (message.action === 'OPEN_ADD_DIALOG') {
+        setAddDialogData({
+          url: message.url || '',
+          title: message.title || '',
+          favicon: message.favicon || '',
+        });
+        setAddDialogOpen(true);
+      }
+    };
+    chrome.runtime.onMessage.addListener(listener);
+    return () => chrome.runtime.onMessage.removeListener(listener);
+  }, []);
 
   if (shortcutsLoading || settingsLoading) {
     return (
@@ -70,6 +91,14 @@ export default function App() {
       </button>
 
       <SettingsPanel open={settingsOpen} onClose={() => setSettingsOpen(false)} />
+
+      <AddShortcutDialog
+        open={addDialogOpen}
+        url={addDialogData.url}
+        title={addDialogData.title}
+        favicon={addDialogData.favicon}
+        onClose={() => setAddDialogOpen(false)}
+      />
 
       <div className={styles.footer}>
         <span>BROWSER_MAIN</span>

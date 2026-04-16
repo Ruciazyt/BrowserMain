@@ -3,21 +3,22 @@ chrome.runtime.onInstalled.addListener(() => {
   console.log('BrowserMain extension installed');
 });
 
+// Toolbar button clicked → send current tab info to the new tab page
+// to trigger the AddShortcutDialog overlay
 chrome.action.onClicked.addListener(async (tab) => {
-  // Quick add shortcut from current tab
-  if (tab.id && tab.url) {
-    const url = tab.url;
-    const title = tab.title || 'New Shortcut';
-    chrome.storage.local.get('browsermain_shortcuts', (result) => {
-      const shortcuts = result.browsermain_shortcuts || [];
-      shortcuts.push({
-        id: Date.now().toString(),
-        title,
-        url,
-        favicon: tab.favIconUrl,
-        order: shortcuts.length,
-      });
-      chrome.storage.local.set({ browsermain_shortcuts: shortcuts });
-    });
-  }
+  // Only handle http(s) pages — skip chrome:// URLs etc.
+  if (!tab.id || !tab.url || !tab.url.startsWith('http')) return;
+
+  // Query the active tab in the current window (the new tab page)
+  const [activeTab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  if (!activeTab.id) return;
+
+  chrome.tabs.sendMessage(activeTab.id, {
+    action: 'OPEN_ADD_DIALOG',
+    url: tab.url,
+    title: tab.title || '',
+    favicon: tab.favIconUrl || '',
+  }).catch(() => {
+    // New tab page may not be ready yet — silently ignore
+  });
 });
