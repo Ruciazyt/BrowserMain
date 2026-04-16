@@ -17,7 +17,10 @@ export default function AddShortcutDialog({ open, url, title, favicon, onClose }
   const [faviconUrl, setFaviconUrl] = useState(favicon || (url ? getFaviconUrl(url) : ''));
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
-  const { addShortcut } = useShortcuts();
+  const { addShortcut, shortcuts } = useShortcuts();
+
+  // Check if entered URL is a duplicate
+  const isDuplicate = inputUrl.trim() && shortcuts.some((s) => s.url.toLowerCase() === inputUrl.trim().toLowerCase());
 
   // Sync props → local state when dialog opens; auto-fetch favicon if none provided
   useEffect(() => {
@@ -95,6 +98,9 @@ export default function AddShortcutDialog({ open, url, title, favicon, onClose }
               placeholder="https://example.com"
               autoFocus
             />
+            {isDuplicate && (
+              <span className={styles.duplicateWarning}>⚠ URL already exists in your shortcuts</span>
+            )}
           </div>
 
           {/* Title field */}
