@@ -116,7 +116,11 @@ export default function ShortcutTile({
 
   const navigateToShortcut = () => {
     if (editMode || showContextMenu) return;
-    chrome.tabs.create({ url: shortcut.url, active: true });
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      if (tabs[0]?.id) {
+        chrome.tabs.update(tabs[0].id, { url: shortcut.url });
+      }
+    });
   };
 
   // Keyboard activation: Enter or Space opens the shortcut
