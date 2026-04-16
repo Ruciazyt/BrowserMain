@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="128" height="128" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <filter id="glow128" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="6.4" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <radialGradient id="bg128" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#1a1a2e"/>
+      <stop offset="100%" stop-color="#0a0a0f"/>
+    </radialGradient>
+  </defs>
+  <rect width="128" height="128" rx="23" fill="url(#bg128)"/>
+    <circle cx="28.2" cy="28.2" r="5.1" fill="#ff9500" opacity="0.6" filter="url(#glow128)"/>
+  <circle cx="46.1" cy="28.2" r="5.1" fill="#ff9500" opacity="0.6" filter="url(#glow128)"/>
+  <circle cx="64.0" cy="28.2" r="5.1" fill="#ff9500" opacity="0.6" filter="url(#glow128)"/>
+  <circle cx="81.9" cy="28.2" r="5.1" fill="#ff9500" opacity="0.6" filter="url(#glow128)"/>
+  <circle cx="28.2" cy="46.1" r="5.1" fill="#ff9500" opacity="0.6" filter="url(#glow128)"/>
+  <circle cx="81.9" cy="46.1" r="5.1" fill="#ff9500" opacity="0.6" filter="url(#glow128)"/>
+  <circle cx="28.2" cy="64.0" r="5.1" fill="#ff9500" opacity="0.6" filter="url(#glow128)"/>
+  <circle cx="81.9" cy="64.0" r="5.1" fill="#ff9500" opacity="0.6" filter="url(#glow128)"/>
+  <circle cx="28.2" cy="81.9" r="5.1" fill="#ff9500" opacity="0.6" filter="url(#glow128)"/>
+  <circle cx="46.1" cy="81.9" r="5.1" fill="#ff9500" opacity="0.6" filter="url(#glow128)"/>
+  <circle cx="64.0" cy="81.9" r="5.1" fill="#ff9500" opacity="0.6" filter="url(#glow128)"/>
+  <circle cx="81.9" cy="81.9" r="5.1" fill="#ff9500" opacity="0.6" filter="url(#glow128)"/>
+    <g filter="url(#glow128)" stroke="#ff9500" stroke-width="6.4" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <path d="M 44.8 80.0 L 44.8 48.0 L 64.0 56.0 L 83.2 48.0 L 83.2 80.0"/>
+  </g>
+</svg>
