@@ -4,7 +4,7 @@
   "scripts": {
     "reset": "del-cli node_modules",
     "dev": "modern dev",
-    "build": "modern build && cp manifest.json dist/ && cp -r src/background dist/ && cp -r public dist/",
+    "build": "modern build && cp manifest.json dist/ && cp -r src/background dist/ && cp -r public dist/ && cp dist/html/main/index.html dist/index.html",
     "start": "modern start",
     "new": "modern new",
     "lint": "modern lint"
