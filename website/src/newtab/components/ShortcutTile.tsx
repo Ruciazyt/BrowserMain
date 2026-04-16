@@ -53,6 +53,7 @@ export default function ShortcutTile({
   // Simplified: 2-stage favicon fallback
   const [faviconSrc, setFaviconSrc] = useState(shortcut.favicon || getSmartFaviconUrl(shortcut.url));
   const [faviconTriedIco, setFaviconTriedIco] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
   const contextMenuRef = useRef<HTMLDivElement>(null);
 
   // When shortcut changes, reset favicon state
@@ -126,7 +127,20 @@ export default function ShortcutTile({
   const handleContextMenu = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    setContextMenuPos({ x: e.clientX, y: e.clientY });
+    const MENU_WIDTH = 120;
+    const MENU_HEIGHT = 80;
+    const EDGE_BUFFER = 8;
+    let x = e.clientX;
+    let y = e.clientY;
+    if (x + MENU_WIDTH + EDGE_BUFFER > window.innerWidth) {
+      x = window.innerWidth - MENU_WIDTH - EDGE_BUFFER;
+    }
+    if (x < EDGE_BUFFER) x = EDGE_BUFFER;
+    if (y + MENU_HEIGHT + EDGE_BUFFER > window.innerHeight) {
+      y = window.innerHeight - MENU_HEIGHT - EDGE_BUFFER;
+    }
+    if (y < EDGE_BUFFER) y = EDGE_BUFFER;
+    setContextMenuPos({ x, y });
     setShowContextMenu(true);
   };
 
@@ -177,6 +191,7 @@ export default function ShortcutTile({
       <div
         className={`${styles.container} ${isDragging ? styles.dragging : ''} ${isDragOver ? styles.dragOver : ''} ${dropPosition === 'before' ? styles.dropBefore : ''} ${dropPosition === 'after' ? styles.dropAfter : ''} ${keyboardFocus ? styles.keyboardFocus : ''}`}
         onClick={handleClick}
+        ref={containerRef}
         onContextMenu={handleContextMenu}
         draggable
         onDragStart={() => onDragStart(index)}
