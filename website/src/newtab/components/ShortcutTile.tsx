@@ -114,9 +114,17 @@ export default function ShortcutTile({
     };
   }, [showContextMenu, editMode]);
 
-  const handleClick = () => {
+  const navigateToShortcut = () => {
     if (editMode) return;
-    window.location.href = shortcut.url;
+    chrome.tabs.create({ url: shortcut.url, active: true });
+  };
+
+  // Keyboard activation: Enter or Space opens the shortcut
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      navigateToShortcut();
+    }
   };
 
   const handleDelete = (e: React.MouseEvent) => {
@@ -190,7 +198,6 @@ export default function ShortcutTile({
     <>
       <div
         className={`${styles.container} ${isDragging ? styles.dragging : ''} ${isDragOver ? styles.dragOver : ''} ${dropPosition === 'before' ? styles.dropBefore : ''} ${dropPosition === 'after' ? styles.dropAfter : ''} ${keyboardFocus ? styles.keyboardFocus : ''}`}
-        onClick={handleClick}
         ref={containerRef}
         onContextMenu={handleContextMenu}
         draggable
@@ -199,6 +206,8 @@ export default function ShortcutTile({
         onDragOver={(e) => { e.preventDefault(); const tileWidth = e.currentTarget.getBoundingClientRect().width; onDragOver(index, e.nativeEvent.offsetX, tileWidth); }}
         onDragLeave={onDragLeave}
         onDrop={onDrop}
+        onClick={navigateToShortcut}
+        onKeyDown={handleKeyDown}
         tabIndex={0}
         onFocus={() => setKeyboardFocus(true)}
         onBlur={() => setKeyboardFocus(false)}

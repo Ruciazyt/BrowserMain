@@ -35,16 +35,6 @@ export function getFaviconUrl(url: string): string {
   }
 }
 
-export function getFaviconUrlWithFallback(url: string): string {
-  try {
-    const { hostname } = new URL(url);
-    const domain = encodeURIComponent(hostname);
-    return `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
-  } catch {
-    return '';
-  }
-}
-
 /**
  * Returns the best favicon URL for a given page URL.
  * Uses Google S2 (most reliable, handles edge cases) with favicon.ico fallback.
@@ -61,7 +51,7 @@ export function getSmartFaviconUrl(url: string): string {
 }
 
 /**
- * Returns favicon.ico URL as a fallback.
+ * Returns favicon.ico URL as a fallback (used as second-stage fallback in ShortcutTile).
  */
 export function getFaviconIcoUrl(url: string): string {
   try {

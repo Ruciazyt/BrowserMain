@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useShortcuts } from '../hooks/useShortcuts';
 import { getFaviconUrl } from '../utils/storage';
+import { isUrl } from '../utils/engines';
 import styles from '../styles/components/AddShortcutDialog.module.css';
 
 interface AddShortcutDialogProps {
@@ -19,8 +20,10 @@ export default function AddShortcutDialog({ open, url, title, favicon, onClose }
   const [saved, setSaved] = useState(false);
   const { addShortcut, shortcuts } = useShortcuts();
 
-  // Check if entered URL is a duplicate
-  const isDuplicate = inputUrl.trim() && shortcuts.some((s) => s.url.toLowerCase() === inputUrl.trim().toLowerCase());
+  // Check if entered URL is a duplicate or invalid
+  const trimmedUrl = inputUrl.trim();
+  const isInvalidUrl = trimmedUrl.length > 0 && !isUrl(trimmedUrl);
+  const isDuplicate = trimmedUrl.length > 0 && isUrl(trimmedUrl) && shortcuts.some((s) => s.url.toLowerCase() === trimmedUrl.toLowerCase());
 
   // Sync props → local state when dialog opens; auto-fetch favicon if none provided
   useEffect(() => {
@@ -45,7 +48,7 @@ export default function AddShortcutDialog({ open, url, title, favicon, onClose }
   const handleSave = async () => {
     const trimmedUrl = inputUrl.trim();
     const trimmedTitle = inputTitle.trim();
-    if (!trimmedUrl) return;
+    if (!trimmedUrl || isInvalidUrl) return;
 
     setSaving(true);
     try {
@@ -98,7 +101,10 @@ export default function AddShortcutDialog({ open, url, title, favicon, onClose }
               placeholder="https://example.com"
               autoFocus
             />
-            {isDuplicate && (
+            {isInvalidUrl && (
+              <span className={styles.duplicateWarning}>⚠ Please enter a valid URL (https://...)</span>
+            )}
+            {!isInvalidUrl && isDuplicate && (
               <span className={styles.duplicateWarning}>⚠ URL already exists in your shortcuts</span>
             )}
           </div>
@@ -125,7 +131,7 @@ export default function AddShortcutDialog({ open, url, title, favicon, onClose }
               <button className={styles.cancelBtn} onClick={onClose} disabled={saving}>
                 Cancel
               </button>
-              <button className={styles.saveBtn} onClick={handleSave} disabled={saving || !inputUrl.trim()}>
+              <button className={styles.saveBtn} onClick={handleSave} disabled={saving || !inputUrl.trim() || isInvalidUrl}>
                 {saving ? 'Saving…' : 'Save'}
               </button>
             </>
