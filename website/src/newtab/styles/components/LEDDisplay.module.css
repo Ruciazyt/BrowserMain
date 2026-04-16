@@ -19,20 +19,13 @@
   background: var(--led-dot);
   box-shadow: 0 0 4px var(--led-amber-glow);
   animation: pulse 2s ease-in-out infinite;
+  animation-delay: var(--delay, 0s);
 }
 
 .dot.off {
   background: rgba(255, 179, 71, 0.12);
   box-shadow: none;
   animation: none;
-}
-
-.dot:nth-child(odd) {
-  animation-delay: 0.3s;
-}
-
-.dot:nth-child(3n) {
-  animation-delay: 0.6s;
 }
 
 @keyframes pulse {
