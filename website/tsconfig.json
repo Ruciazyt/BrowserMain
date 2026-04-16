@@ -1,13 +1,22 @@
 {
-  "extends": "@modern-js/tsconfig/base",
   "compilerOptions": {
-    "declaration": false,
-    "jsx": "preserve",
-    "baseUrl": "./",
-    "paths": {
-      "@/*": ["./src/*"],
-      "@shared/*": ["./shared/*"]
-    }
+    "target": "ES2020",
+    "useDefineForClassFields": true,
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "skipLibCheck": true,
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "strict": true,
+    "noUnusedLocals": false,
+    "noUnusedParameters": false,
+    "noFallthroughCasesInSwitch": true
   },
-  "include": ["src", "shared", "config"]
+  "include": ["src/vite-env.d.ts", "src/newtab", "src/background", "src/assets"],
+  "exclude": ["src/components", "src/App.tsx", "src/App.css", "src/global.less", "src/modern-app-env.d.ts", "src/.eslintrc.json"],
+  "references": [{ "path": "./tsconfig.node.json" }]
 }

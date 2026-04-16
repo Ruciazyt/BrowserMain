@@ -174,8 +174,8 @@
   flex: 1;
   padding: 5px 8px;
   background: transparent;
-  color: var(--led-turquoise);
-  border: 1px solid var(--led-turquoise);
+  color: var(--panel-turquoise);
+  border: 1px solid var(--panel-turquoise);
   border-radius: var(--radius-sm);
   font-size: 11px;
   cursor: pointer;
@@ -183,5 +183,5 @@
 }
 
 .cancelBtn:hover {
-  background: rgba(0, 212, 187, 0.1);
+  background: rgba(125, 211, 232, 0.1);
 }

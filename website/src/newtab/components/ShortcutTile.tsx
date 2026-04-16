@@ -140,7 +140,13 @@ export default function ShortcutTile({
       >
         <div className={styles.iconWrapper}>
           {shortcut.favicon ? (
-            <img src={shortcut.favicon} alt="" />
+            <img
+              src={shortcut.favicon}
+              alt=""
+              onError={(e) => {
+                (e.target as HTMLImageElement).style.display = 'none';
+              }}
+            />
           ) : (
             <GlobeIcon />
           )}
