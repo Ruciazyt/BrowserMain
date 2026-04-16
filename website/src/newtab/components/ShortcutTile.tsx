@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Shortcut } from '../utils/storage';
 import styles from '../styles/components/ShortcutTile.module.css';
 
@@ -13,13 +13,43 @@ const GlobeIcon = () => (
 interface ShortcutTileProps {
   shortcut: Shortcut;
   onDelete: (id: string) => void;
+  onUpdate: (id: string, updates: Partial<Shortcut>) => void;
 }
 
-export default function ShortcutTile({ shortcut, onDelete }: ShortcutTileProps) {
+export default function ShortcutTile({ shortcut, onDelete, onUpdate }: ShortcutTileProps) {
   const [dragging, setDragging] = useState(false);
   const [dragOver, setDragOver] = useState(false);
+  const [showContextMenu, setShowContextMenu] = useState(false);
+  const [contextMenuPos, setContextMenuPos] = useState({ x: 0, y: 0 });
+  const [editMode, setEditMode] = useState(false);
+  const [editTitle, setEditTitle] = useState(shortcut.title);
+  const [editUrl, setEditUrl] = useState(shortcut.url);
+  const contextMenuRef = useRef<HTMLDivElement>(null);
+
+  // Close context menu on outside click or Escape
+  useEffect(() => {
+    if (!showContextMenu) return;
+    const handleClickOutside = (e: MouseEvent) => {
+      if (contextMenuRef.current && !contextMenuRef.current.contains(e.target as Node)) {
+        setShowContextMenu(false);
+      }
+    };
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        setShowContextMenu(false);
+        if (editMode) setEditMode(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [showContextMenu, editMode]);
 
   const handleClick = () => {
+    if (editMode) return;
     window.location.href = shortcut.url;
   };
 
@@ -28,32 +58,99 @@ export default function ShortcutTile({ shortcut, onDelete }: ShortcutTileProps) 
     onDelete(shortcut.id);
   };
 
-  return (
-    <div
-      className={`${styles.container} ${dragging ? styles.dragging : ''} ${dragOver ? styles.dragOver : ''}`}
-      onClick={handleClick}
-      draggable
-      onDragStart={() => setDragging(true)}
-      onDragEnd={() => setDragging(false)}
-      onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
-      onDragLeave={() => setDragOver(false)}
-      onDrop={() => setDragOver(false)}
-    >
-      <div className={styles.iconWrapper}>
-        {shortcut.favicon ? (
-          <img src={shortcut.favicon} alt="" />
-        ) : (
-          <GlobeIcon />
-        )}
+  const handleContextMenu = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setContextMenuPos({ x: e.clientX, y: e.clientY });
+    setShowContextMenu(true);
+  };
+
+  const handleEdit = () => {
+    setShowContextMenu(false);
+    setEditTitle(shortcut.title);
+    setEditUrl(shortcut.url);
+    setEditMode(true);
+  };
+
+  const handleSaveEdit = () => {
+    if (editTitle.trim() && editUrl.trim()) {
+      onUpdate(shortcut.id, { title: editTitle.trim(), url: editUrl.trim() });
+    }
+    setEditMode(false);
+  };
+
+  const handleCancelEdit = () => {
+    setEditMode(false);
+  };
+
+  if (editMode) {
+    return (
+      <div className={styles.editMode}>
+        <input
+          className={styles.editInput}
+          value={editTitle}
+          onChange={(e) => setEditTitle(e.target.value)}
+          placeholder="Title"
+          autoFocus
+        />
+        <input
+          className={styles.editInput}
+          value={editUrl}
+          onChange={(e) => setEditUrl(e.target.value)}
+          placeholder="URL"
+        />
+        <div className={styles.editActions}>
+          <button className={styles.saveBtn} onClick={handleSaveEdit}>Save</button>
+          <button className={styles.cancelBtn} onClick={handleCancelEdit}>Cancel</button>
+        </div>
       </div>
-      <div className={styles.title}>{shortcut.title}</div>
-      <button
-        className={styles.deleteBtn}
-        onClick={handleDelete}
-        aria-label="Delete shortcut"
+    );
+  }
+
+  return (
+    <>
+      <div
+        className={`${styles.container} ${dragging ? styles.dragging : ''} ${dragOver ? styles.dragOver : ''}`}
+        onClick={handleClick}
+        onContextMenu={handleContextMenu}
+        draggable
+        onDragStart={() => setDragging(true)}
+        onDragEnd={() => setDragging(false)}
+        onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+        onDragLeave={() => setDragOver(false)}
+        onDrop={() => setDragOver(false)}
       >
-        ×
-      </button>
-    </div>
+        <div className={styles.iconWrapper}>
+          {shortcut.favicon ? (
+            <img src={shortcut.favicon} alt="" />
+          ) : (
+            <GlobeIcon />
+          )}
+        </div>
+        <div className={styles.title}>{shortcut.title}</div>
+        <button
+          className={styles.deleteBtn}
+          onClick={handleDelete}
+          aria-label="Delete shortcut"
+        >
+          ×
+        </button>
+      </div>
+
+      {showContextMenu && (
+        <div
+          ref={contextMenuRef}
+          className={styles.contextMenu}
+          style={{ left: contextMenuPos.x, top: contextMenuPos.y }}
+        >
+          <button className={styles.contextMenuItem} onClick={handleEdit}>
+            ✏️ Edit
+          </button>
+          <button className={styles.contextMenuItem} onClick={(e) => { e.stopPropagation(); onDelete(shortcut.id); setShowContextMenu(false); }}>
+            🗑️ Delete
+          </button>
+        </div>
+      )}
+    </>
   );
 }

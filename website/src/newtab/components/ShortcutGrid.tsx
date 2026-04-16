@@ -5,9 +5,10 @@ import styles from '../styles/components/ShortcutGrid.module.css';
 interface ShortcutGridProps {
   shortcuts: Shortcut[];
   onDelete: (id: string) => void;
+  onUpdate: (id: string, updates: Partial<Shortcut>) => void;
 }
 
-export default function ShortcutGrid({ shortcuts, onDelete }: ShortcutGridProps) {
+export default function ShortcutGrid({ shortcuts, onDelete, onUpdate }: ShortcutGridProps) {
   if (shortcuts.length === 0) {
     return (
       <div className={styles.container}>
@@ -28,6 +29,7 @@ export default function ShortcutGrid({ shortcuts, onDelete }: ShortcutGridProps)
           key={shortcut.id}
           shortcut={shortcut}
           onDelete={onDelete}
+          onUpdate={onUpdate}
         />
       ))}
     </div>
