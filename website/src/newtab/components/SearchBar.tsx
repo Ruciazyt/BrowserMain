@@ -55,11 +55,24 @@ export default function SearchBar({ defaultEngine = 'google' }: SearchBarProps) 
     return () => document.removeEventListener('keydown', handleKeydown);
   }, []);
 
+  const navigateTo = (url: string) => {
+    window.location.href = url;
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!query.trim()) return;
     const url = isUrl(query.trim()) ? query.trim() : buildSearchUrl(engine, query.trim());
-    window.location.href = url;
+    navigateTo(url);
+  };
+
+  const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    const pastedText = e.clipboardData.getData('text');
+    if (isUrl(pastedText.trim())) {
+      e.preventDefault();
+      setQuery(pastedText.trim());
+      navigateTo(pastedText.trim());
+    }
   };
 
   return (
@@ -101,6 +114,7 @@ export default function SearchBar({ defaultEngine = 'google' }: SearchBarProps) 
         placeholder="Search or enter URL..."
         value={query}
         onChange={(e) => setQuery(e.target.value)}
+        onPaste={handlePaste}
       />
       {query.length > 0 && (
         <button
