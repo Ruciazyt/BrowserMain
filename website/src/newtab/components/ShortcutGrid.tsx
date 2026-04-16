@@ -8,9 +8,10 @@ interface ShortcutGridProps {
   onDelete: (id: string) => void;
   onUpdate: (id: string, updates: Partial<Shortcut>) => void;
   onReorder: (newOrder: Shortcut[]) => void;
+  onAdd?: () => void;
 }
 
-export default function ShortcutGrid({ shortcuts, onDelete, onUpdate, onReorder }: ShortcutGridProps) {
+export default function ShortcutGrid({ shortcuts, onDelete, onUpdate, onReorder, onAdd }: ShortcutGridProps) {
   const [dragIndex, setDragIndex] = useState<number | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
 
@@ -51,8 +52,13 @@ export default function ShortcutGrid({ shortcuts, onDelete, onUpdate, onReorder 
         <div className={styles.empty}>
           <div className={styles.emptyTitle}>No shortcuts yet</div>
           <div className={styles.emptyHint}>
-            Use the toolbar button to add your first shortcut
+            Click the <strong style={{ color: 'var(--led-amber)' }}>+</strong> button to add your first shortcut
           </div>
+          {onAdd && (
+            <button className={styles.addTile} onClick={onAdd} aria-label="Add shortcut" title="Add shortcut" style={{ marginTop: 16 }}>
+              <span className={styles.addTileIcon}>+</span>
+            </button>
+          )}
         </div>
       </div>
     );
@@ -76,6 +82,11 @@ export default function ShortcutGrid({ shortcuts, onDelete, onUpdate, onReorder 
           onDrop={handleDrop}
         />
       ))}
+      {onAdd && (
+        <button className={styles.addTile} onClick={onAdd} aria-label="Add shortcut" title="Add shortcut">
+          <span className={styles.addTileIcon}>+</span>
+        </button>
+      )}
     </div>
   );
 }

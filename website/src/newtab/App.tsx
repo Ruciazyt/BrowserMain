@@ -79,7 +79,16 @@ export default function App() {
 
         <LEDDisplay />
 
-        <ShortcutGrid shortcuts={shortcuts} onDelete={removeShortcut} onUpdate={updateShortcut} onReorder={reorderShortcuts} />
+        <ShortcutGrid
+          shortcuts={shortcuts}
+          onDelete={removeShortcut}
+          onUpdate={updateShortcut}
+          onReorder={reorderShortcuts}
+          onAdd={() => {
+            setAddDialogData({ url: '', title: '', favicon: '' });
+            setAddDialogOpen(true);
+          }}
+        />
       </div>
 
       <button

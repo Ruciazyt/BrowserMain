@@ -154,8 +154,8 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
                           key={dir.value}
                           className={`${styles.directionBtn} ${gradientDirection === dir.value ? styles.active : ''}`}
                           onClick={() => {
-                            setGradientDirection(dir.value);
-                            updateBackground({ type: 'gradient', gradientFrom, gradientTo, gradientDirection: dir.value });
+                            setGradientDirection(dir.value as typeof gradientDirection);
+                            updateBackground({ type: 'gradient', gradientFrom, gradientTo, gradientDirection: dir.value as 'to right top' | 'to right bottom' | 'to left bottom' | 'to left top' });
                           }}
                         >
                           {dir.label}

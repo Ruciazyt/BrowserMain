@@ -41,8 +41,8 @@ const TypeSelector = () => {
   });
   const inputValue = useRef<HTMLInputElement>(null);
   // 搜索引擎切换
-  const handleChange = (_: any, options: { detail: any }) => {
-    const data = options.detail;
+  const handleChange = (_: any, options: any) => {
+    const data = Array.isArray(options) ? options[0].detail : options.detail;
     setSubmitAction({
       name: data.value,
       action: data.action,
@@ -66,7 +66,7 @@ const TypeSelector = () => {
   };
   useEffect(() => {
     const localData = localStorage.getItem('searchData');
-    const data = JSON.parse(localData) || typeList[0];
+    const data = localData ? JSON.parse(localData) : typeList[0];
     setSubmitAction({
       name: data.value,
       action: data.action,

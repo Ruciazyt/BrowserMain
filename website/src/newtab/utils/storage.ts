@@ -18,7 +18,7 @@ export interface BackgroundConfig {
   color?: string;
   gradientFrom?: string;
   gradientTo?: string;
-  gradientDirection?: 'to right' | 'to bottom' | '135deg';
+  gradientDirection?: 'to right top' | 'to right bottom' | 'to left bottom' | 'to left top';
   imageUrl?: string;
 }
 
@@ -27,7 +27,7 @@ const SETTINGS_KEY = 'browsermain_settings';
 
 export async function getShortcuts(): Promise<Shortcut[]> {
   return new Promise((resolve) => {
-    chrome.storage.local.get(SHORTCUTS_KEY, (result) => {
+    chrome.storage.local.get(SHORTCUTS_KEY, (result: any) => {
       resolve(result[SHORTCUTS_KEY] || []);
     });
   });
@@ -45,7 +45,7 @@ export async function getSettings(): Promise<Settings> {
     background: { type: 'solid', color: '#0a0a0f' },
   };
   return new Promise((resolve) => {
-    chrome.storage.sync.get(SETTINGS_KEY, (result) => {
+    (chrome.storage as any).sync.get(SETTINGS_KEY, (result: any) => {
       resolve({ ...defaults, ...result[SETTINGS_KEY] });
     });
   });
@@ -53,9 +53,9 @@ export async function getSettings(): Promise<Settings> {
 
 export async function saveSettings(settings: Partial<Settings>): Promise<void> {
   return new Promise((resolve) => {
-    chrome.storage.sync.get(SETTINGS_KEY, (result) => {
+    (chrome.storage as any).sync.get(SETTINGS_KEY, (result: any) => {
       const current = result[SETTINGS_KEY] || {};
-      chrome.storage.sync.set(
+      (chrome.storage as any).sync.set(
         { [SETTINGS_KEY]: { ...current, ...settings } },
         resolve
       );
