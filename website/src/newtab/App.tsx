@@ -69,16 +69,16 @@ export default function App() {
   return (
     <div className={styles.page} style={{
       background: settings.background.type === 'solid'
-        ? settings.background.color
+        ? (settings.background.color || '#0a0a0f')
         : settings.background.type === 'gradient'
         ? `linear-gradient(${settings.background.gradientDirection || '135deg'}, ${settings.background.gradientFrom || '#0a0a0f'}, ${settings.background.gradientTo || '#1a1a2e'})`
         : settings.background.type === 'image'
-        ? 'none'
+        ? (settings.background.imageUrl ? 'none' : undefined)
         : undefined,
       backgroundImage: settings.background.type === 'image' && settings.background.imageUrl
         ? `url(${settings.background.imageUrl})`
         : undefined,
-      backgroundSize: 'cover',
+      backgroundSize: settings.background.type === 'image' && settings.background.imageUrl ? 'cover' : undefined,
     }}>
       <div className={styles.content}>
         <SearchBar defaultEngine={settings.defaultEngine} />
