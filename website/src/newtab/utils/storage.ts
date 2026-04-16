@@ -45,6 +45,33 @@ export function getFaviconUrlWithFallback(url: string): string {
   }
 }
 
+/**
+ * Returns the best favicon URL for a given page URL.
+ * Uses Google S2 (most reliable, handles edge cases) with favicon.ico fallback.
+ * The caller should render this as an <img> and handle onError to cycle fallbacks.
+ */
+export function getSmartFaviconUrl(url: string): string {
+  try {
+    const { hostname } = new URL(url);
+    const domain = encodeURIComponent(hostname);
+    return `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
+  } catch {
+    return '';
+  }
+}
+
+/**
+ * Returns favicon.ico URL as a fallback.
+ */
+export function getFaviconIcoUrl(url: string): string {
+  try {
+    const { hostname } = new URL(url);
+    return `https://${hostname}/favicon.ico`;
+  } catch {
+    return '';
+  }
+}
+
 export async function getShortcuts(): Promise<Shortcut[]> {
   return new Promise((resolve) => {
     chrome.storage.local.get(SHORTCUTS_KEY, (result: any) => {

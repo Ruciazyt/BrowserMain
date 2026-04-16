@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { getFaviconUrlWithFallback, getFaviconUrl } from '../utils/storage';
+import { getSmartFaviconUrl, getFaviconIcoUrl } from '../utils/storage';
 import { Shortcut } from '../utils/storage';
 import styles from '../styles/components/ShortcutTile.module.css';
 
@@ -50,18 +50,28 @@ export default function ShortcutTile({
   const [editTitle, setEditTitle] = useState(shortcut.title);
   const [editUrl, setEditUrl] = useState(shortcut.url);
   const [keyboardFocus, setKeyboardFocus] = useState(false);
-  const [originalFailed, setOriginalFailed] = useState(false);
-  const [googleFailed, setGoogleFailed] = useState(false);
-  const [faviconIcoFailed, setFaviconIcoFailed] = useState(false);
+  // Simplified: 2-stage favicon fallback
+  const [faviconSrc, setFaviconSrc] = useState(shortcut.favicon || getSmartFaviconUrl(shortcut.url));
+  const [faviconTriedIco, setFaviconTriedIco] = useState(false);
   const contextMenuRef = useRef<HTMLDivElement>(null);
 
-  // Reset all favicon fallback states when the shortcut changes
-  // (e.g., after drag-drop reorder swaps which shortcut renders here)
+  // When shortcut changes, reset favicon state
   useEffect(() => {
-    setOriginalFailed(false);
-    setGoogleFailed(false);
-    setFaviconIcoFailed(false);
-  }, [shortcut.favicon]);
+    const initial = shortcut.favicon || getSmartFaviconUrl(shortcut.url);
+    setFaviconSrc(initial);
+    setFaviconTriedIco(false);
+  }, [shortcut.favicon, shortcut.url]);
+
+  const handleFaviconError = () => {
+    if (!faviconTriedIco) {
+      // Try favicon.ico as second attempt
+      setFaviconSrc(getFaviconIcoUrl(shortcut.url));
+      setFaviconTriedIco(true);
+    } else {
+      // Give up — show globe icon
+      setFaviconSrc('');
+    }
+  };
 
   // Keyboard navigation for reorder
   useEffect(() => {
@@ -179,24 +189,8 @@ export default function ShortcutTile({
         onBlur={() => setKeyboardFocus(false)}
       >
         <div className={styles.iconWrapper}>
-          {shortcut.favicon && !originalFailed ? (
-            <img
-              src={shortcut.favicon}
-              alt=""
-              onError={() => setOriginalFailed(true)}
-            />
-          ) : !googleFailed ? (
-            <img
-              src={getFaviconUrlWithFallback(shortcut.url)}
-              alt=""
-              onError={() => setGoogleFailed(true)}
-            />
-          ) : !faviconIcoFailed ? (
-            <img
-              src={getFaviconUrl(shortcut.url)}
-              alt=""
-              onError={() => setFaviconIcoFailed(true)}
-            />
+          {faviconSrc ? (
+            <img src={faviconSrc} alt="" onError={handleFaviconError} />
           ) : (
             <GlobeIcon />
           )}
