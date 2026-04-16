@@ -1,8 +1,62 @@
+/* ── LED panel wrapper ──────────────────────────────────────────────── */
+.panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  background: linear-gradient(145deg, #7dd3e8, #6bc5de);
+  border: 2px solid #5bb8d4;
+  border-radius: 24px;
+  padding: 20px 32px 24px;
+  box-shadow: inset 0 2px 4px rgba(255, 255, 255, 0.3), 0 4px 16px rgba(0, 0, 0, 0.3);
+}
+
+/* ── Decorative amber dot row ─────────────────────────────────────── */
+.dotRow {
+  display: flex;
+  gap: 8px;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--led-amber);
+  box-shadow: 0 0 4px rgba(255, 149, 0, 0.6);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.dot:nth-child(odd) {
+  animation-delay: 0.4s;
+}
+
+.dot:nth-child(3n) {
+  animation-delay: 0.8s;
+}
+
+.dotOff {
+  background: rgba(255, 179, 71, 0.12);
+  box-shadow: none;
+  animation: none;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(0.8);
+  }
+}
+
+/* ── Shortcut grid ─────────────────────────────────────────────────── */
 .container {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(96px, 1fr));
   gap: 12px;
-  padding: 16px;
+  width: 100%;
 }
 
 .empty {

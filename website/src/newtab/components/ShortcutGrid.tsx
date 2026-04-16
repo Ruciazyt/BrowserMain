@@ -3,6 +3,8 @@ import { Shortcut } from '../utils/storage';
 import ShortcutTile from './ShortcutTile';
 import styles from '../styles/components/ShortcutGrid.module.css';
 
+const DECORATIVE_DOTS = [1, 0, 1, 0, 1, 0, 1, 0];
+
 interface ShortcutGridProps {
   shortcuts: Shortcut[];
   onDelete: (id: string) => void;
@@ -69,50 +71,59 @@ export default function ShortcutGrid({ shortcuts, onDelete, onUpdate, onReorder,
     onReorder(newOrder);
   };
 
-  if (shortcuts.length === 0) {
-    return (
-      <div className={styles.container}>
-        <div className={styles.empty}>
-          <div className={styles.emptyTitle}>No shortcuts yet</div>
-          <div className={styles.emptyHint}>
-            Click the <strong style={{ color: 'var(--led-amber)' }}>+</strong> button to add your first shortcut
-          </div>
-          {onAdd && (
-            <button className={styles.addTile} onClick={onAdd} aria-label="Add shortcut" title="Add shortcut" style={{ marginTop: 16 }}>
-              <span className={styles.addTileIcon}>+</span>
-            </button>
-          )}
-        </div>
+  const panel = (
+    <>
+      <div className={styles.dotRow}>
+        {DECORATIVE_DOTS.map((on, i) => (
+          <span key={i} className={on ? styles.dot : styles.dotOff} />
+        ))}
       </div>
-    );
-  }
-
-  return (
-    <div className={styles.container}>
-      {shortcuts.map((shortcut, i) => (
-        <ShortcutTile
-          key={shortcut.id}
-          shortcut={shortcut}
-          onDelete={onDelete}
-          onUpdate={onUpdate}
-          index={i}
-          isDragging={dragIndex === i}
-          isDragOver={dragOverIndex === i}
-          dropPosition={dragIndex !== null && dragOverIndex === i ? dropPosition : null}
-          onDragStart={handleDragStart}
-          onDragEnd={handleDragEnd}
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
-          onDrop={handleDrop}
-          onMoveLeft={handleMoveLeft}
-          onMoveRight={handleMoveRight}
-        />
-      ))}
-      {onAdd && (
-        <button className={styles.addTile} onClick={onAdd} aria-label="Add shortcut" title="Add shortcut">
-          <span className={styles.addTileIcon}>+</span>
-        </button>
-      )}
-    </div>
+      <div className={styles.container}>
+        {shortcuts.length === 0 ? (
+          <>
+            <div className={styles.empty}>
+              <div className={styles.emptyTitle}>No shortcuts yet</div>
+              <div className={styles.emptyHint}>
+                Click the <strong style={{ color: 'var(--led-amber)' }}>+</strong> button to add your first shortcut
+              </div>
+              {onAdd && (
+                <button className={styles.addTile} onClick={onAdd} aria-label="Add shortcut" title="Add shortcut" style={{ marginTop: 16 }}>
+                  <span className={styles.addTileIcon}>+</span>
+                </button>
+              )}
+            </div>
+          </>
+        ) : (
+          <>
+            {shortcuts.map((shortcut, i) => (
+              <ShortcutTile
+                key={shortcut.id}
+                shortcut={shortcut}
+                onDelete={onDelete}
+                onUpdate={onUpdate}
+                index={i}
+                isDragging={dragIndex === i}
+                isDragOver={dragOverIndex === i}
+                dropPosition={dragIndex !== null && dragOverIndex === i ? dropPosition : null}
+                onDragStart={handleDragStart}
+                onDragEnd={handleDragEnd}
+                onDragOver={handleDragOver}
+                onDragLeave={handleDragLeave}
+                onDrop={handleDrop}
+                onMoveLeft={handleMoveLeft}
+                onMoveRight={handleMoveRight}
+              />
+            ))}
+            {onAdd && (
+              <button className={styles.addTile} onClick={onAdd} aria-label="Add shortcut" title="Add shortcut">
+                <span className={styles.addTileIcon}>+</span>
+              </button>
+            )}
+          </>
+        )}
+      </div>
+    </>
   );
+
+  return <div className={styles.panel}>{panel}</div>;
 }
