@@ -32,6 +32,7 @@ export default function SearchBar({ defaultEngine = 'google' }: SearchBarProps) 
   );
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -41,6 +42,17 @@ export default function SearchBar({ defaultEngine = 'google' }: SearchBarProps) 
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    const handleKeydown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        inputRef.current?.focus();
+      }
+    };
+    document.addEventListener('keydown', handleKeydown);
+    return () => document.removeEventListener('keydown', handleKeydown);
   }, []);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -83,6 +95,7 @@ export default function SearchBar({ defaultEngine = 'google' }: SearchBarProps) 
       </div>
       <div className={styles.divider} />
       <input
+        ref={inputRef}
         type="text"
         className={styles.input}
         placeholder="Search or enter URL..."

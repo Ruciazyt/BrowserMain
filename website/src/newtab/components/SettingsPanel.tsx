@@ -21,14 +21,31 @@ const CheckIcon = () => (
   </svg>
 );
 
+const GRADIENT_DIRECTIONS = [
+  { label: '↗', value: 'to right top' },
+  { label: '↘', value: 'to right bottom' },
+  { label: '↙', value: 'to left bottom' },
+  { label: '↖', value: 'to left top' },
+];
+
 export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
   const { settings, updateEngine, updateBackground } = useSettings();
   const [bgType, setBgType] = useState(settings.background.type);
   const [solidColor, setSolidColor] = useState(settings.background.color || '#0a0a0f');
+  const [gradientFrom, setGradientFrom] = useState(settings.background.gradientFrom || '#0a0a0f');
+  const [gradientTo, setGradientTo] = useState(settings.background.gradientTo || '#1a3a5c');
+  const [gradientDirection, setGradientDirection] = useState(settings.background.gradientDirection || 'to right top');
+  const [imageUrl, setImageUrl] = useState(settings.background.imageUrl || '');
 
   const handleBgType = (type: 'solid' | 'gradient' | 'image') => {
     setBgType(type);
-    updateBackground({ type, color: solidColor });
+    if (type === 'solid') {
+      updateBackground({ type, color: solidColor });
+    } else if (type === 'gradient') {
+      updateBackground({ type, gradientFrom, gradientTo, gradientDirection });
+    } else if (type === 'image') {
+      updateBackground({ type, imageUrl });
+    }
   };
 
   return (
@@ -99,6 +116,63 @@ export default function SettingsPanel({ open, onClose }: SettingsPanelProps) {
                     updateBackground({ type: 'solid', color: e.target.value });
                   }}
                 />
+              </div>
+            )}
+            {bgType === 'gradient' && (
+              <div className={styles.gradientSection}>
+                <div className={styles.colorRow}>
+                  <span className={styles.colorLabel}>From</span>
+                  <input
+                    type="color"
+                    className={styles.colorInput}
+                    value={gradientFrom}
+                    onChange={(e) => {
+                      setGradientFrom(e.target.value);
+                      updateBackground({ type: 'gradient', gradientFrom: e.target.value, gradientTo, gradientDirection });
+                    }}
+                  />
+                  <span className={styles.colorLabel} style={{ marginLeft: 12 }}>To</span>
+                  <input
+                    type="color"
+                    className={styles.colorInput}
+                    value={gradientTo}
+                    onChange={(e) => {
+                      setGradientTo(e.target.value);
+                      updateBackground({ type: 'gradient', gradientFrom, gradientTo: e.target.value, gradientDirection });
+                    }}
+                  />
+                </div>
+                <div className={styles.directionRow}>
+                  {GRADIENT_DIRECTIONS.map((dir) => (
+                    <button
+                      key={dir.value}
+                      className={`${styles.directionBtn} ${gradientDirection === dir.value ? styles.active : ''}`}
+                      onClick={() => {
+                        setGradientDirection(dir.value);
+                        updateBackground({ type: 'gradient', gradientFrom, gradientTo, gradientDirection: dir.value });
+                      }}
+                    >
+                      {dir.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+            {bgType === 'image' && (
+              <div className={styles.imageRow}>
+                <input
+                  type="text"
+                  className={styles.imageInput}
+                  placeholder="Image URL..."
+                  value={imageUrl}
+                  onChange={(e) => setImageUrl(e.target.value)}
+                />
+                <button
+                  className={styles.applyBtn}
+                  onClick={() => updateBackground({ type: 'image', imageUrl })}
+                >
+                  Apply
+                </button>
               </div>
             )}
           </div>

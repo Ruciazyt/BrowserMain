@@ -169,6 +169,88 @@
   min-width: 50px;
 }
 
+.gradientSection {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.directionRow {
+  display: flex;
+  gap: 8px;
+}
+
+.directionBtn {
+  flex: 1;
+  padding: 8px 4px;
+  border-radius: var(--radius-sm);
+  text-align: center;
+  font-size: 16px;
+  color: var(--text-primary);
+  border: 1px solid var(--text-dim);
+  transition: all var(--transition);
+  cursor: pointer;
+  background: transparent;
+  line-height: 1;
+}
+
+.directionBtn:hover {
+  border-color: var(--led-amber);
+}
+
+.directionBtn.active {
+  background: rgba(255, 149, 0, 0.15);
+  border-color: var(--led-amber);
+  color: var(--led-amber);
+  box-shadow: 0 0 8px rgba(255, 149, 0, 0.3);
+}
+
+.imageRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.imageInput {
+  flex: 1;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid var(--text-dim);
+  color: var(--text-bright);
+  outline: none;
+  transition: border-color var(--transition);
+}
+
+.imageInput::placeholder {
+  color: var(--text-dim);
+}
+
+.imageInput:focus {
+  border-color: var(--led-amber);
+}
+
+.applyBtn {
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--led-amber);
+  border: 1px solid var(--led-amber);
+  background: rgba(255, 149, 0, 0.1);
+  cursor: pointer;
+  transition: all var(--transition);
+  white-space: nowrap;
+}
+
+.applyBtn:hover {
+  background: rgba(255, 149, 0, 0.2);
+  box-shadow: 0 0 8px rgba(255, 149, 0, 0.3);
+}
+
 .colorInput {
   width: 40px;
   height: 30px;
