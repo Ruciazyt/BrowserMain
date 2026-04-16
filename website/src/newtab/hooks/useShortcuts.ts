@@ -12,31 +12,36 @@ export function useShortcuts() {
     });
   }, []);
 
+  // All mutations read from chrome.storage.local at call time to avoid stale
+  // closure bugs when multiple operations fire in rapid succession.
   const addShortcut = useCallback(async (title: string, url: string, favicon?: string) => {
+    const current = await getShortcuts();
     const faviconUrl = favicon || getFaviconUrl(url);
     const newShortcut: Shortcut = {
-      id: Date.now().toString(),
+      id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
       title,
       url,
       favicon: faviconUrl,
-      order: shortcuts.length,
+      order: current.length,
     };
-    const updated = [...shortcuts, newShortcut];
+    const updated = [...current, newShortcut];
     await saveShortcuts(updated);
     setShortcuts(updated);
-  }, [shortcuts]);
+  }, []);
 
   const removeShortcut = useCallback(async (id: string) => {
-    const updated = shortcuts.filter((s) => s.id !== id);
+    const current = await getShortcuts();
+    const updated = current.filter((s) => s.id !== id);
     await saveShortcuts(updated);
     setShortcuts(updated);
-  }, [shortcuts]);
+  }, []);
 
   const updateShortcut = useCallback(async (id: string, updates: Partial<Shortcut>) => {
-    const updated = shortcuts.map((s) => (s.id === id ? { ...s, ...updates } : s));
+    const current = await getShortcuts();
+    const updated = current.map((s) => (s.id === id ? { ...s, ...updates } : s));
     await saveShortcuts(updated);
     setShortcuts(updated);
-  }, [shortcuts]);
+  }, []);
 
   const reorderShortcuts = useCallback(async (newOrder: Shortcut[]) => {
     await saveShortcuts(newOrder);
