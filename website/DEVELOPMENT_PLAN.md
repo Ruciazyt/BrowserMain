@@ -70,7 +70,7 @@ website/
 
 ---
 
-## Phase 2: Drag & Drop Reorder (TODO)
+## Phase 2: Drag & Drop Reorder ✅ (Completed)
 **Goal:** Full drag-and-drop reordering of shortcuts.
 
 ### Files to Create/Modify
@@ -80,28 +80,28 @@ website/
 - `ShortcutGrid.module.css` — Add drop indicator styles
 
 ### Acceptance Criteria
-- [ ] Drag a tile, see it follow cursor with visual feedback
-- [ ] Drop between tiles shows insertion indicator
-- [ ] Order persists after page reload
+- [x] Drag a tile, see it follow cursor with visual feedback
+- [x] Drop between tiles shows insertion indicator
+- [x] Order persists after page reload
 
 ### Dependencies
 - Pure HTML5 Drag and Drop API (no external library)
 
 ---
 
-## Phase 3: Bookmark Import (TODO)
+## Phase 3: Bookmark Import ✅ (Completed)
 **Goal:** Import bookmarks from browser into shortcuts.
 
 ### Files to Create/Modify
-- `AddBookmarkImport.tsx` — New component: folder tree, checkboxes, import button
+- `BookmarkImport.tsx` — New component: folder tree, checkboxes, import button
 - `SettingsPanel.tsx` — Add "Import Bookmarks" section
 - `background.js` — Add `chrome.bookmarks.getTree()` handler via messaging
 
 ### Acceptance Criteria
-- [ ] User can browse their bookmark tree
-- [ ] Multi-select folders to import
-- [ ] Duplicate URLs are skipped
-- [ ] Imported shortcuts appear in grid immediately
+- [x] User can browse their bookmark tree
+- [x] Multi-select folders to import
+- [x] Duplicate URLs are skipped
+- [x] Imported shortcuts appear in grid immediately
 
 ---
 

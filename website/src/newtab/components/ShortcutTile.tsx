@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { getFaviconUrlWithFallback } from '../utils/storage';
 import { Shortcut } from '../utils/storage';
 import styles from '../styles/components/ShortcutTile.module.css';
 
@@ -50,7 +51,15 @@ export default function ShortcutTile({
   const [editUrl, setEditUrl] = useState(shortcut.url);
   const [keyboardFocus, setKeyboardFocus] = useState(false);
   const [faviconError, setFaviconError] = useState(false);
+  const [faviconUsingFallback, setFaviconUsingFallback] = useState(false);
   const contextMenuRef = useRef<HTMLDivElement>(null);
+
+  // Reset favicon error state when the shortcut's favicon changes
+  // (e.g., after drag-drop reorder swaps which shortcut renders here)
+  useEffect(() => {
+    setFaviconError(false);
+    setFaviconUsingFallback(false);
+  }, [shortcut.favicon]);
 
   // Keyboard navigation for reorder
   useEffect(() => {
@@ -168,14 +177,25 @@ export default function ShortcutTile({
         onBlur={() => setKeyboardFocus(false)}
       >
         <div className={styles.iconWrapper}>
-          {shortcut.favicon && !faviconError ? (
+          {shortcut.favicon && !faviconError && !faviconUsingFallback ? (
             <img
               src={shortcut.favicon}
               alt=""
-              onError={(e) => {
-                (e.target as HTMLImageElement).style.display = 'none';
-                setFaviconError(true);
+              onError={() => {
+                // Try Google favicons as fallback before giving up
+                const fallback = getFaviconUrlWithFallback(shortcut.url);
+                if (fallback) {
+                  setFaviconUsingFallback(true);
+                } else {
+                  setFaviconError(true);
+                }
               }}
+            />
+          ) : shortcut.favicon && faviconUsingFallback && !faviconError ? (
+            <img
+              src={getFaviconUrlWithFallback(shortcut.url)}
+              alt=""
+              onError={() => setFaviconError(true)}
             />
           ) : (
             <GlobeIcon />
