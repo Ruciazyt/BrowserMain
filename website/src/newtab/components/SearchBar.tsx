@@ -35,6 +35,7 @@ export default function SearchBar({ defaultEngine = 'google' }: SearchBarProps) 
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const pasteTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -83,9 +84,12 @@ export default function SearchBar({ defaultEngine = 'google' }: SearchBarProps) 
   const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
     const pastedText = e.clipboardData.getData('text');
     if (isUrl(pastedText.trim())) {
-      e.preventDefault();
-      setQuery(pastedText.trim());
-      navigateTo(pastedText.trim());
+      // Cancel any pending auto-navigate from a previous paste
+      if (pasteTimerRef.current) clearTimeout(pasteTimerRef.current);
+      // Navigate after short delay so user sees the pasted URL before leaving
+      pasteTimerRef.current = setTimeout(() => {
+        navigateTo(pastedText.trim());
+      }, 400);
     }
   };
 
@@ -127,7 +131,10 @@ export default function SearchBar({ defaultEngine = 'google' }: SearchBarProps) 
         className={styles.input}
         placeholder="Search or enter URL..."
         value={query}
-        onChange={(e) => setQuery(e.target.value)}
+        onChange={(e) => {
+          if (pasteTimerRef.current) clearTimeout(pasteTimerRef.current);
+          setQuery(e.target.value);
+        }}
         onPaste={handlePaste}
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
