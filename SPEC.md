@@ -226,7 +226,7 @@ website/
 
 ### Build Output
 
-Modern.js outputs to `dist/` directory. For the extension, we configure it to output a static site that the `chrome_url_overrides: newTab` can reference.
+Vite outputs to `dist/` directory. For the extension, we configure it to output a static site that the `chrome_url_overrides: newTab` can reference.
 
 ---
 
