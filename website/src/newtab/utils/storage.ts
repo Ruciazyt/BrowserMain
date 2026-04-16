@@ -92,7 +92,7 @@ export async function getSettings(): Promise<Settings> {
     background: { type: 'solid', color: '#0a0a0f' },
   };
   return new Promise((resolve) => {
-    (chrome.storage as any).sync.get(SETTINGS_KEY, (result: any) => {
+    (chrome.storage as any).local.get(SETTINGS_KEY, (result: any) => {
       resolve({ ...defaults, ...result[SETTINGS_KEY] });
     });
   });
@@ -100,9 +100,9 @@ export async function getSettings(): Promise<Settings> {
 
 export async function saveSettings(settings: Partial<Settings>): Promise<void> {
   return new Promise((resolve) => {
-    (chrome.storage as any).sync.get(SETTINGS_KEY, (result: any) => {
+    (chrome.storage as any).local.get(SETTINGS_KEY, (result: any) => {
       const current = result[SETTINGS_KEY] || {};
-      (chrome.storage as any).sync.set(
+      (chrome.storage as any).local.set(
         { [SETTINGS_KEY]: { ...current, ...settings } },
         resolve
       );
