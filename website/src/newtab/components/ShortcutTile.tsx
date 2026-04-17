@@ -79,6 +79,16 @@ export default function ShortcutTile({
 
   // Consolidated keyboard handler: arrow keys for reorder, Enter/Space to open, Escape to blur
   const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (editMode) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        handleSaveEdit();
+      } else if (e.key === 'Escape') {
+        e.preventDefault();
+        handleCancelEdit();
+      }
+      return;
+    }
     if (e.key === 'ArrowLeft') {
       e.preventDefault();
       setIsNavigating(true);
