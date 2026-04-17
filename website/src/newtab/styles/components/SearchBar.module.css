@@ -135,7 +135,7 @@
   border: 1px solid color-mix(in srgb, var(--led-amber) 30%, transparent);
   border-radius: 6px;
   color: var(--led-amber);
-  font-family: 'JetBrains Mono', 'Courier New', monospace;
+  font-family: var(--font-led);
   font-size: 11px;
   font-weight: 500;
   letter-spacing: 0.3px;
@@ -159,7 +159,7 @@
 .hintText {
   color: var(--led-amber);
   opacity: 0.55;
-  font-family: 'JetBrains Mono', 'Courier New', monospace;
+  font-family: var(--font-led);
   font-size: 11px;
   letter-spacing: 0.3px;
   user-select: none;

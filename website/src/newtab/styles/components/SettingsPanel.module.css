@@ -25,6 +25,15 @@
 }
 .panel.open { transform: translateX(0); }
 
+/* Top accent gradient bar */
+.panel::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent-aqua) 0%, var(--accent-violet) 50%, var(--accent-rose) 100%);
+  z-index: 10; pointer-events: none;
+}
+
 /* ── Header ───────────────────────────────────────────────────── */
 .header {
   display: flex; align-items: center; justify-content: space-between;
