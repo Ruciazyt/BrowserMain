@@ -75,3 +75,10 @@
   color: var(--text-dim);
   letter-spacing: 2px;
 }
+
+.day {
+  font-family: var(--font-led);
+  font-size: 12px;
+  color: var(--text-primary);
+  letter-spacing: 2px;
+}

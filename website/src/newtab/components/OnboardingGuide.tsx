@@ -29,7 +29,7 @@ const steps: Step[] = [
     hint: 'Amber glow. JetBrains Mono. Every second counts.',
   },
   {
-    title: '🔍 Quick Search',
+    title: 'Quick Search',
     description: 'Press Ctrl+K to jump straight to the search bar. Pick your engine, type your query, hit Enter — search in a flash.',
     icon: (
       <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -44,7 +44,7 @@ const steps: Step[] = [
     hint: 'Ctrl + K',
   },
   {
-    title: '⚡ Add Shortcuts',
+    title: 'Add Shortcuts',
     description: 'Hit the + button to add any website as a shortcut. Drag to reorder, hover to edit, click to launch.',
     icon: (
       <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -62,7 +62,7 @@ const steps: Step[] = [
     hint: 'Click + to add your favorites',
   },
   {
-    title: '⚙️ Customize',
+    title: 'Customize',
     description: 'Click the ⚙️ gear icon to open settings. Change backgrounds, switch search engines, and tune the display to your taste.',
     icon: (
       <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
