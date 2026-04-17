@@ -28,7 +28,6 @@ const CheckIcon = () => (
 export default function SearchBar({ defaultEngine = 'google' }: SearchBarProps) {
   const [query, setQuery] = useState('');
   const [focused, setFocused] = useState(false);
-  const isMac = typeof navigator !== 'undefined' && /Mac/.test(navigator.platform);
   const [engine, setEngine] = useState<SearchEngine>(
     SEARCH_ENGINES.find((e) => e.id === defaultEngine) || SEARCH_ENGINES[0]
   );
@@ -132,9 +131,6 @@ export default function SearchBar({ defaultEngine = 'google' }: SearchBarProps) 
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
       />
-      {!focused && query.length === 0 && (
-        <kbd className={styles.kbdHint}>{isMac ? '⌘K' : 'Ctrl+K'}</kbd>
-      )}
       {query.length > 0 && (
         <button
           type="button"
