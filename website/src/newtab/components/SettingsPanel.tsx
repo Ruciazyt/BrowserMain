@@ -2,6 +2,9 @@ import { useState, useRef } from 'react';
 import { useSettings } from '../hooks/useSettings';
 import { SEARCH_ENGINES } from '../utils/engines';
 import BookmarkImport from './BookmarkImport';
+import ShortcutImport from './ShortcutImport';
+import { useShortcuts } from '../hooks/useShortcuts';
+import { exportShortcutsAsJson } from '../hooks/useShortcuts';
 import styles from '../styles/components/SettingsPanel.module.css';
 
 interface SettingsPanelProps {
@@ -42,6 +45,7 @@ export default function SettingsPanel({ open, onClose, onBookmarkImportComplete,
   const [imagePreview, setImagePreview] = useState(settings.background.imageUrl || '');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [showBookmarkImport, setShowBookmarkImport] = useState(false);
+  const [showShortcutImport, setShowShortcutImport] = useState(false);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -84,6 +88,10 @@ export default function SettingsPanel({ open, onClose, onBookmarkImportComplete,
         <div className={styles.body}>
           {showBookmarkImport ? (
             <BookmarkImport onBack={() => setShowBookmarkImport(false)} onImported={onBookmarkImportComplete} />
+          ) : (
+            <>
+              {showShortcutImport ? (
+            <ShortcutImport onBack={() => setShowShortcutImport(false)} onImported={onBookmarkImportComplete} />
           ) : (
             <>
               <div className={styles.section}>
@@ -230,6 +238,20 @@ export default function SettingsPanel({ open, onClose, onBookmarkImportComplete,
                 >
                   Import Bookmarks
                 </button>
+                <div className={styles.shortcutActionRow}>
+                  <button
+                    className={styles.exportBtn}
+                    onClick={() => exportShortcutsAsJson()}
+                  >
+                    Export
+                  </button>
+                  <button
+                    className={styles.importBtn}
+                    onClick={() => setShowShortcutImport(true)}
+                  >
+                    Import
+                  </button>
+                </div>
               </div>
 
               <div className={styles.section}>
@@ -244,6 +266,8 @@ export default function SettingsPanel({ open, onClose, onBookmarkImportComplete,
                   Show Tour
                 </button>
               </div>
+            </>
+          )}
             </>
           )}
         </div>

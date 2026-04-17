@@ -371,3 +371,27 @@
   background: rgba(255, 149, 0, 0.15);
   box-shadow: 0 0 12px rgba(255, 149, 0, 0.3);
 }
+
+.shortcutActionRow {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.exportBtn {
+  flex: 1;
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--led-amber);
+  border: 1px solid var(--led-amber);
+  background: rgba(255, 149, 0, 0.1);
+  transition: all var(--transition);
+  cursor: pointer;
+}
+
+.exportBtn:hover {
+  background: rgba(255, 149, 0, 0.2);
+  box-shadow: 0 0 12px var(--led-amber-soft);
+}

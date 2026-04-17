@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Shortcut, getShortcuts, saveShortcuts, getFaviconUrl } from '../utils/storage';
+import { Shortcut, getShortcuts, saveShortcuts, getFaviconUrl, getSmartFaviconUrl } from '../utils/storage';
 
 export function useShortcuts() {
   const [shortcuts, setShortcuts] = useState<Shortcut[]>([]);
@@ -63,3 +63,56 @@ export function useShortcuts() {
     refreshShortcuts,
   };
 }
+
+export const exportShortcutsAsJson = useCallback(async () => {
+  const data = await getShortcuts();
+  const payload = {
+    version: '1.0',
+    exportedAt: new Date().toISOString(),
+    shortcuts: data,
+  };
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `browsermain-shortcuts-${new Date().toISOString().slice(0, 10)}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+}, []);
+
+export const importShortcutsFromJson = useCallback(async (file: File): Promise<{ imported: number; error?: string }> => {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      try {
+        const json = JSON.parse(e.target?.result as string);
+        if (!json || !Array.isArray(json.shortcuts)) {
+          resolve({ imported: 0, error: 'Invalid file format' });
+          return;
+        }
+        const current = await getShortcuts();
+        const existingUrls = new Set(current.map(s => s.url.toLowerCase()));
+        const newOnes = json.shortcuts.filter((s: any) =>
+          s && s.url && typeof s.url === 'string' && !existingUrls.has(s.url.toLowerCase())
+        );
+        const toAdd = newOnes.map((s: any) => ({
+          id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+          title: s.title || s.url,
+          url: s.url,
+          favicon: s.favicon || getSmartFaviconUrl(s.url),
+          order: current.length,
+        }));
+        if (toAdd.length === 0) {
+          resolve({ imported: 0 });
+          return;
+        }
+        await saveShortcuts([...current, ...toAdd]);
+        resolve({ imported: toAdd.length });
+      } catch {
+        resolve({ imported: 0, error: 'Failed to parse file' });
+      }
+    };
+    reader.onerror = () => resolve({ imported: 0, error: 'Failed to read file' });
+    reader.readAsText(file);
+  });
+}, []);
