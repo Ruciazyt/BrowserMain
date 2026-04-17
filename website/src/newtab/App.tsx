@@ -30,29 +30,29 @@ export default function App() {
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [addDialogData, setAddDialogData] = useState({ url: '', title: '', favicon: '' });
 
-  // On mount, check if the toolbar button was just clicked (intent stored in session storage)
-  // This replaces the injection approach — chrome://newtab/ can't receive injected scripts
+  // On mount, check URL hash for "add shortcut" intent from toolbar button click
+  // Data is passed via URL fragment (never sent to server) — reliable, no storage needed
   useEffect(() => {
-    const checkIntent = async () => {
-      try {
-        const result = await chrome.storage.session.get('browsermain_addShortcutIntent');
-        const intent = result?.browsermain_addShortcutIntent as { url?: string; title?: string; favicon?: string; ts?: number } | undefined;
-        const ADD_SHORTCUT_TTL_MS = 5000;
-        if (intent?.url && intent?.ts && Date.now() - intent.ts < ADD_SHORTCUT_TTL_MS) {
-          setAddDialogData({
-            url: intent.url || '',
-            title: intent.title || '',
-            favicon: intent.favicon || '',
-          });
-          setAddDialogOpen(true);
-          // Clear the intent so it doesn't re-trigger on next load
-          chrome.storage.session.remove('browsermain_addShortcutIntent');
-        }
-      } catch {
-        // storage.session not available
+    const hash = window.location.hash.slice(1); // remove '#'
+    if (!hash) return;
+    try {
+      const params = new URLSearchParams(hash);
+      const url = params.get('add_url');
+      const title = params.get('add_title');
+      const favicon = params.get('add_favicon');
+      if (url) {
+        setAddDialogData({
+          url: url || '',
+          title: title || '',
+          favicon: favicon || '',
+        });
+        setAddDialogOpen(true);
+        // Clear hash so refresh doesn't re-open dialog
+        history.replaceState(null, '', window.location.pathname);
       }
-    };
-    checkIntent();
+    } catch {
+      // ignore parse errors
+    }
   }, []);
 
   // ESC key to close settings panel
