@@ -112,6 +112,7 @@ export default function OnboardingGuide({ restartSignal }: OnboardingGuideProps)
 
   const step = steps[currentStep];
   const isLastStep = currentStep === steps.length - 1;
+  const progress = ((currentStep + 1) / steps.length) * 100;
 
   return (
     <div className={styles.overlay}>
@@ -125,6 +126,9 @@ export default function OnboardingGuide({ restartSignal }: OnboardingGuideProps)
                 className={`${styles.dot} ${i === currentStep ? styles.dotActive : ''} ${i < currentStep ? styles.dotDone : ''}`}
               />
             ))}
+          </div>
+          <div className={styles.progressBar}>
+            <div className={styles.progressFill} style={{ width: `${progress}%` }} />
           </div>
           <span className={styles.stepLabel}>
             {currentStep + 1} / {steps.length}
