@@ -34,6 +34,7 @@ export default function App() {
   // Opens directly to extension URL (not chrome://newtab/) — reliable, no storage needed
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
+    console.log('[BrowserMain] App mounted, href:', window.location.href);
     const url = params.get('add_url');
     const title = params.get('add_title');
     const favicon = params.get('add_favicon');
