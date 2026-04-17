@@ -3,21 +3,3 @@
    Kept for backward compatibility.
    Most classes are now unused — prefer CSS variables.
    ============================================ */
-
-/* --- Scrollbar --- */
-::-webkit-scrollbar { width: 4px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(255, 149, 0, 0.4); border-radius: 2px; }
-
-/* --- Focus Styles --- */
-:focus-visible {
-  outline: 1.5px solid rgba(255, 255, 255, 0.4);
-  outline-offset: 2px;
-  border-radius: 10px;
-}
-
-/* --- Selection --- */
-::selection {
-  background: rgba(255, 255, 255, 0.18);
-  color: rgba(255, 255, 255, 0.95);
-}

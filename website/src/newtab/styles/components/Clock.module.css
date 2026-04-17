@@ -17,10 +17,10 @@
 .container:hover { opacity: 0.82; }
 
 .time {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--font-led);
   font-size: 22px;
   font-weight: 300;
-  color: #ff9500;
+  color: var(--led-amber);
   letter-spacing: 2px;
   line-height: 1;
   text-shadow: 0 0 8px rgba(255,149,0,0.8), 0 0 20px rgba(255,149,0,0.4);
@@ -30,7 +30,8 @@
   font-family: var(--font-body);
   font-size: 10px;
   font-weight: 400;
-  color: rgba(255,149,0,0.55);
+  color: var(--led-amber);
+  opacity: 0.55;
   letter-spacing: 1px;
 }
 
