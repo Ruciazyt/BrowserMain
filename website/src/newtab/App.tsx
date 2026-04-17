@@ -75,10 +75,8 @@ export default function App() {
 
       <div className={styles.content}>
 
-        {/* ── Search card ── */}
-        <div className={styles.card}>
-          <SearchBar defaultEngine={settings.defaultEngine} />
-        </div>
+        {/* ── Search bar ── */}
+        <SearchBar defaultEngine={settings.defaultEngine} />
 
         {/* ── Clock + LED card ── */}
         <div className={styles.card}>
