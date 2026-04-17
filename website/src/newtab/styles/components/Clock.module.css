@@ -42,7 +42,7 @@
   color: var(--led-amber);
   letter-spacing: 2px;
   line-height: 1;
-  text-shadow: 0 0 8px rgba(255,149,0,0.8), 0 0 20px rgba(255,149,0,0.4);
+  text-shadow: 0 0 8px color-mix(in srgb, var(--led-amber) 80%, transparent), 0 0 20px color-mix(in srgb, var(--led-amber) 40%, transparent);
 }
 
 .date {

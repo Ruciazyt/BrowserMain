@@ -12,12 +12,12 @@
 }
 .dot {
   width: 5px; height: 5px; border-radius: 50%;
-  background: rgba(255,149,0,0.85);
-  box-shadow: 0 0 4px rgba(255,149,0,0.55);
+  background: color-mix(in srgb, var(--led-amber) 85%, white);
+  box-shadow: 0 0 4px color-mix(in srgb, var(--led-amber) 55%, transparent);
   animation: ledPulse 2s ease-in-out infinite;
 }
 .dot.off {
-  background: rgba(255,149,0,0.12);
+  background: color-mix(in srgb, var(--led-amber) 12%, transparent);
   box-shadow: none; animation: none;
 }
 @keyframes ledPulse {

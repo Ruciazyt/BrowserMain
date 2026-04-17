@@ -71,7 +71,7 @@
 .dropdownItem:hover { background: rgba(255,255,255,0.10); color: rgba(255,255,255,0.95); }
 .dropdownItem.selected { background: rgba(255,255,255,0.10); color: rgba(255,255,255,0.95); }
 .dropdownItem svg { width: 16px; height: 16px; flex-shrink: 0; }
-.checkmark { margin-left: auto; color: rgba(255,149,0,0.80); }
+.checkmark { margin-left: auto; color: var(--led-amber); opacity: 0.80; }
 
 /* ── Divider ─────────────────────────────────────────────────── */
 .divider { width: 1px; height: 22px; background: rgba(255,255,255,0.12); flex-shrink: 0; }
@@ -91,7 +91,7 @@
   width: 30px; height: 30px;
   border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
-  background: linear-gradient(135deg, rgba(255,149,0,0.50) 0%, rgba(255,149,0,0.50) 100%);
+  background: linear-gradient(135deg, var(--led-amber) 0%, var(--led-amber) 100%);
   border: 1px solid rgba(255,149,0,0.40);
   color: rgba(255,255,255,0.90);
   flex-shrink: 0;
@@ -99,8 +99,8 @@
   cursor: pointer;
 }
 .searchBtn:hover {
-  background: linear-gradient(135deg, rgba(255,149,0,0.75) 0%, rgba(255,149,0,0.75) 100%);
-  box-shadow: 0 0 16px rgba(255,149,0,0.35);
+  background: linear-gradient(135deg, var(--led-amber) 0%, var(--led-amber) 100%);
+  box-shadow: 0 0 16px var(--led-amber-glow);
   transform: scale(1.06);
 }
 .searchBtn svg { width: 15px; height: 15px; }
@@ -132,15 +132,15 @@
   align-items: center;
   gap: 4px;
   padding: 2px 8px;
-  background: rgba(255, 149, 0, 0.12);
-  border: 1px solid rgba(255, 149, 0, 0.30);
+  background: color-mix(in srgb, var(--led-amber) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--led-amber) 30%, transparent);
   border-radius: 6px;
-  color: #ff9500;
+  color: var(--led-amber);
   font-family: 'JetBrains Mono', 'Courier New', monospace;
   font-size: 11px;
   font-weight: 500;
   letter-spacing: 0.3px;
-  text-shadow: 0 0 8px rgba(255, 149, 0, 0.50);
+  text-shadow: 0 0 8px var(--led-amber-glow);
   transition: background 200ms ease-out, border-color 200ms ease-out, box-shadow 200ms ease-out;
   cursor: default;
   user-select: none;
@@ -148,8 +148,8 @@
 
 .kbdBadge:hover {
   background: rgba(255, 149, 0, 0.20);
-  border-color: rgba(255, 149, 0, 0.50);
-  box-shadow: 0 0 10px rgba(255, 149, 0, 0.25);
+  border-color: var(--led-amber);
+  box-shadow: 0 0 10px var(--led-amber-soft);
 }
 
 .kbdBadge svg {
@@ -158,7 +158,8 @@
 }
 
 .hintText {
-  color: rgba(255, 149, 0, 0.55);
+  color: var(--led-amber);
+  opacity: 0.55;
   font-family: 'JetBrains Mono', 'Courier New', monospace;
   font-size: 11px;
   letter-spacing: 0.3px;

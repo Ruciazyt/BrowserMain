@@ -18,12 +18,12 @@
   border-radius: var(--radius-sm);
   overflow: hidden;
   display: flex; align-items: center; justify-content: center;
-  background: linear-gradient(135deg, rgba(255,149,0,0.20) 0%, rgba(125,211,232,0.15) 100%);
-  border: 1px solid rgba(255,149,0,0.30);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--led-amber) 20%, transparent) 0%, rgba(125,211,232,0.15) 100%);
+  border: 1px solid color-mix(in srgb, var(--led-amber) 30%, transparent);
   flex-shrink: 0;
 }
 .iconWrapper img { width: 20px; height: 20px; object-fit: contain; border-radius: 3px; }
-.iconFallback { width: 20px; height: 20px; color: rgba(255,149,0,0.70); }
+.iconFallback { width: 20px; height: 20px; color: var(--led-amber); opacity: 0.70; }
 
 /* ── Title ────────────────────────────────────────────────────── */
 .title {
@@ -88,17 +88,17 @@
   transition: border-color var(--dur-fast);
   width: 100%;
 }
-.editInput:focus { border-color: rgba(255,149,0,0.55); }
+.editInput:focus { border-color: color-mix(in srgb, var(--led-amber) 55%, transparent); }
 .editActions { display: flex; gap: 4px; }
 .saveBtn {
   flex: 1; padding: 4px 8px;
-  background: linear-gradient(135deg, rgba(255,149,0,0.40) 0%, rgba(125,211,232,0.30) 100%);
-  border: 1px solid rgba(255,149,0,0.40);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--led-amber) 40%, transparent) 0%, rgba(125,211,232,0.30) 100%);
+  border: 1px solid color-mix(in srgb, var(--led-amber) 40%, transparent);
   color: rgba(255,255,255,0.90);
   border-radius: var(--radius-sm); font-size: 11px; font-weight: 500;
   cursor: pointer; transition: background var(--dur-fast);
 }
-.saveBtn:hover { background: linear-gradient(135deg, rgba(255,149,0,0.60) 0%, rgba(125,211,232,0.50) 100%); }
+.saveBtn:hover { background: linear-gradient(135deg, color-mix(in srgb, var(--led-amber) 60%, transparent) 0%, rgba(125,211,232,0.50) 100%); }
 .cancelBtn {
   flex: 1; padding: 4px 8px;
   background: transparent;
@@ -112,7 +112,7 @@
 /* ── Focus / navigate ─────────────────────────────────────────── */
 .container.keyboardFocus, .container.navigating {
   background: var(--glass-white-md);
-  outline: 1.5px solid rgba(255,149,0,0.50);
+  outline: 1.5px solid color-mix(in srgb, var(--led-amber) 50%, transparent);
   outline-offset: -1.5px;
 }
 .keyboardHint {
@@ -121,7 +121,7 @@
   border: 1px solid rgba(255,255,255,0.14);
   border-radius: var(--radius-sm);
   padding: 3px 8px; font-size: 10px;
-  color: rgba(255,149,0,0.75);
+  color: var(--led-amber); opacity: 0.75;
   white-space: nowrap; pointer-events: none; z-index: 20;
   box-shadow: 0 2px 8px rgba(0,0,0,0.30);
 }
