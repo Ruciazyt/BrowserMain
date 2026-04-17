@@ -92,8 +92,7 @@ chrome.action.onClicked.addListener(async (tab) => {
   }
 
   if (!webpageTabId || !webpageUrl || !webpageUrl.startsWith('http')) {
-    // No valid previous tab — open settings directly
-    await chrome.tabs.update(tab.id, { url: 'chrome://newtab/' });
+    // No valid previous tab — nothing to add, just let the newtab open normally
     return;
   }
 
@@ -109,6 +108,6 @@ chrome.action.onClicked.addListener(async (tab) => {
     }
   });
 
-  // Navigate to newtab (or update the current tab)
-  await chrome.tabs.update(tab.id, { url: 'chrome://newtab/' });
+  // Open a new tab — chrome_url_overrides will serve our index.html automatically
+  chrome.tabs.create({ url: 'chrome://newtab/' });
 });
