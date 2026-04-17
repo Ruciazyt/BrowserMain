@@ -29,35 +29,29 @@ export default function App() {
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [addDialogData, setAddDialogData] = useState({ url: '', title: '', favicon: '' });
 
-  // Listen for messages from background script (toolbar button click)
+  // On mount, check if the toolbar button was just clicked (intent stored in session storage)
+  // This replaces the injection approach — chrome://newtab/ can't receive injected scripts
   useEffect(() => {
-    const listener = (message: { action?: string; url?: string; title?: string; favicon?: string }) => {
-      if (message.action === 'OPEN_ADD_DIALOG') {
-        setAddDialogData({
-          url: message.url || '',
-          title: message.title || '',
-          favicon: message.favicon || '',
-        });
-        setAddDialogOpen(true);
+    const checkIntent = async () => {
+      try {
+        const result = await chrome.storage.session.get('browsermain_addShortcutIntent');
+        const intent = result?.browsermain_addShortcutIntent as { url?: string; title?: string; favicon?: string; ts?: number } | undefined;
+        const ADD_SHORTCUT_TTL_MS = 5000;
+        if (intent?.url && intent?.ts && Date.now() - intent.ts < ADD_SHORTCUT_TTL_MS) {
+          setAddDialogData({
+            url: intent.url || '',
+            title: intent.title || '',
+            favicon: intent.favicon || '',
+          });
+          setAddDialogOpen(true);
+          // Clear the intent so it doesn't re-trigger on next load
+          chrome.storage.session.remove('browsermain_addShortcutIntent');
+        }
+      } catch {
+        // storage.session not available
       }
     };
-    chrome.runtime?.onMessage?.addListener(listener);
-    return () => chrome.runtime?.onMessage?.removeListener(listener);
-  }, []);
-
-  // Also listen for custom events dispatched by injected content script
-  useEffect(() => {
-    const listener = (e: Event) => {
-      const detail = (e as CustomEvent).detail as { url?: string; title?: string; favicon?: string };
-      setAddDialogData({
-        url: detail?.url || '',
-        title: detail?.title || '',
-        favicon: detail?.favicon || '',
-      });
-      setAddDialogOpen(true);
-    };
-    window.addEventListener('browsermain:open-add-dialog', listener);
-    return () => window.removeEventListener('browsermain:open-add-dialog', listener);
+    checkIntent();
   }, []);
 
   // ESC key to close settings panel

@@ -71,7 +71,7 @@ chrome.tabs.onCreated.addListener(async (tab) => {
   }
 });
 
-// Toolbar button clicked → inject content script → send previous tab info to new tab page
+// Toolbar button clicked → store previous tab data in session storage for newtab page to pick up
 chrome.action.onClicked.addListener(async (tab) => {
   // Restore previous tab from session storage (survives service worker restarts)
   let webpageTabId = previousTabId;
@@ -91,31 +91,24 @@ chrome.action.onClicked.addListener(async (tab) => {
     // storage.session not available, fall through to in-memory values
   }
 
-  if (!webpageTabId || !webpageUrl || !webpageUrl.startsWith('http')) return;
-
-  // Find the new tab to inject into
-  const newTabs = await chrome.tabs.query({ url: 'chrome://newtab/*' });
-  const newTab = newTabs.find(t => t.windowId === tab.windowId) || tab;
-
-  if (!newTab.id) return;
-
-  try {
-    // Inject content script into the new tab page (chrome://newtab/ can't use manifest content_scripts)
-    await chrome.scripting.executeScript({
-      target: { tabId: newTab.id },
-      files: ['content-script.js'],
-    });
-  } catch (injectErr) {
-    // Injection failed (tab might be loading), ignore
+  if (!webpageTabId || !webpageUrl || !webpageUrl.startsWith('http')) {
+    // No valid previous tab — open settings directly
+    await chrome.tabs.update(tab.id, { url: 'chrome://newtab/' });
+    return;
   }
 
-  // Send message to the injected content script
-  chrome.tabs.sendMessage(newTab.id, {
-    action: 'OPEN_ADD_DIALOG',
-    url: webpageUrl,
-    title: webpageTitle,
-    favicon: webpageFavicon,
-  }).catch(() => {
-    // Content script not ready yet
+  // Store the "add shortcut" intent with a timestamp (TTL: 5 seconds)
+  // The newtab page will check for this on load
+  const ADD_SHORTCUT_TTL_MS = 5000;
+  await chrome.storage.session.set({
+    browsermain_addShortcutIntent: {
+      url: webpageUrl,
+      title: webpageTitle,
+      favicon: webpageFavicon,
+      ts: Date.now(),
+    }
   });
+
+  // Navigate to newtab (or update the current tab)
+  await chrome.tabs.update(tab.id, { url: 'chrome://newtab/' });
 });
