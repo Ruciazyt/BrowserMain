@@ -72,7 +72,7 @@ chrome.action.onClicked.addListener(async (tab) => {
   }
 
   // Build the target URL with shortcut data as query params
-  const url = new URL(extensionBase);
+  const url = new URL(extensionPageUrl);
   if (webpageUrl && webpageUrl.startsWith('http')) {
     url.searchParams.set('add_url', webpageUrl);
     url.searchParams.set('add_title', webpageTitle);
