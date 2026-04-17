@@ -15,17 +15,23 @@ export function useSettings() {
     });
   }, []);
 
+  // Use functional updates to avoid stale-closure bugs when settings change
+  // between the callback's creation and invocation.
   const updateEngine = useCallback(async (engineId: string) => {
-    const newSettings = { ...settings, defaultEngine: engineId };
-    await saveSettings(newSettings);
-    setSettings(newSettings);
-  }, [settings]);
+    setSettings((prev) => {
+      const newSettings = { ...prev, defaultEngine: engineId };
+      saveSettings(newSettings);
+      return newSettings;
+    });
+  }, []);
 
   const updateBackground = useCallback(async (background: BackgroundConfig) => {
-    const newSettings = { ...settings, background };
-    await saveSettings(newSettings);
-    setSettings(newSettings);
-  }, [settings]);
+    setSettings((prev) => {
+      const newSettings = { ...prev, background };
+      saveSettings(newSettings);
+      return newSettings;
+    });
+  }, []);
 
   return {
     settings,

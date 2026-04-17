@@ -75,26 +75,24 @@ export default function ShortcutTile({
     }
   };
 
-  // Keyboard navigation for reorder
-  useEffect(() => {
-    if (!keyboardFocus) return;
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowLeft') {
-        e.preventDefault();
-        setIsNavigating(true);
-        onMoveLeft?.(index);
-      } else if (e.key === 'ArrowRight') {
-        e.preventDefault();
-        setIsNavigating(true);
-        onMoveRight?.(index);
-      } else if (e.key === 'Escape') {
-        setIsNavigating(false);
-        setKeyboardFocus(false);
-      }
-    };
-    document.addEventListener('keydown', handleKeyDown);
-    return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [keyboardFocus, index, onMoveLeft, onMoveRight]);
+  // Consolidated keyboard handler: arrow keys for reorder, Enter/Space to open, Escape to blur
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'ArrowLeft') {
+      e.preventDefault();
+      setIsNavigating(true);
+      onMoveLeft?.(index);
+    } else if (e.key === 'ArrowRight') {
+      e.preventDefault();
+      setIsNavigating(true);
+      onMoveRight?.(index);
+    } else if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      navigateToShortcut();
+    } else if (e.key === 'Escape') {
+      setIsNavigating(false);
+      setKeyboardFocus(false);
+    }
+  };
 
   // Close context menu on outside click or Escape
   useEffect(() => {
@@ -127,13 +125,6 @@ export default function ShortcutTile({
     });
   };
 
-  // Keyboard activation: Enter or Space opens the shortcut
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      navigateToShortcut();
-    }
-  };
 
   const handleDelete = (e: React.MouseEvent) => {
     e.stopPropagation();
