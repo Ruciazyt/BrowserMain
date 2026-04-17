@@ -10,7 +10,6 @@ import SettingsPanel from './components/SettingsPanel';
 import AddShortcutDialog from './components/AddShortcutDialog';
 import OnboardingGuide from './components/OnboardingGuide';
 import './styles/global.css';
-import './styles/led-theme.css';
 import styles from './styles/App.module.css';
 
 const SettingsIcon = () => (
@@ -26,94 +25,72 @@ export default function App() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [restartOnboardingSignal, setRestartOnboardingSignal] = useState(0);
 
-  // Add shortcut dialog state
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [addDialogData, setAddDialogData] = useState({ url: '', title: '', favicon: '' });
 
-  // On mount, check URL query params for "add shortcut" intent from toolbar button click
-  // Opens directly to extension URL (not chrome://newtab/) — reliable, no storage needed
+  // On mount, check URL query params for "add shortcut" intent
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    console.log('[BrowserMain] App mounted, href:', window.location.href);
     const url = params.get('add_url');
     const title = params.get('add_title');
     const favicon = params.get('add_favicon');
     if (url) {
-      setAddDialogData({
-        url: url || '',
-        title: title || '',
-        favicon: favicon || '',
-      });
+      setAddDialogData({ url: url || '', title: title || '', favicon: favicon || '' });
       setAddDialogOpen(true);
-      // Clear search so refresh doesn't re-open dialog
-      const path = window.location.pathname;
-      history.replaceState(null, '', path + window.location.hash);
+      history.replaceState(null, '', window.location.pathname + window.location.hash);
     }
   }, []);
 
   // ESC key to close settings panel
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && settingsOpen) {
-        setSettingsOpen(false);
-      }
+      if (e.key === 'Escape' && settingsOpen) setSettingsOpen(false);
     };
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [settings]);
+  }, [settingsOpen]);
 
   if (shortcutsLoading || settingsLoading) {
     return (
-      <div className={styles.page} style={{ justifyContent: 'center' }}>
-        <div className="led-loading">
-          <span /><span /><span />
-        </div>
+      <div className={styles.page}>
+        <div className="loading-dots"><span /><span /><span /></div>
       </div>
     );
   }
 
   return (
-    <div className={styles.page} style={{
-      background: settings.background.type === 'solid'
-        ? (settings.background.color || '#0a0a0f')
-        : settings.background.type === 'gradient'
-        ? `linear-gradient(${settings.background.gradientDirection || 'to top right'}, ${settings.background.gradientFrom || '#0a0a0f'}, ${settings.background.gradientTo || '#1a1a2e'})`
-        : settings.background.type === 'image'
-        ? (settings.background.imageUrl ? 'none' : undefined)
-        : undefined,
-      backgroundImage: settings.background.type === 'image' && settings.background.imageUrl
-        ? `url(${settings.background.imageUrl})`
-        : undefined,
-      backgroundSize: settings.background.type === 'image' && settings.background.imageUrl ? 'cover' : undefined,
-    }}>
+    <div className={styles.page}>
       <div className={styles.content}>
-        <SearchBar defaultEngine={settings.defaultEngine} />
 
-        <Greeting />
-
-        <div className={styles.topDecor}>
-          <div className={styles.decorLine} />
-          <div className={styles.decorDot} />
-          <div className={styles.decorDot} style={{ animationDelay: '0.5s' }} />
-          <div className={styles.decorLine} style={{ transform: 'scaleX(-1)' }} />
+        {/* ── Search card ── */}
+        <div className={styles.card}>
+          <SearchBar defaultEngine={settings.defaultEngine} />
         </div>
 
-        <Clock />
+        {/* ── Clock + LED card ── */}
+        <div className={styles.card}>
+          <Greeting />
+          <Clock />
+          <LEDDisplay />
+        </div>
 
-        <LEDDisplay />
+        {/* ── Shortcuts card ── */}
+        <div className={styles.card}>
+          <ShortcutGrid
+            shortcuts={shortcuts}
+            onDelete={removeShortcut}
+            onUpdate={updateShortcut}
+            onReorder={reorderShortcuts}
+            onAdd={() => {
+              setAddDialogData({ url: '', title: '', favicon: '' });
+              setAddDialogOpen(true);
+            }}
+          />
+        </div>
 
-        <ShortcutGrid
-          shortcuts={shortcuts}
-          onDelete={removeShortcut}
-          onUpdate={updateShortcut}
-          onReorder={reorderShortcuts}
-          onAdd={() => {
-            setAddDialogData({ url: '', title: '', favicon: '' });
-            setAddDialogOpen(true);
-          }}
-        />
       </div>
 
+      {/* ── Settings button ── */}
       <button
         className={styles.settingsBtn}
         onClick={() => setSettingsOpen(true)}
@@ -122,8 +99,15 @@ export default function App() {
         <SettingsIcon />
       </button>
 
-      <SettingsPanel open={settingsOpen} onClose={() => setSettingsOpen(false)} onBookmarkImportComplete={refreshShortcuts} onShowTour={() => setRestartOnboardingSignal(Date.now())} />
+      {/* ── Settings panel ── */}
+      <SettingsPanel
+        open={settingsOpen}
+        onClose={() => setSettingsOpen(false)}
+        onBookmarkImportComplete={refreshShortcuts}
+        onShowTour={() => setRestartOnboardingSignal(Date.now())}
+      />
 
+      {/* ── Add shortcut dialog ── */}
       <AddShortcutDialog
         open={addDialogOpen}
         url={addDialogData.url}
@@ -132,11 +116,12 @@ export default function App() {
         onClose={() => setAddDialogOpen(false)}
       />
 
+      {/* ── Onboarding ── */}
       <OnboardingGuide restartSignal={restartOnboardingSignal} />
 
+      {/* ── Footer ── */}
       <div className={styles.footer}>
-        <span>BROWSER_MAIN</span>
-        <span>v0.1.0</span>
+        <span>BrowserMain</span>
       </div>
     </div>
   );

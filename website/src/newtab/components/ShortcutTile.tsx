@@ -49,6 +49,7 @@ export default function ShortcutTile({
   const [editMode, setEditMode] = useState(false);
   const [editTitle, setEditTitle] = useState(shortcut.title);
   const [editUrl, setEditUrl] = useState(shortcut.url);
+  const [editError, setEditError] = useState(false);
   const [keyboardFocus, setKeyboardFocus] = useState(false);
   const [isNavigating, setIsNavigating] = useState(false);
   // Simplified: 2-stage favicon fallback
@@ -159,14 +160,17 @@ export default function ShortcutTile({
     setShowContextMenu(false);
     setEditTitle(shortcut.title);
     setEditUrl(shortcut.url);
+    setEditError(false);
     setEditMode(true);
   };
 
   const handleSaveEdit = () => {
     if (editTitle.trim() && editUrl.trim()) {
       onUpdate(shortcut.id, { title: editTitle.trim(), url: editUrl.trim() });
+      setEditMode(false);
+    } else {
+      setEditError(true);
     }
-    setEditMode(false);
   };
 
   const handleCancelEdit = () => {
@@ -177,16 +181,16 @@ export default function ShortcutTile({
     return (
       <div className={styles.editMode}>
         <input
-          className={styles.editInput}
+          className={`${styles.editInput} ${editError && !editTitle.trim() ? styles.editInputError : ''}`}
           value={editTitle}
-          onChange={(e) => setEditTitle(e.target.value)}
+          onChange={(e) => { setEditTitle(e.target.value); setEditError(false); }}
           placeholder="Title"
           autoFocus
         />
         <input
-          className={styles.editInput}
+          className={`${styles.editInput} ${editError && !editUrl.trim() ? styles.editInputError : ''}`}
           value={editUrl}
-          onChange={(e) => setEditUrl(e.target.value)}
+          onChange={(e) => { setEditUrl(e.target.value); setEditError(false); }}
           placeholder="URL"
         />
         <div className={styles.editActions}>

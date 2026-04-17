@@ -1,214 +1,212 @@
+/* ── Modal overlay ─────────────────────────────────────────────── */
 .overlay {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.45);
-  backdrop-filter: blur(20px) saturate(200%);
-  -webkit-backdrop-filter: blur(20px) saturate(200%);
-  backdrop-filter: blur(12px) saturate(180%);
-  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.60);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
   z-index: 300;
   display: flex;
   align-items: center;
   justify-content: center;
+  padding: 20px;
+  animation: fadeIn 200ms ease-out;
 }
 
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+/* ── Modal card ───────────────────────────────────────────────── */
 .modal {
-  background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(30px) saturate(200%);
-  -webkit-backdrop-filter: blur(30px) saturate(200%);
-  backdrop-filter: blur(24px) saturate(180%);
-  -webkit-backdrop-filter: blur(24px) saturate(180%);
-  border: 1px solid rgba(0, 0, 0, 0.08);
-  border-radius: var(--radius-lg);
+  background: rgba(14, 14, 20, 0.90);
+  backdrop-filter: blur(32px) saturate(200%);
+  -webkit-backdrop-filter: blur(32px) saturate(200%);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: var(--radius-xl);
   width: 100%;
-  max-width: 420px;
-  box-shadow:
-    0 0 20px var(--led-amber-glow),
-    0 20px 60px rgba(0, 0, 0, 0.6);
+  max-width: 400px;
   overflow: hidden;
+  animation: slideUp 250ms cubic-bezier(0.22, 1, 0.36, 1);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6);
 }
 
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Top edge highlight */
+.modal::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.5) 50%, transparent 100%);
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* ── Header ──────────────────────────────────────────────────── */
 .header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 20px;
-  background: rgba(255, 149, 0, 0.08);
-  border-bottom: 1px solid rgba(255, 149, 0, 0.3);
+  padding: 16px 18px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
 }
 
 .headerTitle {
-  font-family: var(--font-led);
   font-size: 14px;
-  color: #ff9500;
-  letter-spacing: 3px;
-  text-shadow: 0 0 8px var(--led-amber-glow);
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.88);
+  letter-spacing: 0.3px;
 }
 
 .closeBtn {
-  width: 28px;
-  height: 28px;
+  width: 26px;
+  height: 26px;
   border-radius: var(--radius-sm);
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.04);
-  color: #8e8e93;
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.45);
   cursor: pointer;
   transition: all var(--transition);
   border: none;
 }
 
 .closeBtn:hover {
-  background: rgba(255, 107, 107, 0.2);
-  color: #ff6b6b;
+  background: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.85);
 }
 
+/* ── Body ────────────────────────────────────────────────────── */
 .body {
-  padding: 20px;
+  padding: 18px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 14px;
 }
 
+/* ── Favicon row ──────────────────────────────────────────────── */
 .faviconRow {
   display: flex;
   align-items: center;
   gap: 10px;
   padding: 8px 12px;
-  background: rgba(255, 255, 255, 0.04);
-  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.05);
   border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-md);
 }
 
 .faviconImg {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   object-fit: contain;
-  border-radius: 2px;
+  border-radius: 3px;
 }
 
 .faviconHint {
-  font-size: 12px;
-  color: #8e8e93;
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.35);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
+/* ── Form fields ──────────────────────────────────────────────── */
 .field {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 5px;
 }
 
 .label {
-  font-family: var(--font-led);
-  font-size: 11px;
-  color: #ff9500;
-  letter-spacing: 2px;
-  opacity: 0.8;
+  font-size: 10px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.38);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
 }
 
 .input {
-  padding: 10px 12px;
-  border-radius: var(--radius-sm);
-  font-size: 14px;
-  background: rgba(0, 0, 0, 0.06);
-  border: 1px solid var(--text-dim);
-  color: var(--text-bright);
+  padding: 9px 12px;
+  border-radius: var(--radius-md);
+  font-size: 13px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  color: rgba(255, 255, 255, 0.88);
   outline: none;
-  transition: border-color var(--transition), box-shadow var(--transition);
+  transition: border-color var(--transition), background var(--transition);
+  width: 100%;
 }
 
-.input::placeholder {
-  color: #8e8e93;
-  opacity: 0.6;
-}
+.input::placeholder { color: rgba(255, 255, 255, 0.30); }
 
 .input:focus {
-  border-color: #ff9500;
-  box-shadow: 0 0 0 2px rgba(255, 149, 0, 0.15), 0 0 8px var(--led-amber-soft);
+  border-color: rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.09);
 }
 
+/* ── Footer ───────────────────────────────────────────────────── */
 .footer {
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 10px;
-  padding: 16px 20px;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  gap: 8px;
+  padding: 14px 18px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
 }
 
 .cancelBtn {
-  padding: 8px 18px;
-  border-radius: var(--radius-sm);
+  padding: 8px 16px;
+  border-radius: var(--radius-md);
   font-size: 13px;
-  font-weight: 500;
-  color: #1a1a1a;
-  border: 1px solid var(--text-dim);
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.50);
+  border: 1px solid rgba(255, 255, 255, 0.10);
   background: transparent;
   cursor: pointer;
   transition: all var(--transition);
 }
 
 .cancelBtn:hover {
-  border-color: #ff9500;
-  color: #ff9500;
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.18);
+  color: rgba(255, 255, 255, 0.75);
 }
 
-.cancelBtn:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
+.cancelBtn:disabled { opacity: 0.4; cursor: not-allowed; }
 
 .saveBtn {
-  padding: 8px 22px;
-  border-radius: var(--radius-sm);
+  padding: 8px 20px;
+  border-radius: var(--radius-md);
   font-size: 13px;
-  font-weight: 700;
-  color: var(--bg-primary);
-  background: #ff9500;
-  border: 1px solid var(--led-amber);
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.85);
+  background: rgba(255, 255, 255, 0.88);
+  border: none;
   cursor: pointer;
   transition: all var(--transition);
-  box-shadow: 0 0 10px var(--led-amber-soft);
-  letter-spacing: 0.5px;
+  letter-spacing: 0.1px;
 }
 
 .saveBtn:hover:not(:disabled) {
-  background: #ffb347;
-  box-shadow: 0 0 16px var(--led-amber-glow);
-  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 1);
 }
 
-.saveBtn:active:not(:disabled) {
-  transform: translateY(0);
-}
+.saveBtn:disabled { opacity: 0.45; cursor: not-allowed; }
 
-.saveBtn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
+/* ── Success message ───────────────────────────────────────────── */
 .successMsg {
-  font-family: var(--font-led);
-  font-size: 14px;
-  color: #ff9500;
-  text-shadow: 0 0 8px var(--led-amber-glow);
-  letter-spacing: 2px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.70);
   animation: fadeIn 200ms ease;
 }
 
 .pasteHint {
-  font-size: 12px;
-  color: var(--turquoise);
-  margin-top: 4px;
-  opacity: 0.9;
+  font-size: 11px;
+  color: rgba(100, 181, 246, 0.70);
+  margin-top: 3px;
   animation: fadeIn 200ms ease;
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: scale(0.9); }
-  to { opacity: 1; transform: scale(1); }
 }

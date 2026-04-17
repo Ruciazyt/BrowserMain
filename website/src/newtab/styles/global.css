@@ -1,34 +1,45 @@
 /* ============================================
    BrowserMain - Global Styles
-   LED Matrix Retro-Futuristic Theme
+   Liquid Glass Theme
    ============================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* --- SVG Liquid Glass Filter (hidden, referenced by CSS) --- */
+svg#liquid-glass-filters {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
 
 /* --- CSS Variables --- */
 :root {
-  --bg-primary: #0a0a0f;
-  --bg-secondary: #0f0f18;
-  --led-amber: #ff9500;
-  --led-amber-glow: rgba(255, 149, 0, 0.4);
-  --led-amber-soft: rgba(255, 149, 0, 0.15);
-  --led-dot: #ffb347;
-  --panel-turquoise: #7dd3e8;
-  --panel-turquoise-dark: #5bb8d4;
-  --text-primary: #9ca3af;
-  --text-bright: #f5f5f5;
-  --text-dim: #6b7280;
-  --success: #4ade80;
-  --danger: #ff6b6b;
+  /* OLED Black */
+  --bg-primary: #000000;
 
-  --radius-lg: 24px;
-  --radius-md: 16px;
-  --radius-sm: 12px;
+  /* Liquid Glass cards - very light translucency */
+  --glass-bg: rgba(255, 255, 255, 0.07);
+  --glass-bg-hover: rgba(255, 255, 255, 0.12);
+  --glass-border: rgba(255, 255, 255, 0.14);
+  --glass-border-bright: rgba(255, 255, 255, 0.28);
 
-  --font-led: 'JetBrains Mono', monospace;
-  --font-ui: 'Inter', -apple-system, sans-serif;
+  /* Text on glass (light background needs dark text) */
+  --text-bright: rgba(255, 255, 255, 0.95);
+  --text-primary: rgba(255, 255, 255, 0.65);
+  --text-dim: rgba(255, 255, 255, 0.40);
 
-  --transition: 200ms ease-out;
+  /* Accent - kept minimal */
+  --accent: rgba(255, 255, 255, 0.85);
+
+  --radius-xl: 28px;
+  --radius-lg: 20px;
+  --radius-md: 14px;
+  --radius-sm: 10px;
+
+  --font-ui: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+
+  --transition: 250ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 /* --- Reset --- */
@@ -50,6 +61,7 @@ body {
   color: var(--text-bright);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 #root {
@@ -58,72 +70,91 @@ body {
 }
 
 /* --- Scrollbar --- */
-::-webkit-scrollbar {
-  width: 6px;
-}
-::-webkit-scrollbar-track {
-  background: var(--bg-secondary);
-}
-::-webkit-scrollbar-thumb {
-  background: var(--led-amber);
-  border-radius: 3px;
-  opacity: 0.6;
-}
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.15); border-radius: 2px; }
 
 /* --- Typography --- */
-h1, h2, h3, h4 {
-  font-weight: 600;
-  color: var(--text-bright);
-}
+h1, h2, h3, h4 { font-weight: 600; color: var(--text-bright); }
+a { color: var(--accent); text-decoration: none; transition: opacity var(--transition); }
+a:hover { opacity: 0.7; }
 
-a {
-  color: var(--led-amber);
-  text-decoration: none;
-  transition: opacity var(--transition);
-}
+button { font-family: var(--font-ui); cursor: pointer; border: none; outline: none; background: none; }
+input, textarea { font-family: var(--font-ui); outline: none; }
 
-a:hover {
-  opacity: 0.8;
-}
-
-button {
-  font-family: var(--font-ui);
-  cursor: pointer;
-  border: none;
-  outline: none;
-  background: none;
-}
-
-input, textarea {
-  font-family: var(--font-ui);
-  outline: none;
-}
-
-/* --- Utility Classes --- */
-.led-glow {
-  box-shadow: 0 0 12px var(--led-amber), 0 0 24px var(--led-amber-soft);
-}
-
-.led-text {
-  font-family: var(--font-led);
-  color: var(--led-amber);
-  text-shadow: 0 0 8px var(--led-amber-glow);
-}
-
-.panel {
-  background: var(--panel-turquoise);
-  border: 2px solid var(--panel-turquoise-dark);
+/* --- Liquid Glass Base --- */
+.glass-card {
+  position: relative;
+  background: var(--glass-bg);
+  backdrop-filter: blur(24px) saturate(180%) brightness(1.05);
+  -webkit-backdrop-filter: blur(24px) saturate(180%) brightness(1.05);
+  border: 1px solid var(--glass-border);
   border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+/* Top edge highlight - the key liquid glass refraction effect */
+.glass-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.45) 20%,
+    rgba(255, 255, 255, 0.65) 50%,
+    rgba(255, 255, 255, 0.45) 80%,
+    transparent 100%
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Subtle bottom inner shadow */
+.glass-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: rgba(0, 0, 0, 0.15);
+  pointer-events: none;
 }
 
 /* --- Focus Styles --- */
 :focus-visible {
-  outline: 2px solid var(--led-amber);
+  outline: 1.5px solid rgba(255, 255, 255, 0.4);
   outline-offset: 2px;
+  border-radius: var(--radius-sm);
 }
 
 /* --- Selection --- */
 ::selection {
-  background: var(--led-amber);
-  color: var(--bg-primary);
+  background: rgba(255, 255, 255, 0.2);
+  color: var(--text-bright);
+}
+
+/* --- Ambient Loading --- */
+.loading-dots {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.loading-dots span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--text-dim);
+  animation: dotPulse 1.4s ease-in-out infinite;
+}
+.loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+.loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes dotPulse {
+  0%, 100% { opacity: 0.3; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1); }
 }
