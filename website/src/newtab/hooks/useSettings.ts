@@ -16,14 +16,16 @@ export function useSettings() {
   }, []);
 
   const updateEngine = useCallback(async (engineId: string) => {
-    await saveSettings({ defaultEngine: engineId });
-    setSettings((s) => ({ ...s, defaultEngine: engineId }));
-  }, []);
+    const newSettings = { ...settings, defaultEngine: engineId };
+    await saveSettings(newSettings);
+    setSettings(newSettings);
+  }, [settings]);
 
   const updateBackground = useCallback(async (background: BackgroundConfig) => {
-    await saveSettings({ background });
-    setSettings((s) => ({ ...s, background }));
-  }, []);
+    const newSettings = { ...settings, background };
+    await saveSettings(newSettings);
+    setSettings(newSettings);
+  }, [settings]);
 
   return {
     settings,

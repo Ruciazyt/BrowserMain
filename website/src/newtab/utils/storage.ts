@@ -98,14 +98,10 @@ export async function getSettings(): Promise<Settings> {
 }
 
 // Save settings to chrome.storage.sync (per SPEC.md)
-export async function saveSettings(settings: Partial<Settings>): Promise<void> {
+// Caller is responsible for merging the full Settings object.
+// This function just persists what it receives (no read-then-write race condition).
+export async function saveSettings(settings: Settings): Promise<void> {
   return new Promise((resolve) => {
-    (chrome.storage as any).sync.get(SETTINGS_KEY, (result: any) => {
-      const current = result[SETTINGS_KEY] || {};
-      (chrome.storage as any).sync.set(
-        { [SETTINGS_KEY]: { ...current, ...settings } },
-        resolve
-      );
-    });
+    (chrome.storage as any).sync.set({ [SETTINGS_KEY]: settings }, resolve);
   });
 }
