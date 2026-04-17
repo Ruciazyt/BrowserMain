@@ -41,7 +41,7 @@ jobs:
 
   release:
     needs: build
-    if: startsWith(github.ref, 'refs/tags/v')
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -59,8 +59,21 @@ jobs:
           zip -r ../browser-main.zip .
           cd ..
 
+      - name: Delete old release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # Delete existing release if any (to avoid duplicates)
+          for i in $(gh release list --limit 5 --jq '.[] | select(.tagName | startswith("build-")) | .tagName'); do
+            gh release delete "$i" --yes 2>/dev/null || true
+          done
+
       - name: Create Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@v2
         with:
           files: browser-main.zip
+          tag_name: build-${{ github.run_number }}
+          name: Build #${{ github.run_number }}
+          draft: false
+          prerelease: false
           generate_release_notes: true
