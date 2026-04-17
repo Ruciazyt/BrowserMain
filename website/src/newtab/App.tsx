@@ -68,7 +68,7 @@ export default function App() {
   if (shortcutsLoading || settingsLoading) {
     return (
       <div className={styles.page}>
-        {settings.background.type === 'image' ? (
+        {settings.background.type === 'image' && (
           <div className="blob-scene">
             <div
               className="blob blob-img"
@@ -77,12 +77,6 @@ export default function App() {
                 borderRadius: 0, width: '100vw', height: '100vh', opacity: 0.85,
               }}
             />
-          </div>
-        ) : (
-          <div className="blob-scene">
-            <div className="blob blob-1" />
-            <div className="blob blob-2" />
-            <div className="blob blob-3" />
           </div>
         )}
         <div className="loading-dots"><span /><span /><span /></div>
@@ -93,7 +87,7 @@ export default function App() {
   return (
     <div className={styles.page}>
       {/* Animated blob background — only shown for image background type */}
-      {settings.background.type === 'image' ? (
+      {settings.background.type === 'image' && (
         <div className="blob-scene">
           <div
             className="blob blob-img"
@@ -102,12 +96,6 @@ export default function App() {
               borderRadius: 0, width: '100vw', height: '100vh', opacity: 0.85,
             }}
           />
-        </div>
-      ) : (
-        <div className="blob-scene">
-          <div className="blob blob-1" />
-          <div className="blob blob-2" />
-          <div className="blob blob-3" />
         </div>
       )}
 

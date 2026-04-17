@@ -118,3 +118,50 @@
 .clearBtn:hover { background: rgba(255,255,255,0.10); color: rgba(255,255,255,0.70); }
 .clearBtn svg { width: 11px; height: 11px; }
 
+/* ── Keyboard shortcut hint badge ───────────────────────────── */
+.shortcutHint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  margin-top: 10px;
+}
+
+.kbdBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  background: rgba(255, 149, 0, 0.12);
+  border: 1px solid rgba(255, 149, 0, 0.30);
+  border-radius: 6px;
+  color: #ff9500;
+  font-family: 'JetBrains Mono', 'Courier New', monospace;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  text-shadow: 0 0 8px rgba(255, 149, 0, 0.50);
+  transition: background 200ms ease-out, border-color 200ms ease-out, box-shadow 200ms ease-out;
+  cursor: default;
+  user-select: none;
+}
+
+.kbdBadge:hover {
+  background: rgba(255, 149, 0, 0.20);
+  border-color: rgba(255, 149, 0, 0.50);
+  box-shadow: 0 0 10px rgba(255, 149, 0, 0.25);
+}
+
+.kbdBadge svg {
+  flex-shrink: 0;
+  opacity: 0.85;
+}
+
+.hintText {
+  color: rgba(255, 149, 0, 0.55);
+  font-family: 'JetBrains Mono', 'Courier New', monospace;
+  font-size: 11px;
+  letter-spacing: 0.3px;
+  user-select: none;
+}
+
