@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useShortcuts } from '../hooks/useShortcuts';
-import { getFaviconUrl } from '../utils/storage';
+import { getSmartFaviconUrl } from '../utils/storage';
 import { isUrl } from '../utils/engines';
 import styles from '../styles/components/AddShortcutDialog.module.css';
 
@@ -15,7 +15,7 @@ interface AddShortcutDialogProps {
 export default function AddShortcutDialog({ open, url, title, favicon, onClose }: AddShortcutDialogProps) {
   const [inputUrl, setInputUrl] = useState(url);
   const [inputTitle, setInputTitle] = useState(title);
-  const [faviconUrl, setFaviconUrl] = useState(favicon || (url ? getFaviconUrl(url) : ''));
+  const [faviconUrl, setFaviconUrl] = useState(favicon || (url ? getSmartFaviconUrl(url) : ''));
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const { addShortcut, shortcuts } = useShortcuts();
@@ -33,10 +33,11 @@ export default function AddShortcutDialog({ open, url, title, favicon, onClose }
       setSaved(false);
       setSaving(false);
       // Auto-fetch favicon if none provided but URL is available
+      // Use getSmartFaviconUrl (Google S2) for best quality, consistent with ShortcutTile
       if (favicon) {
         setFaviconUrl(favicon);
       } else if (url) {
-        setFaviconUrl(getFaviconUrl(url));
+        setFaviconUrl(getSmartFaviconUrl(url));
       } else {
         setFaviconUrl('');
       }
