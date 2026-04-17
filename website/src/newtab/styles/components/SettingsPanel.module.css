@@ -55,7 +55,7 @@
 .sectionTitle::before {
   content: ''; display: inline-block;
   width: 5px; height: 5px; border-radius: 50%;
-  background: rgba(94,231,223,0.50);
+  background: rgba(255,149,0,0.50);
 }
 
 /* ── Engine list ──────────────────────────────────────────────── */
@@ -71,7 +71,7 @@
 .engineItem.selected { background: var(--glass-white); border-color: var(--glass-border-subtle); }
 .engineItem svg { width: 18px; height: 18px; color: rgba(255,255,255,0.50); }
 .engineName { font-size: 13px; color: rgba(255,255,255,0.78); flex: 1; }
-.checkmark { color: rgba(94,231,223,0.60); font-size: 13px; }
+.checkmark { color: rgba(255,149,0,0.60); font-size: 13px; }
 
 /* ── Background type grid ──────────────────────────────────────── */
 .bgTypeGrid { display: grid; grid-template-columns: repeat(3,1fr); gap: 6px; }
