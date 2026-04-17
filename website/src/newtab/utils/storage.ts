@@ -76,23 +76,33 @@ export async function saveShortcuts(shortcuts: Shortcut[]): Promise<void> {
   });
 }
 
+// Read settings from chrome.storage.sync (per SPEC.md).
+// For backward compatibility: if no sync data found, fall back to local.
 export async function getSettings(): Promise<Settings> {
   const defaults: Settings = {
     defaultEngine: 'google',
     background: { type: 'solid', color: '#0a0a0f' },
   };
   return new Promise((resolve) => {
-    (chrome.storage as any).local.get(SETTINGS_KEY, (result: any) => {
-      resolve({ ...defaults, ...result[SETTINGS_KEY] });
+    (chrome.storage as any).sync.get(SETTINGS_KEY, (result: any) => {
+      if (result[SETTINGS_KEY]) {
+        resolve({ ...defaults, ...result[SETTINGS_KEY] });
+      } else {
+        // Fallback to local for existing users migrating from the old implementation
+        (chrome.storage as any).local.get(SETTINGS_KEY, (localResult: any) => {
+          resolve({ ...defaults, ...localResult[SETTINGS_KEY] });
+        });
+      }
     });
   });
 }
 
+// Save settings to chrome.storage.sync (per SPEC.md)
 export async function saveSettings(settings: Partial<Settings>): Promise<void> {
   return new Promise((resolve) => {
-    (chrome.storage as any).local.get(SETTINGS_KEY, (result: any) => {
+    (chrome.storage as any).sync.get(SETTINGS_KEY, (result: any) => {
       const current = result[SETTINGS_KEY] || {};
-      (chrome.storage as any).local.set(
+      (chrome.storage as any).sync.set(
         { [SETTINGS_KEY]: { ...current, ...settings } },
         resolve
       );
