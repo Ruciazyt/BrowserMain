@@ -88,9 +88,7 @@ export default function SettingsPanel({ open, onClose, onBookmarkImportComplete,
         <div className={styles.body}>
           {showBookmarkImport ? (
             <BookmarkImport onBack={() => setShowBookmarkImport(false)} onImported={onBookmarkImportComplete} />
-          ) : (
-            <>
-              {showShortcutImport ? (
+          ) : showShortcutImport ? (
             <ShortcutImport onBack={() => setShowShortcutImport(false)} onImported={onBookmarkImportComplete} />
           ) : (
             <>
@@ -266,8 +264,6 @@ export default function SettingsPanel({ open, onClose, onBookmarkImportComplete,
                   Show Tour
                 </button>
               </div>
-            </>
-          )}
             </>
           )}
         </div>

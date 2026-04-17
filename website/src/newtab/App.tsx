@@ -41,8 +41,23 @@ export default function App() {
         setAddDialogOpen(true);
       }
     };
-    chrome.runtime.onMessage.addListener(listener);
-    return () => chrome.runtime.onMessage.removeListener(listener);
+    chrome.runtime?.onMessage?.addListener(listener);
+    return () => chrome.runtime?.onMessage?.removeListener(listener);
+  }, []);
+
+  // Also listen for custom events dispatched by injected content script
+  useEffect(() => {
+    const listener = (e: Event) => {
+      const detail = (e as CustomEvent).detail as { url?: string; title?: string; favicon?: string };
+      setAddDialogData({
+        url: detail?.url || '',
+        title: detail?.title || '',
+        favicon: detail?.favicon || '',
+      });
+      setAddDialogOpen(true);
+    };
+    window.addEventListener('browsermain:open-add-dialog', listener);
+    return () => window.removeEventListener('browsermain:open-add-dialog', listener);
   }, []);
 
   // ESC key to close settings panel

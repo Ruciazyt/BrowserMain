@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build && cp manifest.json dist/ && cp -r src/background dist/",
+    "build": "tsc && vite build && cp manifest.json dist/ && cp -r src/background dist/ && cp src/newtab/content-script.js dist/",
     "preview": "vite preview"
   },
   "dependencies": {

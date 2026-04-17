@@ -71,8 +71,7 @@ chrome.tabs.onCreated.addListener(async (tab) => {
   }
 });
 
-// Toolbar button clicked → send stored previous tab info to the new tab page
-// to trigger the AddShortcutDialog overlay
+// Toolbar button clicked → inject content script → send previous tab info to new tab page
 chrome.action.onClicked.addListener(async (tab) => {
   // Restore previous tab from session storage (survives service worker restarts)
   let webpageTabId = previousTabId;
@@ -94,18 +93,29 @@ chrome.action.onClicked.addListener(async (tab) => {
 
   if (!webpageTabId || !webpageUrl || !webpageUrl.startsWith('http')) return;
 
-  // Now find the new tab to send the message to
+  // Find the new tab to inject into
   const newTabs = await chrome.tabs.query({ url: 'chrome://newtab/*' });
   const newTab = newTabs.find(t => t.windowId === tab.windowId) || tab;
 
   if (!newTab.id) return;
 
+  try {
+    // Inject content script into the new tab page (chrome://newtab/ can't use manifest content_scripts)
+    await chrome.scripting.executeScript({
+      target: { tabId: newTab.id },
+      files: ['content-script.js'],
+    });
+  } catch (injectErr) {
+    // Injection failed (tab might be loading), ignore
+  }
+
+  // Send message to the injected content script
   chrome.tabs.sendMessage(newTab.id, {
     action: 'OPEN_ADD_DIALOG',
     url: webpageUrl,
     title: webpageTitle,
     favicon: webpageFavicon,
   }).catch(() => {
-    // New tab page may not be ready yet
+    // Content script not ready yet
   });
 });

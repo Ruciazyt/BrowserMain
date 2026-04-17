@@ -64,7 +64,7 @@ export function useShortcuts() {
   };
 }
 
-export const exportShortcutsAsJson = useCallback(async () => {
+export async function exportShortcutsAsJson() {
   const data = await getShortcuts();
   const payload = {
     version: '1.0',
@@ -78,9 +78,9 @@ export const exportShortcutsAsJson = useCallback(async () => {
   a.download = `browsermain-shortcuts-${new Date().toISOString().slice(0, 10)}.json`;
   a.click();
   URL.revokeObjectURL(url);
-}, []);
+}
 
-export const importShortcutsFromJson = useCallback(async (file: File): Promise<{ imported: number; error?: string }> => {
+export async function importShortcutsFromJson(file: File): Promise<{ imported: number; error?: string }> {
   return new Promise((resolve) => {
     const reader = new FileReader();
     reader.onload = async (e) => {
@@ -115,4 +115,4 @@ export const importShortcutsFromJson = useCallback(async (file: File): Promise<{
     reader.onerror = () => resolve({ imported: 0, error: 'Failed to read file' });
     reader.readAsText(file);
   });
-}, []);
+}

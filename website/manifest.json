@@ -12,7 +12,8 @@
   "permissions": [
     "storage",
     "tabs",
-    "bookmarks"
+    "bookmarks",
+    "scripting"
   ],
   "background": {
     "service_worker": "background/background.js"
