@@ -50,15 +50,41 @@ export default function App() {
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [settingsOpen]);
 
+  // Apply background settings from user preferences
+  useEffect(() => {
+    if (settingsLoading) return;
+    const { background } = settings;
+    if (background.type === 'solid') {
+      document.body.style.background = background.color || '#0a0a0f';
+    } else if (background.type === 'gradient') {
+      const dir = background.gradientDirection || 'to top right';
+      document.body.style.background = `linear-gradient(${dir}, ${background.gradientFrom || '#0a0a0f'}, ${background.gradientTo || '#1a3a5c'})`;
+    } else {
+      // 'image' — blob-scene handles the background; reset body
+      document.body.style.background = '';
+    }
+  }, [settings.background, settingsLoading]);
+
   if (shortcutsLoading || settingsLoading) {
     return (
       <div className={styles.page}>
-        {/* Animated blob background */}
-        <div className="blob-scene">
-          <div className="blob blob-1" />
-          <div className="blob blob-2" />
-          <div className="blob blob-3" />
-        </div>
+        {settings.background.type === 'image' ? (
+          <div className="blob-scene">
+            <div
+              className="blob blob-img"
+              style={{
+                background: `url(${settings.background.imageUrl}) center / cover no-repeat`,
+                borderRadius: 0, width: '100vw', height: '100vh', opacity: 0.85,
+              }}
+            />
+          </div>
+        ) : (
+          <div className="blob-scene">
+            <div className="blob blob-1" />
+            <div className="blob blob-2" />
+            <div className="blob blob-3" />
+          </div>
+        )}
         <div className="loading-dots"><span /><span /><span /></div>
       </div>
     );
@@ -66,12 +92,24 @@ export default function App() {
 
   return (
     <div className={styles.page}>
-      {/* Animated blob background */}
-      <div className="blob-scene">
-        <div className="blob blob-1" />
-        <div className="blob blob-2" />
-        <div className="blob blob-3" />
-      </div>
+      {/* Animated blob background — only shown for image background type */}
+      {settings.background.type === 'image' ? (
+        <div className="blob-scene">
+          <div
+            className="blob blob-img"
+            style={{
+              background: `url(${settings.background.imageUrl}) center / cover no-repeat`,
+              borderRadius: 0, width: '100vw', height: '100vh', opacity: 0.85,
+            }}
+          />
+        </div>
+      ) : (
+        <div className="blob-scene">
+          <div className="blob blob-1" />
+          <div className="blob blob-2" />
+          <div className="blob blob-3" />
+        </div>
+      )}
 
       <div className={styles.content}>
 
