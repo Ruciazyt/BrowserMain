@@ -1,14 +1,9 @@
-/* ── Greeting card ───────────────────────────────────────────── */
-.wrapper {
-  width: 100%;
-  padding: 0 16px;
-}
-
+/* ── Greeting ───────────────────────────────────────────────── */
+.wrapper { width: 100%; padding: 0 16px; }
 .greeting {
-  font-family: 'Inter', -apple-system, sans-serif;
-  font-size: 13px;
-  font-weight: 400;
-  color: rgba(255, 255, 255, 0.38);
+  font-family: var(--font-body);
+  font-size: 13px; font-weight: 400;
+  color: rgba(255,255,255,0.36);
   text-align: center;
   letter-spacing: 0.3px;
 }

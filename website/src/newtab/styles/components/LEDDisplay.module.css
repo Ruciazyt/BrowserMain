@@ -1,51 +1,33 @@
-/* ── LED Display card ────────────────────────────────────────── */
+/* ── LED Display ─────────────────────────────────────────────── */
 .wrapper {
-  width: 100%;
-  padding: 10px 16px 6px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  width: 100%; padding: 8px 16px 6px;
+  display: flex; flex-direction: column; align-items: center;
 }
+.container { display: flex; flex-direction: column; align-items: center; gap: 5px; }
 
-.container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-}
-
-/* ── Dot matrix ─────────────────────────────────────────────── */
 .dotMatrix {
   display: grid;
   grid-template-columns: repeat(8, 1fr);
-  gap: 5px;
-  padding: 6px;
+  gap: 4px; padding: 5px;
 }
-
 .dot {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: rgba(255, 149, 0, 0.85);
-  box-shadow: 0 0 4px rgba(255, 149, 0, 0.4);
+  width: 5px; height: 5px; border-radius: 50%;
+  background: rgba(94,231,223,0.80);
+  box-shadow: 0 0 4px rgba(94,231,223,0.40);
   animation: dotPulse 2s ease-in-out infinite;
 }
-
 .dot.off {
-  background: rgba(255, 149, 0, 0.12);
-  box-shadow: none;
-  animation: none;
+  background: rgba(94,231,223,0.10);
+  box-shadow: none; animation: none;
 }
-
 @keyframes dotPulse {
   0%, 100% { opacity: 1; }
-  50% { opacity: 0.55; }
+  50% { opacity: 0.50; }
 }
-
 .label {
-  font-family: 'Inter', -apple-system, sans-serif;
+  font-family: var(--font-body);
   font-size: 9px;
-  color: rgba(255, 255, 255, 0.25);
-  letter-spacing: 2.5px;
+  color: rgba(255,255,255,0.22);
+  letter-spacing: 2px;
   text-transform: uppercase;
 }

@@ -53,6 +53,12 @@ export default function App() {
   if (shortcutsLoading || settingsLoading) {
     return (
       <div className={styles.page}>
+        {/* Animated blob background */}
+        <div className="blob-scene">
+          <div className="blob blob-1" />
+          <div className="blob blob-2" />
+          <div className="blob blob-3" />
+        </div>
         <div className="loading-dots"><span /><span /><span /></div>
       </div>
     );
@@ -60,6 +66,13 @@ export default function App() {
 
   return (
     <div className={styles.page}>
+      {/* Animated blob background */}
+      <div className="blob-scene">
+        <div className="blob blob-1" />
+        <div className="blob blob-2" />
+        <div className="blob blob-3" />
+      </div>
+
       <div className={styles.content}>
 
         {/* ── Search card ── */}

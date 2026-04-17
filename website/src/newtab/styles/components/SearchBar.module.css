@@ -1,7 +1,7 @@
-/* ── Search bar card ─────────────────────────────────────────── */
+/* ── Search bar ──────────────────────────────────────────────── */
 .wrapper {
   width: 100%;
-  padding: 14px 16px;
+  padding: 12px 14px;
 }
 
 .container {
@@ -9,182 +9,116 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.10);
+  background: var(--glass-white);
+  backdrop-filter: var(--blur-sm);
+  -webkit-backdrop-filter: var(--blur-sm);
+  border: 1px solid var(--glass-border-subtle);
   border-radius: var(--radius-lg);
-  padding: 8px 10px;
-  transition: border-color var(--transition), background var(--transition);
+  padding: 7px 10px;
+  transition: border-color var(--dur-fast), background var(--dur-fast);
 }
 
 .container:focus-within {
-  background: rgba(255, 255, 255, 0.09);
-  border-color: rgba(255, 255, 255, 0.22);
+  background: var(--glass-white-md);
+  border-color: var(--glass-border);
 }
 
 /* ── Engine switcher ─────────────────────────────────────────── */
-.engineSwitcher {
-  position: relative;
-  flex-shrink: 0;
-}
+.engineSwitcher { position: relative; flex-shrink: 0; }
 
 .engineButton {
-  width: 30px;
-  height: 30px;
+  width: 30px; height: 30px;
   border-radius: var(--radius-sm);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: flex; align-items: center; justify-content: center;
   background: transparent;
   cursor: pointer;
-  transition: background var(--transition);
-  color: rgba(255, 255, 255, 0.5);
+  transition: background var(--dur-fast);
+  color: rgba(255,255,255,0.50);
   flex-shrink: 0;
 }
-
-.engineButton:hover {
-  background: rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.9);
-}
-
-.engineButton svg {
-  width: 18px;
-  height: 18px;
-}
+.engineButton:hover { background: var(--glass-white-md); color: rgba(255,255,255,0.90); }
+.engineButton svg { width: 18px; height: 18px; }
 
 .dropdown {
   position: absolute;
-  top: calc(100% + 6px);
-  left: 0;
-  background: rgba(255, 255, 255, 0.10);
-  backdrop-filter: blur(24px) saturate(200%);
-  -webkit-backdrop-filter: blur(24px) saturate(200%);
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  top: calc(100% + 6px); left: 0;
+  background: var(--glass-white-md);
+  backdrop-filter: var(--blur-md);
+  -webkit-backdrop-filter: var(--blur-md);
+  border: 1px solid var(--glass-border);
   border-radius: var(--radius-md);
   overflow: hidden;
   z-index: 100;
   min-width: 160px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  box-shadow: var(--shadow-float);
 }
 
 .dropdownItem {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  width: 100%;
-  padding: 10px 14px;
+  display: flex; align-items: center; gap: 10px;
+  width: 100%; padding: 10px 14px;
   cursor: pointer;
-  transition: background var(--transition);
-  color: rgba(255, 255, 255, 0.75);
+  transition: background var(--dur-fast);
+  color: rgba(255,255,255,0.75);
   font-size: 13px;
   text-align: left;
-  border: none;
-  background: none;
+  border: none; background: none;
 }
-
-.dropdownItem:hover {
-  background: rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.95);
-}
-
-.dropdownItem.selected {
-  color: rgba(255, 255, 255, 0.95);
-  background: rgba(255, 255, 255, 0.06);
-}
-
-.dropdownItem svg {
-  width: 16px;
-  height: 16px;
-  flex-shrink: 0;
-}
-
-.checkmark {
-  margin-left: auto;
-  color: rgba(255, 255, 255, 0.6);
-}
+.dropdownItem:hover { background: var(--glass-white); color: rgba(255,255,255,0.95); }
+.dropdownItem.selected { color: rgba(255,255,255,0.95); background: var(--glass-white); }
+.dropdownItem svg { width: 16px; height: 16px; flex-shrink: 0; }
+.checkmark { margin-left: auto; color: rgba(255,255,255,0.5); }
 
 /* ── Divider ─────────────────────────────────────────────────── */
-.divider {
-  width: 1px;
-  height: 22px;
-  background: rgba(255, 255, 255, 0.12);
-  flex-shrink: 0;
-}
+.divider { width: 1px; height: 22px; background: rgba(255,255,255,0.12); flex-shrink: 0; }
 
 /* ── Input ───────────────────────────────────────────────────── */
 .input {
-  flex: 1;
-  background: transparent;
-  border: none;
-  color: rgba(255, 255, 255, 0.92);
-  font-size: 14px;
-  font-family: var(--font-ui);
-  min-width: 0;
-  letter-spacing: 0.1px;
+  flex: 1; background: transparent; border: none;
+  color: rgba(255,255,255,0.90);
+  font-size: 14px; font-family: var(--font-body);
+  min-width: 0; letter-spacing: 0.1px;
 }
-
-.input::placeholder {
-  color: rgba(255, 255, 255, 0.35);
-}
+.input::placeholder { color: rgba(255,255,255,0.32); }
 
 /* ── Buttons ─────────────────────────────────────────────────── */
 .searchBtn {
-  width: 32px;
-  height: 32px;
+  width: 30px; height: 30px;
   border-radius: var(--radius-sm);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(255, 255, 255, 0.12);
-  color: rgba(255, 255, 255, 0.75);
+  display: flex; align-items: center; justify-content: center;
+  background: linear-gradient(135deg, rgba(94,231,223,0.40) 0%, rgba(59,130,246,0.40) 100%);
+  border: 1px solid rgba(94,231,223,0.35);
+  color: rgba(255,255,255,0.85);
   flex-shrink: 0;
-  transition: all var(--transition);
-  border: none;
+  transition: all var(--dur-fast);
   cursor: pointer;
 }
-
 .searchBtn:hover {
-  background: rgba(255, 255, 255, 0.20);
-  color: rgba(255, 255, 255, 0.95);
+  background: linear-gradient(135deg, rgba(94,231,223,0.60) 0%, rgba(59,130,246,0.60) 100%);
+  box-shadow: 0 0 14px rgba(94,231,223,0.3);
+  transform: scale(1.05);
 }
-
-.searchBtn svg {
-  width: 16px;
-  height: 16px;
-}
+.searchBtn svg { width: 15px; height: 15px; }
 
 .clearBtn {
-  width: 26px;
-  height: 26px;
+  width: 24px; height: 24px;
   border-radius: var(--radius-sm);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: flex; align-items: center; justify-content: center;
   background: transparent;
-  color: rgba(255, 255, 255, 0.35);
+  color: rgba(255,255,255,0.30);
   flex-shrink: 0;
-  transition: all var(--transition);
-  border: none;
-  cursor: pointer;
-  padding: 0;
+  transition: all var(--dur-fast);
+  border: none; cursor: pointer; padding: 0;
 }
-
-.clearBtn:hover {
-  background: rgba(255, 255, 255, 0.08);
-  color: rgba(255, 255, 255, 0.7);
-}
-
-.clearBtn svg {
-  width: 12px;
-  height: 12px;
-}
+.clearBtn:hover { background: var(--glass-white); color: rgba(255,255,255,0.70); }
+.clearBtn svg { width: 11px; height: 11px; }
 
 /* ── Keyboard hint ───────────────────────────────────────────── */
 .kbdHint {
-  font-family: var(--font-ui);
+  font-family: var(--font-body);
   font-size: 10px;
-  color: rgba(255, 255, 255, 0.25);
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.09);
+  color: rgba(255,255,255,0.22);
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
   border-radius: 5px;
   padding: 2px 6px;
   flex-shrink: 0;

@@ -1,207 +1,96 @@
 /* ── Onboarding overlay ───────────────────────────────────────── */
 .overlay {
-  position: fixed;
-  top: 0; right: 0; bottom: 0; left: 0;
+  position: fixed; top: 0; right: 0; bottom: 0; left: 0;
   z-index: 9999;
-  background: rgba(0, 0, 0, 0.65);
+  background: rgba(0,0,0,0.60);
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  display: flex; align-items: center; justify-content: center;
   padding: 24px;
   animation: overlayIn 300ms ease-out;
 }
-
 @keyframes overlayIn { from { opacity: 0; } to { opacity: 1; } }
 
 /* ── Card ─────────────────────────────────────────────────────── */
 .modal {
-  width: 100%;
-  max-width: 420px;
-  background: rgba(12, 12, 16, 0.92);
-  backdrop-filter: blur(32px) saturate(200%);
-  -webkit-backdrop-filter: blur(32px) saturate(200%);
-  border: 1px solid rgba(255, 255, 255, 0.10);
+  position: relative;
+  width: 100%; max-width: 420px;
+  background: var(--glass-white-md);
+  backdrop-filter: var(--blur-lg);
+  -webkit-backdrop-filter: var(--blur-lg);
+  border: 1px solid var(--glass-border);
   border-radius: var(--radius-xl);
   overflow: hidden;
-  animation: modalIn 350ms cubic-bezier(0.22, 1, 0.36, 1);
-  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6);
+  animation: modalIn 350ms var(--ease-liquid);
+  box-shadow: 0 24px 80px rgba(0,0,0,0.55);
 }
+@keyframes modalIn { from { opacity: 0; transform: scale(0.94) translateY(16px); } to { opacity: 1; transform: scale(1) translateY(0); } }
 
+/* Top accent gradient */
 .modal::before {
   content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.5) 50%, transparent 100%);
-  pointer-events: none;
-  z-index: 2;
-}
-
-@keyframes modalIn {
-  from { opacity: 0; transform: scale(0.93) translateY(16px); }
-  to { opacity: 1; transform: scale(1) translateY(0); }
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent-aqua) 0%, var(--accent-violet) 50%, var(--accent-rose) 100%);
+  pointer-events: none; z-index: 10;
 }
 
 /* ── Header ───────────────────────────────────────────────────── */
-.header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 18px 20px 0;
-}
-
-.ledDots { display: flex; gap: 6px; align-items: center; }
-
-.dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.15);
-  transition: all 300ms ease;
-}
-
-.dotActive {
-  background: rgba(255, 255, 255, 0.85);
-  width: 18px;
-  border-radius: 3px;
-}
-
-.dotDone { background: rgba(255, 255, 255, 0.35); }
-
-.stepLabel {
-  font-size: 10px;
-  color: rgba(255, 255, 255, 0.30);
-  letter-spacing: 0.5px;
-}
-
-.progressBar {
-  width: 100%;
-  height: 2px;
-  background: rgba(255, 255, 255, 0.08);
-  margin-top: 12px;
-}
-
-.progressFill {
-  height: 100%;
-  border-radius: 1px;
-  background: rgba(255, 255, 255, 0.50);
-  transition: width 400ms ease;
-}
+.header { display: flex; align-items: center; justify-content: space-between; padding: 18px 20px 0; }
+.ledDots { display: flex; gap: 5px; align-items: center; }
+.dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.15); transition: all 300ms ease; }
+.dotActive { background: rgba(94,231,223,0.88); width: 18px; border-radius: 3px; }
+.dotDone { background: rgba(255,255,255,0.32); }
+.stepLabel { font-size: 10px; color: rgba(255,255,255,0.28); letter-spacing: 0.5px; }
+.progressBar { width: 100%; height: 2px; background: rgba(255,255,255,0.07); margin-top: 12px; }
+.progressFill { height: 100%; border-radius: 1px; background: linear-gradient(90deg, var(--accent-aqua), var(--accent-violet)); transition: width 400ms ease; }
 
 /* ── Icon ─────────────────────────────────────────────────────── */
-.iconWrapper {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24px 20px 16px;
-}
-
-.iconRing {
-  position: absolute;
-  width: 88px;
-  height: 88px;
-  border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-}
-
-.icon {
-  position: relative;
-  width: 64px;
-  height: 64px;
-  color: rgba(255, 255, 255, 0.70);
-}
-
+.iconWrapper { position: relative; display: flex; align-items: center; justify-content: center; padding: 22px 20px 14px; }
+.iconRing { position: absolute; width: 88px; height: 88px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.12); }
+.icon { position: relative; width: 64px; height: 64px; color: rgba(255,255,255,0.65); }
 .icon svg { width: 100%; height: 100%; }
 
 /* ── Content ──────────────────────────────────────────────────── */
 .content { padding: 0 26px; text-align: center; }
-
-.title {
-  font-size: 18px;
-  font-weight: 600;
-  color: rgba(255, 255, 255, 0.90);
-  margin-bottom: 10px;
-  letter-spacing: 0.2px;
-}
-
-.description {
-  font-size: 14px;
-  color: rgba(255, 255, 255, 0.50);
-  line-height: 1.65;
-  margin-bottom: 12px;
-}
-
+.title { font-size: 18px; font-weight: 600; color: rgba(255,255,255,0.90); margin-bottom: 10px; letter-spacing: 0.2px; }
+.description { font-size: 14px; color: rgba(255,255,255,0.48); line-height: 1.65; margin-bottom: 12px; }
 .hint {
-  display: inline-block;
-  font-size: 10px;
-  color: rgba(255, 255, 255, 0.30);
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 20px;
-  padding: 3px 10px;
-  margin-bottom: 4px;
+  display: inline-block; font-size: 10px;
+  color: rgba(94,231,223,0.70);
+  background: rgba(94,231,223,0.10);
+  border: 1px solid rgba(94,231,223,0.25);
+  border-radius: 20px; padding: 3px 10px; margin-bottom: 4px;
 }
 
 /* ── Actions ──────────────────────────────────────────────────── */
 .actions {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 18px 22px 22px;
-  gap: 8px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 22px 22px; gap: 8px;
 }
-
 .left, .right { flex: 1; }
 .right { display: flex; justify-content: flex-end; }
-
 .skipBtn {
-  background: none;
-  border: none;
-  color: rgba(255, 255, 255, 0.30);
-  font-size: 13px;
-  cursor: pointer;
-  padding: 8px 12px;
-  transition: color var(--transition);
-  font-family: var(--font-ui);
+  background: none; border: none;
+  color: rgba(255,255,255,0.28); font-size: 13px;
+  cursor: pointer; padding: 8px 12px;
+  transition: color var(--dur-fast); font-family: var(--font-body);
 }
-
-.skipBtn:hover { color: rgba(255, 255, 255, 0.55); }
-
+.skipBtn:hover { color: rgba(255,255,255,0.52); }
 .prevBtn, .nextBtn {
   background: transparent;
-  border: 1.5px solid rgba(255, 255, 255, 0.20);
-  color: rgba(255, 255, 255, 0.75);
-  font-size: 13px;
-  font-weight: 500;
-  padding: 8px 16px;
-  border-radius: var(--radius-md);
-  cursor: pointer;
-  transition: all var(--transition);
-  font-family: var(--font-ui);
+  border: 1.5px solid rgba(255,255,255,0.20);
+  color: rgba(255,255,255,0.72);
+  font-size: 13px; font-weight: 500;
+  padding: 8px 16px; border-radius: var(--radius-md);
+  cursor: pointer; transition: all var(--dur-fast); font-family: var(--font-body);
 }
-
-.prevBtn:hover, .nextBtn:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.30);
-  color: rgba(255, 255, 255, 0.95);
-}
-
+.prevBtn:hover, .nextBtn:hover { background: var(--glass-white); border-color: rgba(255,255,255,0.30); color: rgba(255,255,255,0.95); }
 .getStartedBtn {
-  background: rgba(255, 255, 255, 0.88);
-  color: rgba(0, 0, 0, 0.85);
-  font-size: 13px;
-  font-weight: 600;
-  padding: 8px 20px;
-  border-radius: var(--radius-md);
-  border: none;
-  cursor: pointer;
-  transition: all var(--transition);
-  font-family: var(--font-ui);
+  background: linear-gradient(135deg, rgba(94,231,223,0.85) 0%, rgba(59,130,246,0.85) 100%);
+  color: rgba(0,0,0,0.85); font-size: 13px; font-weight: 600;
+  padding: 8px 20px; border-radius: var(--radius-md);
+  border: none; cursor: pointer; transition: all var(--dur-fast); font-family: var(--font-body);
+  box-shadow: 0 4px 16px rgba(94,231,223,0.25);
 }
-
-.getStartedBtn:hover {
-  background: rgba(255, 255, 255, 1);
-}
+.getStartedBtn:hover { background: linear-gradient(135deg, rgba(94,231,223,1) 0%, rgba(59,130,246,1) 100%); box-shadow: 0 6px 24px rgba(94,231,223,0.40); transform: translateY(-1px); }
