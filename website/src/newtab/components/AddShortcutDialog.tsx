@@ -18,12 +18,20 @@ export default function AddShortcutDialog({ open, url, title, favicon, onClose }
   const [faviconUrl, setFaviconUrl] = useState(favicon || (url ? getSmartFaviconUrl(url) : ''));
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+  const [pasteHint, setPasteHint] = useState('');
   const { addShortcut, shortcuts } = useShortcuts();
 
   // Check if entered URL is a duplicate or invalid
   const trimmedUrl = inputUrl.trim();
   const isInvalidUrl = trimmedUrl.length > 0 && !isUrl(trimmedUrl);
   const isDuplicate = trimmedUrl.length > 0 && isUrl(trimmedUrl) && shortcuts.some((s) => s.url.toLowerCase() === trimmedUrl.toLowerCase());
+
+  // Clear paste hint after 3 seconds
+  useEffect(() => {
+    if (!pasteHint) return;
+    const timer = setTimeout(() => setPasteHint(''), 3000);
+    return () => clearTimeout(timer);
+  }, [pasteHint]);
 
   // Sync props → local state when dialog opens; auto-fetch favicon if none provided
   useEffect(() => {
@@ -32,6 +40,7 @@ export default function AddShortcutDialog({ open, url, title, favicon, onClose }
       setInputTitle(title);
       setSaved(false);
       setSaving(false);
+      setPasteHint('');
       // Auto-fetch favicon if none provided but URL is available
       // Use getSmartFaviconUrl (Google S2) for best quality, consistent with ShortcutTile
       if (favicon) {
@@ -99,6 +108,14 @@ export default function AddShortcutDialog({ open, url, title, favicon, onClose }
               type="url"
               value={inputUrl}
               onChange={(e) => setInputUrl(e.target.value)}
+              onPaste={(e) => {
+                const text = e.clipboardData.getData('text');
+                if (isUrl(text)) {
+                  e.preventDefault();
+                  setInputUrl(text);
+                  setFaviconUrl(getSmartFaviconUrl(text));
+                }
+              }}
               placeholder="https://example.com"
               autoFocus
             />
@@ -118,8 +135,20 @@ export default function AddShortcutDialog({ open, url, title, favicon, onClose }
               type="text"
               value={inputTitle}
               onChange={(e) => setInputTitle(e.target.value)}
+              onPaste={(e) => {
+                const text = e.clipboardData.getData('text');
+                if (isUrl(text)) {
+                  e.preventDefault();
+                  setInputUrl(text);
+                  setInputTitle('');
+                  setPasteHint('URL detected — moved to URL field.');
+                  // Auto-fetch favicon for pasted URL
+                  setFaviconUrl(getSmartFaviconUrl(text));
+                }
+              }}
               placeholder="My Shortcut"
             />
+            {pasteHint && <span className={styles.pasteHint}>{pasteHint}</span>}
           </div>
         </div>
 
