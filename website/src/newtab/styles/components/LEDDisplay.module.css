@@ -1,6 +1,6 @@
 /* ── LED Display ─────────────────────────────────────────────── */
 .wrapper {
-  width: 100%; padding: 8px 16px 6px;
+  padding: 6px 16px 12px;
   display: flex; flex-direction: column; align-items: center;
 }
 .container { display: flex; flex-direction: column; align-items: center; gap: 5px; }
@@ -12,20 +12,20 @@
 }
 .dot {
   width: 5px; height: 5px; border-radius: 50%;
-  background: rgba(94,231,223,0.80);
-  box-shadow: 0 0 4px rgba(94,231,223,0.40);
-  animation: dotPulse 2s ease-in-out infinite;
+  background: rgba(255,149,0,0.85);
+  box-shadow: 0 0 4px rgba(255,149,0,0.55);
+  animation: ledPulse 2s ease-in-out infinite;
 }
 .dot.off {
-  background: rgba(94,231,223,0.10);
+  background: rgba(255,149,0,0.12);
   box-shadow: none; animation: none;
 }
-@keyframes dotPulse {
+@keyframes ledPulse {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.50; }
 }
 .label {
-  font-family: var(--font-body);
+  font-family: 'JetBrains Mono', monospace;
   font-size: 9px;
   color: rgba(255,255,255,0.22);
   letter-spacing: 2px;

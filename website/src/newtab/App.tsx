@@ -116,9 +116,13 @@ export default function App() {
         {/* ── Search bar ── */}
         <SearchBar defaultEngine={settings.defaultEngine} />
 
-        {/* ── Clock + LED card ── */}
+        {/* ── Greeting ── */}
         <div className={styles.card}>
           <Greeting />
+        </div>
+
+        {/* ── Clock card ── */}
+        <div className={styles.card}>
           <Clock />
           <LEDDisplay />
         </div>
