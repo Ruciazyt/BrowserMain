@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useShortcuts } from './hooks/useShortcuts';
 import { useSettings } from './hooks/useSettings';
 import SearchBar from './components/SearchBar';
+import Greeting from './components/Greeting';
 import Clock from './components/Clock';
 import LEDDisplay from './components/LEDDisplay';
 import ShortcutGrid from './components/ShortcutGrid';
@@ -91,6 +92,8 @@ export default function App() {
     }}>
       <div className={styles.content}>
         <SearchBar defaultEngine={settings.defaultEngine} />
+
+        <Greeting />
 
         <div className={styles.topDecor}>
           <div className={styles.decorLine} />

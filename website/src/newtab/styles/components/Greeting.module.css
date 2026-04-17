@@ -1,0 +1,24 @@
+.greeting {
+  font-family: var(--font-led);
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--led-amber);
+  text-transform: uppercase;
+  letter-spacing: 6px;
+  text-align: center;
+  text-shadow:
+    0 0 8px var(--led-amber-glow),
+    0 0 16px rgba(255, 149, 0, 0.3);
+  animation: fadeIn 0.8s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
