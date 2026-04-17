@@ -50,6 +50,7 @@ export default function ShortcutTile({
   const [editTitle, setEditTitle] = useState(shortcut.title);
   const [editUrl, setEditUrl] = useState(shortcut.url);
   const [keyboardFocus, setKeyboardFocus] = useState(false);
+  const [isNavigating, setIsNavigating] = useState(false);
   // Simplified: 2-stage favicon fallback
   const [faviconSrc, setFaviconSrc] = useState(shortcut.favicon || getSmartFaviconUrl(shortcut.url));
   const [faviconTriedIco, setFaviconTriedIco] = useState(false);
@@ -80,11 +81,14 @@ export default function ShortcutTile({
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'ArrowLeft') {
         e.preventDefault();
+        setIsNavigating(true);
         onMoveLeft?.(index);
       } else if (e.key === 'ArrowRight') {
         e.preventDefault();
+        setIsNavigating(true);
         onMoveRight?.(index);
       } else if (e.key === 'Escape') {
+        setIsNavigating(false);
         setKeyboardFocus(false);
       }
     };
@@ -202,7 +206,7 @@ export default function ShortcutTile({
   return (
     <>
       <div
-        className={`${styles.container} ${isDragging ? styles.dragging : ''} ${isDragOver ? styles.dragOver : ''} ${dropPosition === 'before' ? styles.dropBefore : ''} ${dropPosition === 'after' ? styles.dropAfter : ''} ${keyboardFocus ? styles.keyboardFocus : ''}`}
+        className={`${styles.container} ${isDragging ? styles.dragging : ''} ${isDragOver ? styles.dragOver : ''} ${dropPosition === 'before' ? styles.dropBefore : ''} ${dropPosition === 'after' ? styles.dropAfter : ''} ${keyboardFocus ? styles.keyboardFocus : ''} ${isNavigating ? styles.navigating : ''}`}
         ref={containerRef}
         onContextMenu={handleContextMenu}
         draggable
@@ -215,7 +219,7 @@ export default function ShortcutTile({
         onKeyDown={handleKeyDown}
         tabIndex={0}
         onFocus={() => setKeyboardFocus(true)}
-        onBlur={() => setKeyboardFocus(false)}
+        onBlur={() => { setIsNavigating(false); setKeyboardFocus(false); }}
       >
         <div className={styles.iconWrapper}>
           {faviconSrc ? (
@@ -232,7 +236,7 @@ export default function ShortcutTile({
         >
           ×
         </button>
-        {keyboardFocus && (
+        {isNavigating && (
           <div className={styles.keyboardHint}>← → to move · Esc to exit</div>
         )}
       </div>

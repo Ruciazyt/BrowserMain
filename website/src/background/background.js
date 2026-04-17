@@ -44,6 +44,11 @@ chrome.tabs.onActivated.addListener(async (activeInfo) => {
 // When a new tab is created, the previously active tab's onActivated fires AFTER the new tab is created
 // So we store the previous tab info when a new tab is created and we're about to lose track of it
 chrome.tabs.onCreated.addListener(async (tab) => {
+  // If the created tab is already active (e.g., toolbar button creates a new tab),
+  // do NOT update previousTabId — the previousTabId from onActivated is already correct.
+  // Only capture the previous tab when a background tab is created.
+  if (tab.active) return;
+
   // When a new tab is created, capture the current active tab as "previous"
   // This handles the case where the user clicks the toolbar button right as the new tab appears
   try {
