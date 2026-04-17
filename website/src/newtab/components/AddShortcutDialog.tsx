@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useShortcuts } from '../hooks/useShortcuts';
-import { getSmartFaviconUrl } from '../utils/storage';
+import { getSmartFaviconUrl, getFaviconIcoUrl } from '../utils/storage';
 import { isUrl } from '../utils/engines';
 import styles from '../styles/components/AddShortcutDialog.module.css';
 
@@ -16,6 +16,8 @@ export default function AddShortcutDialog({ open, url, title, favicon, onClose }
   const [inputUrl, setInputUrl] = useState(url);
   const [inputTitle, setInputTitle] = useState(title);
   const [faviconUrl, setFaviconUrl] = useState(favicon || (url ? getSmartFaviconUrl(url) : ''));
+  // 2-stage favicon fallback: Google S2 → favicon.ico → GlobeIcon
+  const [faviconTriedIco, setFaviconTriedIco] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [pasteHint, setPasteHint] = useState('');
@@ -41,6 +43,7 @@ export default function AddShortcutDialog({ open, url, title, favicon, onClose }
       setSaved(false);
       setSaving(false);
       setPasteHint('');
+      setFaviconTriedIco(false);
       // Auto-fetch favicon if none provided but URL is available
       // Use getSmartFaviconUrl (Google S2) for best quality, consistent with ShortcutTile
       if (favicon) {
@@ -52,6 +55,25 @@ export default function AddShortcutDialog({ open, url, title, favicon, onClose }
       }
     }
   }, [open, url, title, favicon]);
+
+  // Reset favicon state when input URL changes so the new Google S2 URL is used
+  useEffect(() => {
+    if (inputUrl && isUrl(inputUrl.trim())) {
+      setFaviconUrl(getSmartFaviconUrl(inputUrl.trim()));
+      setFaviconTriedIco(false);
+    }
+  }, [inputUrl]);
+
+  const handleFaviconError = () => {
+    if (!faviconTriedIco) {
+      // Try favicon.ico as second attempt
+      setFaviconUrl(getFaviconIcoUrl(inputUrl.trim() || url));
+      setFaviconTriedIco(true);
+    } else {
+      // Give up — clear favicon to show globe icon
+      setFaviconUrl('');
+    }
+  };
 
   if (!open) return null;
 
@@ -92,10 +114,18 @@ export default function AddShortcutDialog({ open, url, title, favicon, onClose }
 
         {/* Body */}
         <div className={styles.body}>
-          {/* Favicon preview */}
-          {faviconUrl && (
+          {/* Favicon preview — GlobeIcon shown when both Google S2 and favicon.ico fail */}
+          {(faviconUrl || inputUrl.trim()) && (
             <div className={styles.faviconRow}>
-              <img src={faviconUrl} alt="" className={styles.faviconImg} />
+              {faviconUrl ? (
+                <img src={faviconUrl} alt="" className={styles.faviconImg} onError={handleFaviconError} />
+              ) : (
+                <svg className={styles.faviconGlobe} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10"/>
+                  <line x1="2" y1="12" x2="22" y2="12"/>
+                  <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+                </svg>
+              )}
               <span className={styles.faviconHint}>Current page</span>
             </div>
           )}
@@ -113,7 +143,7 @@ export default function AddShortcutDialog({ open, url, title, favicon, onClose }
                 if (isUrl(text)) {
                   e.preventDefault();
                   setInputUrl(text);
-                  setFaviconUrl(getSmartFaviconUrl(text));
+                  // Favicon update is handled by the inputUrl effect above
                 }
               }}
               placeholder="https://example.com"
@@ -142,8 +172,7 @@ export default function AddShortcutDialog({ open, url, title, favicon, onClose }
                   setInputUrl(text);
                   setInputTitle('');
                   setPasteHint('URL detected — moved to URL field.');
-                  // Auto-fetch favicon for pasted URL
-                  setFaviconUrl(getSmartFaviconUrl(text));
+                  // Favicon update is handled by the inputUrl effect above
                 }
               }}
               placeholder="My Shortcut"

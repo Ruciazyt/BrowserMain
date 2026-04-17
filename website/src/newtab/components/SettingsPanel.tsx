@@ -188,34 +188,65 @@ export default function SettingsPanel({ open, onClose, onBookmarkImportComplete,
                   </div>
                 )}
                 {bgType === 'image' && (
-                  <div className={styles.imageRow}>
-                    <input
-                      type="text"
-                      className={styles.imageInput}
-                      placeholder="Image URL..."
-                      value={imageUrl}
-                      onChange={(e) => {
-                        setImageUrl(e.target.value);
-                        setImagePreview(e.target.value);
-                      }}
-                    />
-                    <button
-                      className={styles.uploadBtn}
-                      onClick={() => fileInputRef.current?.click()}
-                    >
-                      Upload
-                    </button>
-                    <button
-                      className={styles.applyBtn}
-                      onClick={() => updateBackground({ type: 'image', imageUrl })}
-                    >
-                      Apply
-                    </button>
-                  </div>
-                )}
-                {bgType === 'image' && imagePreview && (
-                  <div className={styles.imagePreview}>
-                    <img src={imagePreview} alt="Background preview" />
+                  <div className={styles.imageSection}>
+                    <div className={styles.imageRow}>
+                      <div className={styles.imageInputWrapper}>
+                        <input
+                          type="text"
+                          className={styles.imageInput}
+                          placeholder="Image URL..."
+                          value={imageUrl}
+                          onChange={(e) => {
+                            setImageUrl(e.target.value);
+                            setImagePreview(e.target.value);
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              updateBackground({ type: 'image', imageUrl });
+                            }
+                          }}
+                        />
+                        {imageUrl && (
+                          <button
+                            className={styles.clearImageBtn}
+                            onClick={() => {
+                              setImageUrl('');
+                              setImagePreview('');
+                            }}
+                            aria-label="Clear URL"
+                          >
+                            ×
+                          </button>
+                        )}
+                      </div>
+                      <button
+                        className={styles.uploadBtn}
+                        onClick={() => fileInputRef.current?.click()}
+                      >
+                        Upload
+                      </button>
+                      <button
+                        className={`${styles.applyBtn} ${imageUrl !== settings.background.imageUrl ? styles.applyBtnDirty : ''}`}
+                        onClick={() => updateBackground({ type: 'image', imageUrl })}
+                      >
+                        Apply
+                      </button>
+                    </div>
+                    {imagePreview && (
+                      <div className={styles.imagePreviewArea}>
+                        <img src={imagePreview} alt="Background preview" />
+                        <button
+                          className={styles.removeImageBtn}
+                          onClick={() => {
+                            setImagePreview('');
+                            setImageUrl('');
+                            updateBackground({ type: 'solid', color: solidColor });
+                          }}
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    )}
                   </div>
                 )}
                 <input
