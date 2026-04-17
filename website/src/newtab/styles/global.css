@@ -40,6 +40,7 @@
   --radius-card: 24px;
   --radius-btn: 16px;
   --radius-input: 12px;
+  --radius-xs: 4px;
 
   /* LED Glow Effect */
   --glow-led: 0 0 12px #ff9500, 0 0 24px rgba(255, 149, 0, 0.3);
@@ -88,7 +89,6 @@
   --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
 
   /* Border radius tokens */
-  --radius-xs: 4px;
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 16px;

@@ -114,6 +114,7 @@
   background: var(--glass-white-md);
   outline: 1.5px solid color-mix(in srgb, var(--led-amber) 50%, transparent);
   outline-offset: -1.5px;
+  transition: background var(--dur-fast), outline var(--dur-fast);
 }
 .keyboardHint {
   position: absolute; bottom: -24px; left: 50%; transform: translateX(-50%);

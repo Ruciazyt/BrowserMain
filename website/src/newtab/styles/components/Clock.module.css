@@ -22,8 +22,8 @@
   background: var(--led-amber);
   box-shadow: 0 0 4px var(--led-amber-glow, rgba(255, 149, 0, 0.6));
 }
-.dotRow::before { box-shadow: 0 0 4px var(--led-amber-glow, rgba(255, 149, 0, 0.6)); }
-.dotRow::after { box-shadow: 0 0 4px var(--led-amber-soft, rgba(255, 149, 0, 0.35)); }
+.dotRow::before { box-shadow: 0 0 4px var(--led-amber-glow); }
+.dotRow::after { box-shadow: 0 0 4px var(--led-amber-glow); }
 
 .container {
   cursor: pointer;

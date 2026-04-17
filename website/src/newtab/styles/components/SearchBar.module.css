@@ -16,12 +16,12 @@
   border: 1px solid var(--glass-border);
   border-radius: 28px;
   padding: 10px 14px;
-  transition: background 200ms, border-color 200ms, box-shadow 200ms;
+  transition: background var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 .container:focus-within {
   background: var(--glass-white-md);
-  border-color: rgba(94,231,223,0.50);
+  border-color: var(--accent-aqua);
   box-shadow: 0 0 0 3px rgba(94,231,223,0.12), 0 8px 32px rgba(0,0,0,0.25);
 }
 
@@ -91,15 +91,14 @@
   width: 30px; height: 30px;
   border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
-  background: linear-gradient(135deg, var(--led-amber) 0%, var(--led-amber) 100%);
+  background: var(--led-amber);
   border: 1px solid rgba(255,149,0,0.40);
   color: rgba(255,255,255,0.90);
   flex-shrink: 0;
-  transition: all 150ms;
+  transition: all var(--dur-fast);
   cursor: pointer;
 }
 .searchBtn:hover {
-  background: linear-gradient(135deg, var(--led-amber) 0%, var(--led-amber) 100%);
   box-shadow: 0 0 16px var(--led-amber-glow);
   transform: scale(1.06);
 }
@@ -112,7 +111,7 @@
   background: transparent;
   color: rgba(255,255,255,0.28);
   flex-shrink: 0;
-  transition: all 150ms;
+  transition: all var(--dur-fast);
   border: none; cursor: pointer; padding: 0;
 }
 .clearBtn:hover { background: rgba(255,255,255,0.10); color: rgba(255,255,255,0.70); }
