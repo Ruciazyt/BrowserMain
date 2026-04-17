@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build && cp manifest.json dist/ && cp -r src/background dist/",
+    "build": "tsc && vite build && node -e \"const fs=require('fs'); fs.copyFileSync('manifest.json','dist/manifest.json'); fs.cpSync('src/background','dist/background',{ recursive: true });\"",
     "preview": "vite preview"
   },
   "dependencies": {

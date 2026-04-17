@@ -50,8 +50,8 @@ chrome.tabs.onCreated.addListener(async (tab) => {
 // Toolbar button clicked → open a new tab pointing to the extension's own page
 // This avoids chrome://newtab/ override ambiguity and is fully reliable
 chrome.action.onClicked.addListener(async (tab) => {
-  // Get the extension's own URL (always available)
-  const extensionBase = chrome.runtime.getURL('');
+  // Open the bundled new tab page explicitly instead of the extension root.
+  const extensionPageUrl = chrome.runtime.getURL('index.html');
 
   let webpageUrl = previousTabUrl;
   let webpageTitle = previousTabTitle;
@@ -69,7 +69,7 @@ chrome.action.onClicked.addListener(async (tab) => {
   }
 
   // Build the target URL with shortcut data as query params
-  const url = new URL(extensionBase);
+  const url = new URL(extensionPageUrl);
   if (webpageUrl && webpageUrl.startsWith('http')) {
     url.searchParams.set('add_url', webpageUrl);
     url.searchParams.set('add_title', webpageTitle);
