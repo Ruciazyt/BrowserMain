@@ -30,28 +30,23 @@ export default function App() {
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [addDialogData, setAddDialogData] = useState({ url: '', title: '', favicon: '' });
 
-  // On mount, check URL hash for "add shortcut" intent from toolbar button click
-  // Data is passed via URL fragment (never sent to server) — reliable, no storage needed
+  // On mount, check URL query params for "add shortcut" intent from toolbar button click
+  // Opens directly to extension URL (not chrome://newtab/) — reliable, no storage needed
   useEffect(() => {
-    const hash = window.location.hash.slice(1); // remove '#'
-    if (!hash) return;
-    try {
-      const params = new URLSearchParams(hash);
-      const url = params.get('add_url');
-      const title = params.get('add_title');
-      const favicon = params.get('add_favicon');
-      if (url) {
-        setAddDialogData({
-          url: url || '',
-          title: title || '',
-          favicon: favicon || '',
-        });
-        setAddDialogOpen(true);
-        // Clear hash so refresh doesn't re-open dialog
-        history.replaceState(null, '', window.location.pathname);
-      }
-    } catch {
-      // ignore parse errors
+    const params = new URLSearchParams(window.location.search);
+    const url = params.get('add_url');
+    const title = params.get('add_title');
+    const favicon = params.get('add_favicon');
+    if (url) {
+      setAddDialogData({
+        url: url || '',
+        title: title || '',
+        favicon: favicon || '',
+      });
+      setAddDialogOpen(true);
+      // Clear search so refresh doesn't re-open dialog
+      const path = window.location.pathname;
+      history.replaceState(null, '', path + window.location.hash);
     }
   }, []);
 
@@ -64,7 +59,7 @@ export default function App() {
     };
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
-  }, [settingsOpen]);
+  }, [settings]);
 
   if (shortcutsLoading || settingsLoading) {
     return (
