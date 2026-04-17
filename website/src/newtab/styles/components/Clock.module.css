@@ -62,7 +62,7 @@
 
 .time {
   font-family: var(--font-led);
-  font-size: 48px;
+  font-size: 32px;
   font-weight: 700;
   color: var(--led-amber);
   text-shadow:
