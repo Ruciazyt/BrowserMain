@@ -79,7 +79,7 @@ export default function AddShortcutDialog({ open, url, title, favicon, onClose }
 
   return (
     <div className={styles.overlay} onClick={onClose}>
-      <div className={styles.modal} onClick={(e) => e.stopPropagation()} onKeyDown={handleKeyDown}>
+      <div className={styles.modal} onClick={(e) => e.stopPropagation()} onKeyDown={handleKeyDown} tabIndex={0} role="dialog" aria-modal="true" aria-label="Add Shortcut">
         {/* Header */}
         <div className={styles.header}>
           <span className={styles.headerTitle}>ADD SHORTCUT</span>

@@ -56,6 +56,10 @@
   gap: 4px;
 }
 
+.container:hover {
+  cursor: pointer;
+}
+
 .time {
   font-family: var(--font-led);
   font-size: 48px;
