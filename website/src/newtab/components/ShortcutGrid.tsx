@@ -45,12 +45,18 @@ export default function ShortcutGrid({ shortcuts, onDelete, onUpdate, onReorder,
       setDropPosition(null);
       return;
     }
-    const insertIndex = dropPosition === 'after' ? dragOverIndex + 1 : dragOverIndex;
-    // Adjust if dragging forward (dragIndex < insertIndex)
-    const finalIndex = dragIndex < insertIndex ? insertIndex - 1 : insertIndex;
+    // When dropPosition is 'after' and dragging to a higher index, the splice above
+    // (dragIndex removal) shifts items down, so dragOverIndex already points to the
+    // correct slot — use it directly instead of +1.
+    const insertIndex =
+      dropPosition === 'after' && dragIndex < dragOverIndex
+        ? dragOverIndex
+        : dropPosition === 'after'
+          ? dragOverIndex + 1
+          : dragOverIndex;
     const newOrder = [...shortcuts];
     const [removed] = newOrder.splice(dragIndex, 1);
-    newOrder.splice(finalIndex, 0, removed);
+    newOrder.splice(insertIndex, 0, removed);
     onReorder(newOrder);
     setDragIndex(null);
     setDragOverIndex(null);

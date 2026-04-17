@@ -9,8 +9,10 @@
   position: relative; user-select: none;
 }
 .container:hover { background: var(--glass-white); transform: translateY(-2px); }
-.container.dragging { opacity: 0.35; transform: scale(0.95); }
+.container.dragging { opacity: 0 !important; pointer-events: none; }
 .container.dragOver { background: var(--glass-white-md); }
+.container.dropBefore { border-left: 2px solid var(--led-amber); box-shadow: -4px 0 8px var(--led-amber-soft); }
+.container.dropAfter { border-right: 2px solid var(--led-amber); box-shadow: 4px 0 8px var(--led-amber-soft); }
 
 /* ── Icon ─────────────────────────────────────────────────────── */
 .iconWrapper {
@@ -111,10 +113,11 @@
 
 /* ── Focus / navigate ─────────────────────────────────────────── */
 .container.keyboardFocus, .container.navigating {
-  background: var(--glass-white-md);
-  outline: 1.5px solid color-mix(in srgb, var(--led-amber) 50%, transparent);
-  outline-offset: -1.5px;
-  transition: background var(--dur-fast), outline var(--dur-fast);
+  background: rgba(255, 149, 0, 0.10);
+  outline: 1.5px solid color-mix(in srgb, var(--led-amber) 60%, transparent);
+  outline-offset: 1px;
+  box-shadow: 0 0 12px rgba(255, 149, 0, 0.25);
+  transition: background var(--dur-fast), outline var(--dur-fast), box-shadow var(--dur-fast);
 }
 .keyboardHint {
   position: absolute; bottom: -24px; left: 50%; transform: translateX(-50%);
