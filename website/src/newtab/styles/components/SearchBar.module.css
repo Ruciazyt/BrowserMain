@@ -1,8 +1,8 @@
 /* ── Search bar — full-width rounded input ──────────────────── */
 .wrapper {
   width: 100%;
-  max-width: 520px;
-  margin: 0 auto;
+  position: relative;
+  /* no max-width — dropdown expands freely */
 }
 
 .container {
@@ -52,7 +52,8 @@
   border-radius: 16px;
   overflow: hidden;
   z-index: 100;
-  min-width: 160px;
+  min-width: 200px;
+  width: calc(100% + 48px);
   box-shadow: 0 16px 48px rgba(0,0,0,0.40);
 }
 
