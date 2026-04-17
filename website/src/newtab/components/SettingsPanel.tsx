@@ -25,10 +25,10 @@ const CheckIcon = () => (
 );
 
 const GRADIENT_DIRECTIONS = [
-  { label: '↗', value: 'to right top' },
-  { label: '↘', value: 'to right bottom' },
-  { label: '↙', value: 'to left bottom' },
-  { label: '↖', value: 'to left top' },
+  { label: '↗', value: 'to top right' },
+  { label: '↘', value: 'to bottom right' },
+  { label: '↙', value: 'to bottom left' },
+  { label: '↖', value: 'to top left' },
 ];
 
 export default function SettingsPanel({ open, onClose, onBookmarkImportComplete, onShowTour }: SettingsPanelProps) {
@@ -37,7 +37,7 @@ export default function SettingsPanel({ open, onClose, onBookmarkImportComplete,
   const [solidColor, setSolidColor] = useState(settings.background.color || '#0a0a0f');
   const [gradientFrom, setGradientFrom] = useState(settings.background.gradientFrom || '#0a0a0f');
   const [gradientTo, setGradientTo] = useState(settings.background.gradientTo || '#1a3a5c');
-  const [gradientDirection, setGradientDirection] = useState(settings.background.gradientDirection || 'to right top');
+  const [gradientDirection, setGradientDirection] = useState(settings.background.gradientDirection || 'to top right');
   const [imageUrl, setImageUrl] = useState(settings.background.imageUrl || '');
   const [imagePreview, setImagePreview] = useState(settings.background.imageUrl || '');
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -172,7 +172,7 @@ export default function SettingsPanel({ open, onClose, onBookmarkImportComplete,
                           className={`${styles.directionBtn} ${gradientDirection === dir.value ? styles.active : ''}`}
                           onClick={() => {
                             setGradientDirection(dir.value as typeof gradientDirection);
-                            updateBackground({ type: 'gradient', gradientFrom, gradientTo, gradientDirection: dir.value as 'to right top' | 'to right bottom' | 'to left bottom' | 'to left top' });
+                            updateBackground({ type: 'gradient', gradientFrom, gradientTo, gradientDirection: dir.value as 'to top right' | 'to bottom right' | 'to bottom left' | 'to top left' });
                           }}
                         >
                           {dir.label}

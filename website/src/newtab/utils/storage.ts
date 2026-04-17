@@ -18,7 +18,7 @@ export interface BackgroundConfig {
   color?: string;
   gradientFrom?: string;
   gradientTo?: string;
-  gradientDirection?: 'to right top' | 'to right bottom' | 'to left bottom' | 'to left top';
+  gradientDirection?: 'to top right' | 'to bottom right' | 'to bottom left' | 'to top left';
   imageUrl?: string;
 }
 
