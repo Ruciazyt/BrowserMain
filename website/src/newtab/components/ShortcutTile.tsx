@@ -214,15 +214,9 @@ export default function ShortcutTile({
         tabIndex={0}
         onFocus={() => setKeyboardFocus(true)}
         onBlur={() => {
-          if (navigatingRef.current) {
-            // Focus is moving to another tile (keyboard nav in progress).
-            // Reset the flag; the next tile will pick up isNavigating=true from its handleKeyDown.
-            navigatingRef.current = false;
-            setKeyboardFocus(false);
-          } else {
-            setIsNavigating(false);
-            setKeyboardFocus(false);
-          }
+          setIsNavigating(false);
+          setKeyboardFocus(false);
+          navigatingRef.current = false;
         }}
       >
         <div className={styles.iconWrapper}>
