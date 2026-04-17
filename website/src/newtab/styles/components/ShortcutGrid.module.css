@@ -4,7 +4,10 @@
   flex-direction: column;
   align-items: center;
   gap: 14px;
-  background: linear-gradient(145deg, #7dd3e8, #6bc5de);
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.25);
   border: 2px solid #5bb8d4;
   border-radius: 24px;
   padding: 20px 32px 24px;
@@ -53,7 +56,9 @@
 
 /* ── Shortcut grid ─────────────────────────────────────────────────── */
 .container {
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
   backdrop-filter: blur(12px) saturate(180%);
   -webkit-backdrop-filter: blur(12px) saturate(180%);
   border: 1px solid rgba(255, 255, 255, 0.08);
@@ -100,7 +105,7 @@
   padding: 12px 8px;
   border-radius: var(--radius-md);
   cursor: pointer;
-  background: rgba(255, 149, 0, 0.05);
+  background: rgba(255, 149, 0, 0.06);
   border: 1px dashed rgba(255, 149, 0, 0.35);
   transition: all var(--transition);
   min-height: 80px;
