@@ -25,7 +25,7 @@
   50% { opacity: 0.50; }
 }
 .label {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: var(--font-led);
   font-size: 9px;
   color: rgba(255,255,255,0.22);
   letter-spacing: 2px;

@@ -43,7 +43,7 @@
 .closeBtn:hover { background: var(--glass-white-md); color: rgba(255,255,255,0.90); }
 
 /* ── Body ────────────────────────────────────────────────────── */
-.body { flex: 1; overflow-y: auto; padding: 20px; }
+.body { flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 20px; }
 .section { margin-bottom: 26px; }
 .sectionTitle {
   font-size: 10px; font-weight: 600;

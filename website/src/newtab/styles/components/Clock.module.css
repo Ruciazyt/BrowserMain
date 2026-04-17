@@ -1,10 +1,29 @@
 /* ── Clock — compact rounded square ──────────────────────────── */
-.wrapper {
+.panel {
   width: 100%;
   display: flex;
   justify-content: center;
   padding: 12px 12px 6px;
 }
+
+.dotRow {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  padding: 2px 0;
+}
+.dotRow::before,
+.dotRow::after {
+  content: '';
+  display: block;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--led-amber);
+  box-shadow: 0 0 4px var(--led-amber-glow, rgba(255, 149, 0, 0.6));
+}
+.dotRow::before { box-shadow: 0 0 4px var(--led-amber-glow, rgba(255, 149, 0, 0.6)); }
+.dotRow::after { box-shadow: 0 0 4px var(--led-amber-soft, rgba(255, 149, 0, 0.35)); }
 
 .container {
   cursor: pointer;
