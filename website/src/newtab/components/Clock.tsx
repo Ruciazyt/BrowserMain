@@ -42,7 +42,7 @@ export default function Clock() {
       const mo = (now.getMonth() + 1).toString().padStart(2, '0');
       const dd = now.getDate().toString().padStart(2, '0');
       setDate(`${yyyy}-${mo}-${dd}`);
-      setDay(now.toLocaleDateString('en-US', { weekday: 'long' }));
+      setDay(now.toLocaleDateString(undefined, { weekday: 'long' }));
     };
     update();
     const interval = setInterval(update, 1000);

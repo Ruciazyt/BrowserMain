@@ -95,12 +95,12 @@ export async function importShortcutsFromJson(file: File): Promise<{ imported: n
         const newOnes = json.shortcuts.filter((s: any) =>
           s && s.url && typeof s.url === 'string' && !existingUrls.has(s.url.toLowerCase())
         );
-        const toAdd = newOnes.map((s: any) => ({
+        const toAdd = newOnes.map((s: any, i: number) => ({
           id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
           title: s.title || s.url,
           url: s.url,
           favicon: s.favicon || getSmartFaviconUrl(s.url),
-          order: current.length,
+          order: current.length + i,
         }));
         if (toAdd.length === 0) {
           resolve({ imported: 0 });
