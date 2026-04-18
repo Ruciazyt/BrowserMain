@@ -8,6 +8,7 @@ export default function Clock() {
   const [time, setTime] = useState('');
   const [date, setDate] = useState('');
   const [day, setDay] = useState('');
+  const [displayTime, setDisplayTime] = useState('');
   const { settings, updateClockFormat } = useSettings();
   // Ref so the interval callback always reads the latest 24h setting without deps
   const is24hRef = useRef(settings.clockIs24h !== false);
@@ -17,8 +18,21 @@ export default function Clock() {
     is24hRef.current = settings.clockIs24h !== false;
   }, [settings.clockIs24h]);
 
-  const toggleFormat = () => {
-    updateClockFormat(!is24hRef.current);
+const toggleFormat = () => {
+    const newIs24h = !is24hRef.current;
+    updateClockFormat(newIs24h);
+    // Immediately update displayTime with new format for instant feedback
+    const now = new Date();
+    let hh = now.getHours();
+    const mm = now.getMinutes().toString().padStart(2, '0');
+    const ss = now.getSeconds().toString().padStart(2, '0');
+    let ampm = '';
+    if (!newIs24h) {
+      ampm = hh >= 12 ? ' PM' : ' AM';
+      hh = hh % 12 || 12;
+    }
+    const hhStr = hh.toString().padStart(2, '0');
+    setDisplayTime(`${hhStr}:${mm}:${ss}${ampm}`);
   };
 
   useEffect(() => {
@@ -53,7 +67,7 @@ export default function Clock() {
         ))}
       </div>
       <div className={styles.container} onClick={toggleFormat} role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') toggleFormat(); }} aria-label={`Clock, currently ${settings.clockIs24h ? '24-hour' : '12-hour'} format. Click to toggle.`}>
-        <div className={styles.time}>{time}</div>
+        <div className={styles.time}>{displayTime || time}</div>
         <div className={styles.date}>{date}</div>
         <div className={styles.day}>{day}</div>
       </div>

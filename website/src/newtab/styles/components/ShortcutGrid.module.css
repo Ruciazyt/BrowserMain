@@ -116,7 +116,7 @@
 .addTile::before {
   content: '';
   position: absolute;
-  top: 0; left: 6px; right: 6px;
+  top: 0; left: var(--space-sm); right: var(--space-sm);
   height: 1px;
   background: linear-gradient(
     90deg,

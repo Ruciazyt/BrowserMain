@@ -79,15 +79,6 @@ export default function SearchBar({ defaultEngine = 'google' }: SearchBarProps) 
     navigateTo(url);
   };
 
-  const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
-    const pastedText = e.clipboardData.getData('text');
-    if (isUrl(pastedText.trim())) {
-      e.preventDefault();
-      navigateTo(pastedText.trim());
-    }
-    // If not a URL, do nothing — let browser handle normal paste
-  };
-
   return (
     <>
       <form className={styles.container} onSubmit={handleSubmit}>
@@ -128,7 +119,6 @@ export default function SearchBar({ defaultEngine = 'google' }: SearchBarProps) 
           placeholder="Search or enter URL..."
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          onPaste={handlePaste}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
         />
