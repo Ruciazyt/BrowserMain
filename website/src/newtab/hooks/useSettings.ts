@@ -33,10 +33,19 @@ export function useSettings() {
     });
   }, []);
 
+  const updateUserName = useCallback(async (name: string) => {
+    setSettings((prev) => {
+      const newSettings = { ...prev, userName: name };
+      saveSettings(newSettings);
+      return newSettings;
+    });
+  }, []);
+
   return {
     settings,
     loading,
     updateEngine,
     updateBackground,
+    updateUserName,
   };
 }

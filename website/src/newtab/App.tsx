@@ -123,7 +123,7 @@ export default function App() {
       {/* ── Header (glass) ── */}
       <div className={styles.header}>
         <SearchBar defaultEngine={settings.defaultEngine} />
-        <Greeting />
+        <Greeting userName={settings.userName} />
       </div>
 
       <div className={styles.content}>

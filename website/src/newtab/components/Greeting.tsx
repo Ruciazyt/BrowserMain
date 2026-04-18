@@ -12,31 +12,10 @@ function getGreeting(hour: number): string {
   return isZh ? '夜深了' : 'GOOD NIGHT';
 }
 
-export default function Greeting() {
+export default function Greeting({ userName }: { userName?: string }) {
   const [greeting, setGreeting] = useState('');
-  const [userName, setUserName] = useState('');
   const [, forceUpdate] = useState(0);
   const lastDayRef = useRef<number>(-1);
-
-  useEffect(() => {
-    // Try to get the user's name from their Chrome profile
-    // chrome.identity is only available in Chromium-based browsers with a signed-in profile
-    const loadUserName = () => {
-      try {
-        if (typeof chrome !== 'undefined' && chrome.identity && chrome.identity.getProfileUserInfo) {
-          chrome.identity.getProfileUserInfo((userInfo) => {
-            if (!chrome.runtime.lastError && userInfo) {
-              const name = (userInfo as { name?: string }).name;
-              if (name) setUserName(name);
-            }
-          });
-        }
-      } catch {
-        // chrome.identity not available (Firefox, not signed in, etc.) — silently skip
-      }
-    };
-    loadUserName();
-  }, []);
 
   useEffect(() => {
     const update = () => {

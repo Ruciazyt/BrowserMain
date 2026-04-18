@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { exportShortcutsAsJson, importShortcutsFromJson } from '../hooks/useShortcuts';
-import styles from '../styles/components/BookmarkImport.module.css';
+import styles from '../styles/components/ShortcutImport.module.css';
 
 interface ShortcutImportProps {
   onBack: () => void;

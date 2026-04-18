@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { getSmartFaviconUrl, getFaviconIcoUrl } from '../utils/storage';
+import { getSmartFaviconUrl, getFaviconIcoUrl, getDomainFromUrl } from '../utils/storage';
 import { Shortcut } from '../utils/storage';
 import styles from '../styles/components/ShortcutTile.module.css';
 
@@ -246,6 +246,7 @@ export default function ShortcutTile({
           )}
         </div>
         <div className={styles.title}>{shortcut.title}</div>
+        <div className={styles.domain}>{getDomainFromUrl(shortcut.url)}</div>
         <button
           className={styles.deleteBtn}
           onClick={handleDelete}

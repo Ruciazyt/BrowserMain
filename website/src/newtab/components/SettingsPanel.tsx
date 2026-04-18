@@ -35,7 +35,7 @@ const GRADIENT_DIRECTIONS = [
 ];
 
 export default function SettingsPanel({ open, onClose, onBookmarkImportComplete, onShowTour }: SettingsPanelProps) {
-  const { settings, updateEngine, updateBackground } = useSettings();
+  const { settings, updateEngine, updateBackground, updateUserName } = useSettings();
   const { shortcuts, refreshShortcuts } = useShortcuts();
   const [bgType, setBgType] = useState(settings.background.type);
   const [solidColor, setSolidColor] = useState(settings.background.color || '#0a0a0f');
@@ -327,6 +327,22 @@ export default function SettingsPanel({ open, onClose, onBookmarkImportComplete,
 
               <div className={styles.section}>
                 <div className={styles.sectionTitle}>About</div>
+                <div className={styles.displayNameRow}>
+                  <span className={styles.displayNameLabel}>Display Name</span>
+                  <input
+                    type="text"
+                    className={styles.displayNameInput}
+                    placeholder="Your name..."
+                    defaultValue={settings.userName || ''}
+                    onBlur={(e) => updateUserName(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        updateUserName((e.target as HTMLInputElement).value);
+                        (e.target as HTMLInputElement).blur();
+                      }
+                    }}
+                  />
+                </div>
                 <div className={styles.aboutVersion}>BrowserMain v0.1.0</div>
                 <div className={styles.version}>LED MATRIX UI</div>
                 <button

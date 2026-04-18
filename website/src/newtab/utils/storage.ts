@@ -11,6 +11,7 @@ export interface Shortcut {
 export interface Settings {
   defaultEngine: string;
   background: BackgroundConfig;
+  userName?: string;
 }
 
 export interface BackgroundConfig {
@@ -30,6 +31,15 @@ export function getFaviconUrl(url: string): string {
     const { hostname } = new URL(url);
     // First try direct favicon.ico on the domain
     return `https://${hostname}/favicon.ico`;
+  } catch {
+    return '';
+  }
+}
+
+export function getDomainFromUrl(url: string): string {
+  try {
+    const { hostname } = new URL(url);
+    return hostname.replace(/^www\./, '');
   } catch {
     return '';
   }

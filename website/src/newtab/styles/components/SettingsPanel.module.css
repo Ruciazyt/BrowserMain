@@ -178,6 +178,27 @@
 .colorInput::-webkit-color-swatch-wrapper { padding: 0; }
 .colorInput::-webkit-color-swatch { border: none; border-radius: 4px; }
 
+/* ── Display Name ───────────────────────────────────────────── */
+.displayNameRow {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 12px;
+}
+.displayNameLabel {
+  font-size: 12px; color: rgba(255,255,255,0.50);
+  min-width: 80px; flex-shrink: 0;
+}
+.displayNameInput {
+  flex: 1; padding: 7px 12px;
+  border-radius: var(--radius-md);
+  font-size: 12px;
+  background: var(--glass-white);
+  border: 1px solid rgba(255,255,255,0.10);
+  color: rgba(255,255,255,0.85); outline: none;
+  transition: border-color var(--dur-fast);
+}
+.displayNameInput::placeholder { color: rgba(255,255,255,0.28); }
+.displayNameInput:focus { border-color: rgba(94,231,223,0.45); }
+
 /* ── About ─────────────────────────────────────────────────── */
 .aboutSection { text-align: center; padding: 14px 0 6px; color: rgba(255,255,255,0.28); font-size: 11px; }
 .importBtn {

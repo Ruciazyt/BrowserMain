@@ -138,22 +138,33 @@ export default function AddShortcutDialog({ open, url, title, favicon, onClose }
           {/* URL field */}
           <div className={styles.field}>
             <label className={styles.label}>URL</label>
-            <input
-              className={styles.input}
-              type="text"
-              value={inputUrl}
-              onChange={(e) => setInputUrl(e.target.value)}
-              onPaste={(e) => {
-                const text = e.clipboardData.getData('text');
-                if (isUrl(text)) {
-                  e.preventDefault();
-                  setInputUrl(text);
-                  // Favicon update is handled by the inputUrl effect above
-                }
-              }}
-              placeholder="https://example.com"
-              autoFocus
-            />
+            <div className={styles.inputWrapper}>
+              <input
+                className={styles.input}
+                type="text"
+                value={inputUrl}
+                onChange={(e) => setInputUrl(e.target.value)}
+                onPaste={(e) => {
+                  const text = e.clipboardData.getData('text');
+                  if (isUrl(text)) {
+                    e.preventDefault();
+                    setInputUrl(text);
+                    // Favicon update is handled by the inputUrl effect above
+                  }
+                }}
+                placeholder="https://example.com"
+                autoFocus
+              />
+              {trimmedUrl.length > 0 && (
+                <span
+                  className={`${styles.statusDot} ${
+                    isInvalidUrl ? styles.statusDotInvalid :
+                    isDuplicate  ? styles.statusDotDuplicate :
+                                    styles.statusDotValid
+                  }`}
+                />
+              )}
+            </div>
             {isInvalidUrl && (
               <span className={styles.duplicateWarning}>⚠ Please enter a valid URL (https://...)</span>
             )}
