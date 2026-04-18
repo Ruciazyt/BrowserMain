@@ -96,10 +96,10 @@
 .cancelBtn:hover { background: var(--glass-white); color: rgba(255,255,255,0.70); }
 /* ── Focus / navigate ─────────────────────────────────────────── */
 .container.keyboardFocus, .container.navigating {
-  background: rgba(255, 149, 0, 0.10);
-  outline: 1.5px solid color-mix(in srgb, var(--led-amber) 60%, transparent);
+  background: rgba(94, 231, 223, 0.10);
+  outline: 1.5px solid rgba(94, 231, 223, 0.60);
   outline-offset: 1px;
-  box-shadow: 0 0 12px rgba(255, 149, 0, 0.25);
+  box-shadow: 0 0 12px rgba(94, 231, 223, 0.20);
   transition: background var(--dur-fast), outline var(--dur-fast), box-shadow var(--dur-fast);
 }
 .keyboardHint {

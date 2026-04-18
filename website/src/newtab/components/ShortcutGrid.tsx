@@ -36,9 +36,11 @@ export default function ShortcutGrid({ shortcuts, onDelete, onUpdate, onReorder,
     setDropPosition(offsetX < tileWidth / 2 ? 'before' : 'after');
   };
 
-  const handleDragLeave = () => {
-    setDragOverIndex(null);
-    setDropPosition(null);
+  const handleDragLeave = (e: React.DragEvent) => {
+    if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+      setDragOverIndex(null);
+      setDropPosition(null);
+    }
   };
 
   const handleDrop = () => {

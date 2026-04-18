@@ -79,7 +79,7 @@ export function useBookmarkImport() {
           return true;
         })
         .map((url, i) => ({
-          id: Date.now().toString() + i,
+          id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
           title: new URL(url).hostname.replace(/^www\./, ''),
           url,
           order: existing.length + i,

@@ -85,6 +85,7 @@ export default function SearchBar({ defaultEngine = 'google' }: SearchBarProps) 
       e.preventDefault();
       navigateTo(pastedText.trim());
     }
+    // If not a URL, do nothing — let browser handle normal paste
   };
 
   return (

@@ -22,7 +22,7 @@ interface ShortcutTileProps {
   onDragStart: (index: number) => void;
   onDragEnd: () => void;
   onDragOver: (index: number, offsetX: number, tileWidth: number) => void;
-  onDragLeave: () => void;
+  onDragLeave: (e: React.DragEvent) => void;
   onDrop: () => void;
   onMoveLeft?: (index: number) => void;
   onMoveRight?: (index: number) => void;
@@ -221,7 +221,12 @@ export default function ShortcutTile({
         onDragStart={() => onDragStart(index)}
         onDragEnd={onDragEnd}
         onDragOver={(e) => { e.preventDefault(); const tileWidth = e.currentTarget.getBoundingClientRect().width; onDragOver(index, e.nativeEvent.offsetX, tileWidth); }}
-        onDragLeave={onDragLeave}
+        onDragLeave={(e) => {
+          // Only fire if we've truly left the tile (not just moved onto a child element)
+          if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+            onDragLeave(e);
+          }
+        }}
         onDrop={onDrop}
         onClick={navigateToShortcut}
         onKeyDown={handleKeyDown}
