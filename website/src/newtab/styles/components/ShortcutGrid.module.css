@@ -103,8 +103,8 @@
   border-radius: var(--radius-lg);
   cursor: pointer;
   background: var(--glass-white);
-  backdrop-filter: var(--blur-sm);
-  -webkit-backdrop-filter: var(--blur-sm);
+  backdrop-filter: var(--blur-md);
+  -webkit-backdrop-filter: var(--blur-md);
   border: 1px solid var(--glass-border);
   box-shadow: var(--shadow-glass);
   transition: all var(--dur-fast) var(--ease-liquid);

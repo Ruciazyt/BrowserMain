@@ -24,12 +24,12 @@
 /* ── Content ─────────────────────────────────────────────────── */
 .content {
   width: 100%;
-  max-width: 640px;
+  max-width: 720px;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 12px;
-  margin-top: 20px;
+  margin-top: 16px;
   flex: 1;
 }
 

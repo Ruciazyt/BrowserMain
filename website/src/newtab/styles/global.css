@@ -126,7 +126,7 @@
 html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
 
 body {
-  font-family: var(--font-ui);
+  font-family: var(--font-body);
   color: var(--text-primary);
   background: var(--bg-primary);
   overflow-x: hidden;
