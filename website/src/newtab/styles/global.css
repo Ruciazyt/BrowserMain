@@ -18,9 +18,14 @@
   --led-amber-soft: rgba(255, 149, 0, 0.35);
   --led-amber-mid: rgba(255, 149, 0, 0.50);
 
-  /* Panel Colors */
+  /* Accent colors */
+  --accent-aqua: #5ee7df;
+  --accent-violet: #7c6aef;
+  --accent-rose: #f875aa;
+  --accent-blue: #3b82f6;
+
+  /* LED panel colors */
   --panel-turquoise: #7dd3e8;
-  --panel-turquoise-dark: #5bb8d4;
 
   /* Text Colors */
   --text-primary: #9ca3af;
@@ -30,43 +35,6 @@
   /* Semantic Colors */
   --success: #4ade80;
   --danger: #ff6b6b;
-
-  /* Typography */
-  --font-led: 'JetBrains Mono', monospace;
-  --font-ui: 'Inter', sans-serif;
-  --font-display: 'Italiana', serif;
-  --font-body: 'DM Sans', sans-serif;
-
-  /* Spacing tokens */
-  --space-xs: 4px;
-  --space-sm: 8px;
-  --space-md: 12px;
-  --space-lg: 16px;
-  --space-xl: 24px;
-
-  /* Spacing aliases */
-  --space-card-gap: 8px;
-  --space-component-gap: 12px;
-
-  /* Transitions */
-  --transition-fast: 200ms ease-out;
-  --dur-fast: 150ms ease-out;
-  --dur-mid: 250ms ease-out;
-  --ease-liquid: cubic-bezier(0.34, 1.56, 0.64, 1);
-  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
-
-  /* Border Radius */
-  --radius-card: 24px;
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 24px;
-  --radius-2xl: 32px;
-  --radius-pill: 999px;
-  --radius-input: var(--radius-md);
-
-  /* Loading dot token */
-  --loading-dot-size: 6px;
 
   /* Glass surfaces */
   --glass-white: rgba(255, 255, 255, 0.10);
@@ -88,11 +56,35 @@
   --shadow-led-glow: 0 0 8px var(--led-amber-glow), 0 0 20px rgba(255, 149, 0, 0.4);
   --shadow-search-btn: 0 0 16px var(--led-amber-glow);
 
-  /* Accent colors */
-  --accent-aqua: #5ee7df;
-  --accent-violet: #7c6aef;
-  --accent-rose: #f875aa;
-  --accent-blue: #3b82f6;
+  /* Typography */
+  --font-led: 'JetBrains Mono', monospace;
+  --font-ui: 'Inter', sans-serif;
+  --font-display: 'Italiana', serif;
+  --font-body: 'DM Sans', sans-serif;
+
+  /* Spacing tokens */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 12px;
+  --space-lg: 16px;
+  --space-xl: 24px;
+
+  /* Transitions */
+  --dur-fast: 150ms ease-out;
+  --dur-mid: 250ms ease-out;
+  --ease-liquid: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Border Radius */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-pill: 999px;
+  --radius-input: var(--radius-md);
+
+  /* Loading dot token */
+  --loading-dot-size: 6px;
 }
 
 /* ── Blob Scene ──────────────────────────────────────────────── */
@@ -164,9 +156,9 @@ h1, h2, h3, h4 {
 a {
   color: var(--led-amber);
   text-decoration: none;
-  transition: opacity var(--transition-fast);
+  transition: color 150ms ease-out;
 }
-a:hover { opacity: 0.8; }
+a:hover { opacity: 1; color: var(--led-amber-warm); }
 button {
   font-family: var(--font-ui);
   cursor: pointer;
