@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useSettings } from '../hooks/useSettings';
 import { SEARCH_ENGINES } from '../utils/engines';
 import BookmarkImport from './BookmarkImport';
@@ -49,6 +49,13 @@ export default function SettingsPanel({ open, onClose, onBookmarkImportComplete,
   const [showShortcutImport, setShowShortcutImport] = useState(false);
   const [showClearConfirm, setShowClearConfirm] = useState(false);
   const [showClearSuccess, setShowClearSuccess] = useState(false);
+  const [tourCompleted, setTourCompleted] = useState(false);
+
+  useEffect(() => {
+    chrome.storage.local.get('onboardingComplete', (result) => {
+      setTourCompleted(result.onboardingComplete === true);
+    });
+  }, []);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -371,7 +378,7 @@ export default function SettingsPanel({ open, onClose, onBookmarkImportComplete,
                   onClick={onShowTour}
                   style={{ marginTop: 12, width: '100%' }}
                 >
-                  <span className={styles.tourIcon}>◉</span> Show Tour
+                  <span className={styles.tourIcon}>◉</span> {tourCompleted ? 'Replay Tour' : 'Show Tour'}
                 </button>
               </div>
             </>
