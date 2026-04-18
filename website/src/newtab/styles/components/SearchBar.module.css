@@ -163,7 +163,7 @@
 .kbdBadge:hover {
   background: color-mix(in srgb, var(--led-amber) 20%, transparent);
   border-color: var(--led-amber);
-  box-shadow: var(--shadow-glass), 0 0 10px var(--led-amber-soft);
+  box-shadow: 0 0 10px var(--led-amber-soft), 0 0 20px color-mix(in srgb, var(--led-amber) 25%, transparent);
 }
 
 .kbdBadge svg {

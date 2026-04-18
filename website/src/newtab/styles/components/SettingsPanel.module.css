@@ -80,7 +80,7 @@
 .engineItem:hover { background: var(--glass-white); }
 .engineItem.selected { background: var(--glass-white); border-color: var(--glass-border-subtle); }
 .engineItem svg { width: 18px; height: 18px; color: rgba(255,255,255,0.50); }
-.engineName { font-size: 13px; color: rgba(255,255,255,0.78); flex: 1; }
+.engineName { font-size: 13px; color: rgba(255,255,255,0.75); flex: 1; }
 .checkmark { color: var(--led-amber); opacity: 0.60; font-size: 13px; }
 
 /* ── Background type grid ──────────────────────────────────────── */
@@ -173,10 +173,10 @@
 .removeImageBtn:hover { background: rgba(200,50,50,0.60); border-color: rgba(255,100,100,0.40); color: rgba(255,255,255,0.95); }
 .colorInput {
   width: 36px; height: 28px; border: none; border-radius: var(--radius-sm);
-  cursor: pointer; padding: 2px; background: transparent;
+  cursor: pointer; padding: 2px; background: var(--glass-white);
 }
 .colorInput::-webkit-color-swatch-wrapper { padding: 0; }
-.colorInput::-webkit-color-swatch { border: none; border-radius: 4px; }
+.colorInput::-webkit-color-swatch { border: 1px solid var(--glass-border); border-radius: 4px; }
 
 /* ── Display Name ───────────────────────────────────────────── */
 .displayNameRow {

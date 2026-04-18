@@ -75,6 +75,7 @@
   color: rgba(255,255,255,0.22);
   font-family: var(--font-led);
   letter-spacing: 0.5px;
+  opacity: 0.75;
 }
 
 /* ── Shortcut Grid ──────────────────────────────────────────── */

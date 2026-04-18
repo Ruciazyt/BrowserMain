@@ -14,7 +14,7 @@
   border-radius: var(--radius-sm);
   overflow: hidden;
   display: flex; align-items: center; justify-content: center;
-  background: linear-gradient(135deg, color-mix(in srgb, var(--led-amber) 20%, transparent) 0%, color-mix(in srgb, var(--panel-turquoise) 15%, transparent) 100%);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--led-amber) 20%, transparent) 0%, color-mix(in srgb, var(--led-amber) 10%, transparent) 100%);
   border: 1px solid color-mix(in srgb, var(--led-amber) 30%, transparent);
   flex-shrink: 0;
 }
@@ -95,7 +95,7 @@
 .editActions { display: flex; gap: 4px; }
 .saveBtn {
   flex: 1; padding: 4px 8px;
-  background: linear-gradient(135deg, color-mix(in srgb, var(--led-amber) 40%, transparent) 0%, color-mix(in srgb, var(--panel-turquoise) 30%, transparent) 100%);
+  background: linear-gradient(135deg, color-mix(in srgb, var(--led-amber) 40%, transparent) 0%, color-mix(in srgb, var(--led-amber) 20%, transparent) 100%);
   border: 1px solid color-mix(in srgb, var(--led-amber) 40%, transparent);
   color: rgba(255,255,255,0.90);
   border-radius: var(--radius-sm); font-size: 11px; font-weight: 500;
@@ -113,10 +113,8 @@
 .cancelBtn:hover { background: var(--glass-white); color: rgba(255,255,255,0.70); }
 /* ── Focus / navigate ─────────────────────────────────────────── */
 .container.keyboardFocus, .container.navigating {
-  background: rgba(255, 149, 0, 0.10);
-  outline: 2px solid rgba(255, 149, 0, 0.60);
-  outline-offset: 2px;
-  box-shadow: 0 0 12px rgba(255, 149, 0, 0.30);
+  background: rgba(255, 149, 0, 0.12);
+  border: 1px solid rgba(255, 149, 0, 0.30);
   transition: background var(--dur-fast), outline var(--dur-fast), box-shadow var(--dur-fast);
 }
 .keyboardHint {
