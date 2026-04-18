@@ -49,7 +49,7 @@
   color: rgba(255,255,255,0.42);
   cursor: pointer; transition: all var(--dur-fast); border: none;
 }
-.closeBtn:hover { background: var(--glass-white-md); color: rgba(255,255,255,0.85); transform: rotate(90deg); }
+.closeBtn:hover { background: var(--glass-white-md); color: rgba(255,255,255,0.90); }
 
 /* ── Body ────────────────────────────────────────────────────── */
 .body { padding: 16px 18px; display: flex; flex-direction: column; gap: 13px; }
