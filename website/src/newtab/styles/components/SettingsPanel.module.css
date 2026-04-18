@@ -338,4 +338,55 @@
   animation: fadeIn var(--dur-fast) ease;
 }
 
+.clockFormatRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 10px;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.clockFormatLabel {
+  font-family: var(--font-led);
+  font-size: 10px;
+  color: var(--text-primary);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.clockFormatToggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.clockFormatBtn {
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-led);
+  font-size: 10px;
+  letter-spacing: 0.5px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: transparent;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all var(--dur-fast);
+}
+
+.clockFormatBtn.active {
+  background: var(--led-amber);
+  border-color: var(--led-amber);
+  color: #0a0a0f;
+  font-weight: 600;
+  box-shadow: 0 0 8px rgba(255, 149, 0, 0.4);
+}
+
+.clockFormatBtn:hover:not(.active) {
+  border-color: rgba(255, 149, 0, 0.4);
+  color: var(--led-amber);
+}
+
 

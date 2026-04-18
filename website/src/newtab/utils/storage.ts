@@ -12,6 +12,7 @@ export interface Settings {
   defaultEngine: string;
   background: BackgroundConfig;
   userName?: string;
+  clockIs24h?: boolean;
 }
 
 export interface BackgroundConfig {

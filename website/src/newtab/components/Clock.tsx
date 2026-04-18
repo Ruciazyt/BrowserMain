@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import styles from '../styles/components/Clock.module.css';
+import { useSettings } from '../hooks/useSettings';
 
 const DECORATIVE_DOTS = [1, 0, 1, 0, 1, 0, 1, 0];
 
@@ -7,28 +8,17 @@ export default function Clock() {
   const [time, setTime] = useState('');
   const [date, setDate] = useState('');
   const [day, setDay] = useState('');
-  const [is24h, setIs24h] = useState(true);
-  const is24hRef = useRef(is24h);
+  const { settings, updateClockFormat } = useSettings();
+  // Ref so the interval callback always reads the latest 24h setting without deps
+  const is24hRef = useRef(settings.clockIs24h !== false);
 
-  // Keep ref in sync with state
+  // Keep ref in sync when settings change
   useEffect(() => {
-    is24hRef.current = is24h;
-  }, [is24h]);
-
-  // Load 12/24h preference on mount
-  useEffect(() => {
-    chrome.storage.local.get('clockIs24h', (result) => {
-      if (chrome.runtime.lastError) return;
-      if (typeof result.clockIs24h === 'boolean') {
-        setIs24h(result.clockIs24h);
-      }
-    });
-  }, []);
+    is24hRef.current = settings.clockIs24h !== false;
+  }, [settings.clockIs24h]);
 
   const toggleFormat = () => {
-    const next = !is24h;
-    setIs24h(next);
-    chrome.storage.local.set({ clockIs24h: next });
+    updateClockFormat(!is24hRef.current);
   };
 
   useEffect(() => {
@@ -53,7 +43,7 @@ export default function Clock() {
     update();
     const interval = setInterval(update, 1000);
     return () => clearInterval(interval);
-  }, []);
+  }, []); // interval set up once; uses is24hRef for current format
 
   return (
     <div className={styles.panel}>
@@ -62,7 +52,7 @@ export default function Clock() {
           <div key={i} className={`${styles.dot} ${on ? '' : styles.dotOff}`} />
         ))}
       </div>
-      <div className={styles.container} onClick={toggleFormat} role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') toggleFormat(); }} aria-label={`Clock, currently ${is24h ? '24-hour' : '12-hour'} format. Click to toggle.`}>
+      <div className={styles.container} onClick={toggleFormat} role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') toggleFormat(); }} aria-label={`Clock, currently ${settings.clockIs24h ? '24-hour' : '12-hour'} format. Click to toggle.`}>
         <div className={styles.time}>{time}</div>
         <div className={styles.date}>{date}</div>
         <div className={styles.day}>{day}</div>

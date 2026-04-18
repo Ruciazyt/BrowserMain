@@ -33,8 +33,10 @@ export default function Greeting({ userName }: { userName?: string }) {
   }, []);
 
   return (
-    <div className={styles.greeting}>
-      {userName ? `${greeting}, ${userName}` : greeting}
+    <div className={styles.wrapper}>
+      <div className={styles.greeting}>
+        {userName ? `${greeting}, ${userName}` : greeting}
+      </div>
     </div>
   );
 }

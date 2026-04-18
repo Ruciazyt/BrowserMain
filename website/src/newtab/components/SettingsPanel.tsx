@@ -35,7 +35,7 @@ const GRADIENT_DIRECTIONS = [
 ];
 
 export default function SettingsPanel({ open, onClose, onBookmarkImportComplete, onShowTour }: SettingsPanelProps) {
-  const { settings, updateEngine, updateBackground, updateUserName } = useSettings();
+  const { settings, updateEngine, updateBackground, updateUserName, updateClockFormat } = useSettings();
   const { shortcuts, refreshShortcuts } = useShortcuts();
   const [bgType, setBgType] = useState(settings.background.type);
   const [solidColor, setSolidColor] = useState(settings.background.color || '#0a0a0f');
@@ -342,6 +342,27 @@ export default function SettingsPanel({ open, onClose, onBookmarkImportComplete,
                       }
                     }}
                   />
+                </div>
+                <div className={styles.clockFormatRow}>
+                  <span className={styles.clockFormatLabel}>Clock Format</span>
+                  <div className={styles.clockFormatToggle}>
+                    <button
+                      className={`${styles.clockFormatBtn} ${settings.clockIs24h !== false ? styles.active : ''}`}
+                      onClick={() => {
+                        updateClockFormat(true);
+                      }}
+                    >
+                      24H
+                    </button>
+                    <button
+                      className={`${styles.clockFormatBtn} ${settings.clockIs24h === false ? styles.active : ''}`}
+                      onClick={() => {
+                        updateClockFormat(false);
+                      }}
+                    >
+                      12H
+                    </button>
+                  </div>
                 </div>
                 <div className={styles.aboutVersion}>BrowserMain v0.1.0</div>
                 <div className={styles.version}>LED MATRIX UI</div>
