@@ -292,7 +292,7 @@ export default function SettingsPanel({ open, onClose, onBookmarkImportComplete,
                   onClick={onShowTour}
                   style={{ marginTop: 12, width: '100%' }}
                 >
-                  Show Tour
+                  <span className={styles.tourIcon}>◉</span> Show Tour
                 </button>
               </div>
             </>

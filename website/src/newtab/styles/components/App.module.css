@@ -1,0 +1,108 @@
+/* ── App layout ──────────────────────────────────────────────── */
+.page {
+  width: 100%;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 16px 0;
+  position: relative;
+  overflow: hidden;
+}
+
+/* ── Header ─────────────────────────────────────────────────── */
+.header {
+  width: 100%;
+  max-width: 640px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+
+/* ── Content ─────────────────────────────────────────────────── */
+.content {
+  width: 100%;
+  max-width: 640px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  margin-top: 20px;
+  flex: 1;
+}
+
+/* ── Card ────────────────────────────────────────────────────── */
+.card {
+  width: 100%;
+  background: var(--glass-white);
+  backdrop-filter: var(--blur-md);
+  -webkit-backdrop-filter: var(--blur-md);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-glass);
+  overflow: hidden;
+  position: relative;
+}
+
+/* Top edge refraction highlight */
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 8px; right: 8px;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.40) 40%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  pointer-events: none;
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+}
+
+/* ── Settings button ───────────────────────────────────────── */
+.settingsBtn {
+  position: fixed;
+  top: 16px;
+  right: 16px;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--glass-white);
+  backdrop-filter: var(--blur-sm);
+  -webkit-backdrop-filter: var(--blur-sm);
+  border: 1px solid var(--glass-border);
+  color: rgba(255, 255, 255, 0.45);
+  cursor: pointer;
+  transition: all var(--dur-fast) var(--ease-liquid);
+  z-index: 100;
+  box-shadow: var(--shadow-glass);
+}
+.settingsBtn svg { width: 18px; height: 18px; }
+.settingsBtn:hover {
+  background: var(--glass-white-md);
+  border-color: var(--glass-border-bright);
+  color: rgba(255, 255, 255, 0.85);
+  transform: scale(1.08) rotate(30deg);
+  box-shadow: var(--shadow-float);
+}
+
+/* ── Footer ─────────────────────────────────────────────────── */
+.footer {
+  width: 100%;
+  max-width: 640px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 0 10px;
+  font-family: var(--font-led);
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.16);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+}

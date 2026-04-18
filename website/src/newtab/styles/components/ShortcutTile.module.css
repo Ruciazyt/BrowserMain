@@ -110,16 +110,6 @@
   cursor: pointer; transition: all var(--dur-fast);
 }
 .cancelBtn:hover { background: var(--glass-white); color: rgba(255,255,255,0.70); }
-.editCancelBtn {
-  flex: 1; padding: 4px 8px;
-  background: transparent;
-  color: rgba(255,255,255,0.42);
-  border: 1px solid rgba(255,255,255,0.10);
-  border-radius: var(--radius-sm); font-size: 11px;
-  cursor: pointer; transition: all var(--dur-fast);
-}
-.editCancelBtn:hover { background: var(--glass-white); color: rgba(255,255,255,0.70); }
-
 /* ── Focus / navigate ─────────────────────────────────────────── */
 .container.keyboardFocus, .container.navigating {
   background: rgba(255, 149, 0, 0.10);

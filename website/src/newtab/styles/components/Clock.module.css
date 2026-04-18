@@ -20,7 +20,7 @@
   height: 5px;
   border-radius: 50%;
   background: var(--led-amber);
-  box-shadow: 0 0 4px var(--led-amber-glow, rgba(255, 149, 0, 0.6));
+  box-shadow: 0 0 4px var(--led-amber-glow);
 }
 
 .container {
