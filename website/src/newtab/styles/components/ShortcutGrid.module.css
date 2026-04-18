@@ -7,6 +7,23 @@
   border-radius: var(--radius-xl);
   padding: 16px;
   box-shadow: var(--shadow-glass);
+  position: relative;
+}
+
+/* Top-edge refraction highlight — matches global .card */
+.panel::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(
+    135deg,
+    rgba(255,255,255,0.45) 0%,
+    rgba(255,255,255,0) 50%
+  );
+  pointer-events: none;
+  z-index: 2;
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
 }
 
 /* ── Decorative dot row ──────────────────────────────────────── */

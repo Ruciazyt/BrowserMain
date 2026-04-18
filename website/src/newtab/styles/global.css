@@ -90,6 +90,38 @@
   --accent-blue: #3b82f6;
 }
 
+/* ── Blob Scene (image background container) ─────────────────── */
+.blob-scene {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(60px);
+  opacity: 0.45;
+  animation: blobFloat 18s ease-in-out infinite;
+}
+
+.blob-img {
+  width: 100vw;
+  height: 100vh;
+  top: 0;
+  left: 0;
+  animation: blobFloat 25s ease-in-out infinite;
+  opacity: 0.6;
+}
+
+@keyframes blobFloat {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(2%, 3%) scale(1.03); }
+  66% { transform: translate(-1.5%, -2%) scale(0.98); }
+}
+
 /* --- Reset --- */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -166,7 +198,7 @@ input, textarea {
   width: 5px;
   height: 5px;
   border-radius: 50%;
-  background: rgba(255, 149, 0, 0.5);
+  background: var(--led-amber-mid);
   animation: dotPulse 1.4s ease-in-out infinite;
 }
 .loading-dots span:nth-child(2) { animation-delay: .2s; }
