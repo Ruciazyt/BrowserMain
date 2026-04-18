@@ -1,5 +1,8 @@
 /* ── Container ───────────────────────────────────────────────── */
-.container { transition: all var(--dur-fast); }
+.container {
+  position: relative;
+  transition: all var(--dur-fast);
+}
 
 /* ── Icon ─────────────────────────────────────────────────────── */
 .iconWrapper {

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useBookmarkImport, BMTreeNode, countBookmarks } from '../hooks/useBookmarkImport';
 import styles from '../styles/components/BookmarkImport.module.css';
 
@@ -16,6 +16,7 @@ function FolderItem({ node, depth, selectedIds, toggleFolder, expandedIds, toggl
   const isExpanded = expandedIds.has(node.id);
   const isSelected = selectedIds.has(node.id);
   const bookmarkCount = countBookmarks(node);
+  const checkboxRef = useRef<HTMLInputElement>(null);
 
   // Determine indeterminate: if some children are selected but not all
   let childSelectedCount = 0;
@@ -29,6 +30,12 @@ function FolderItem({ node, depth, selectedIds, toggleFolder, expandedIds, toggl
     });
   }
   const indeterminate = childTotalCount > 0 && childSelectedCount > 0 && childSelectedCount < childTotalCount;
+
+  useEffect(() => {
+    if (checkboxRef.current) {
+      checkboxRef.current.indeterminate = indeterminate;
+    }
+  }, [indeterminate]);
 
   return (
     <div className={styles.folderItem}>
@@ -60,9 +67,7 @@ function FolderItem({ node, depth, selectedIds, toggleFolder, expandedIds, toggl
           <input
             type="checkbox"
             checked={isSelected}
-            ref={(el) => {
-              if (el) el.indeterminate = indeterminate;
-            }}
+            ref={checkboxRef}
             onChange={() => toggleFolder(node.id)}
             className={styles.checkbox}
           />

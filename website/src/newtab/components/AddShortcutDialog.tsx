@@ -75,6 +75,16 @@ export default function AddShortcutDialog({ open, url, title, favicon, onClose }
     }
   };
 
+  // Document-level Escape key handling — works regardless of focus location
+  useEffect(() => {
+    if (!open) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [open, onClose]);
+
   if (!open) return null;
 
   const handleSave = async () => {
@@ -94,13 +104,9 @@ export default function AddShortcutDialog({ open, url, title, favicon, onClose }
     }
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Escape') onClose();
-  };
-
   return (
     <div className={styles.overlay} onClick={onClose}>
-      <div className={styles.modal} onClick={(e) => e.stopPropagation()} onKeyDown={handleKeyDown} tabIndex={0} role="dialog" aria-modal="true" aria-label="Add Shortcut">
+      <div className={styles.modal} onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" aria-label="Add Shortcut">
         {/* Header */}
         <div className={styles.header}>
           <span className={styles.headerTitle}>ADD SHORTCUT</span>
@@ -111,8 +117,8 @@ export default function AddShortcutDialog({ open, url, title, favicon, onClose }
           </button>
         </div>
 
-        {/* Body */}
-        <form className={styles.body} onSubmit={(e) => { e.preventDefault(); handleSave(); }} noValidate>
+        {/* Body + Footer (form wraps everything so Enter submits and form attribute connects buttons) */}
+        <form id="add-shortcut-form" className={styles.body} onSubmit={(e) => { e.preventDefault(); handleSave(); }} noValidate>
           {/* Favicon preview — GlobeIcon shown when both Google S2 and favicon.ico fail */}
           {(faviconUrl || inputUrl.trim()) && (
             <div className={styles.faviconRow}>
@@ -178,23 +184,23 @@ export default function AddShortcutDialog({ open, url, title, favicon, onClose }
             />
             {pasteHint && <span className={styles.pasteHint}>{pasteHint}</span>}
           </div>
-        </form>
 
-        {/* Footer */}
-        <div className={styles.footer}>
-          {saved ? (
-            <div className={styles.successMsg}>✓ Saved!</div>
-          ) : (
-            <>
-              <button className={styles.cancelBtn} onClick={onClose} disabled={saving}>
-                Cancel
-              </button>
-              <button type="submit" className={styles.saveBtn} disabled={saving || !inputUrl.trim() || isInvalidUrl}>
-                {saving ? 'Saving…' : 'Save'}
-              </button>
-            </>
-          )}
-        </div>
+          {/* Footer */}
+          <div className={styles.footer}>
+            {saved ? (
+              <div className={styles.successMsg}>✓ Saved!</div>
+            ) : (
+              <>
+                <button type="button" className={styles.cancelBtn} form="add-shortcut-form" onClick={onClose} disabled={saving}>
+                  Cancel
+                </button>
+                <button type="submit" form="add-shortcut-form" className={styles.saveBtn} disabled={saving || !inputUrl.trim() || isInvalidUrl}>
+                  {saving ? 'Saving…' : 'Save'}
+                </button>
+              </>
+            )}
+          </div>
+        </form>
       </div>
     </div>
   );

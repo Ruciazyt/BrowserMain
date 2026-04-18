@@ -205,7 +205,7 @@ export default function ShortcutTile({
         />
         <div className={styles.editActions}>
           <button className={styles.saveBtn} onClick={handleSaveEdit}>Save</button>
-          <button className={styles.editCancelBtn} onClick={handleCancelEdit}>Cancel</button>
+          <button className={styles.cancelBtn} onClick={handleCancelEdit}>Cancel</button>
         </div>
       </div>
     );

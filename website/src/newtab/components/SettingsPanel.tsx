@@ -309,7 +309,7 @@ export default function SettingsPanel({ open, onClose, onBookmarkImportComplete,
                           await new Promise<void>((resolve) => {
                             chrome.storage.local.set({ 'browsermain_shortcuts': [] }, () => resolve());
                           });
-                          await refreshShortcuts();
+                          onBookmarkImportComplete?.();
                           setShowClearConfirm(false);
                           setShowClearSuccess(true);
                           setTimeout(() => setShowClearSuccess(false), 2500);

@@ -87,6 +87,13 @@ export default function ShortcutGrid({ shortcuts, onDelete, onUpdate, onReorder,
           <span key={i} className={on ? styles.dot : styles.dotOff} />
         ))}
       </div>
+      {shortcuts.length > 0 && (
+        <div className={styles.header}>
+          <span />
+          <span className={styles.count}>({shortcuts.length} shortcuts)</span>
+          <span className={styles.hint}>right-click to edit</span>
+        </div>
+      )}
       <div className={styles.container}>
         {shortcuts.length === 0 ? (
           <>
@@ -94,6 +101,9 @@ export default function ShortcutGrid({ shortcuts, onDelete, onUpdate, onReorder,
               <div className={styles.emptyTitle}>No shortcuts yet</div>
               <div className={styles.emptyHint}>
                 Click the <strong style={{ color: 'var(--led-amber)' }}>+</strong> button to add your first shortcut
+              </div>
+              <div className={styles.emptyHint} style={{ marginTop: 4 }}>
+                Right-click any shortcut to edit or delete
               </div>
               {onAdd && (
                 <button className={styles.addTile} onClick={onAdd} aria-label="Add shortcut" title="Add shortcut" style={{ marginTop: 16 }}>
