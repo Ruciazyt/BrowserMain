@@ -10,6 +10,19 @@
   text-transform: uppercase;
   text-shadow: var(--shadow-led-glow);
   animation: greetingPulse 3s ease-in-out infinite;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+  transition: font-size 0.3s ease;
+}
+
+/* Scale down slightly when user name is present (longer text) */
+@media (max-width: 480px) {
+  .greeting {
+    font-size: 9px;
+    letter-spacing: 1.5px;
+  }
 }
 
 @keyframes greetingPulse {

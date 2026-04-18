@@ -16,6 +16,7 @@
   --led-amber-rgb: 255, 149, 0;
   --led-amber-glow: rgba(255, 149, 0, 0.6);
   --led-amber-soft: rgba(255, 149, 0, 0.35);
+  --led-amber-mid: rgba(255, 149, 0, 0.50);
 
   /* Panel Colors */
   --panel-turquoise: #7dd3e8;

@@ -99,6 +99,7 @@ export default function BookmarkImport({ onBack, onImported }: BookmarkImportPro
   const [tree, setTree] = useState<BMTreeNode[]>([]);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
+  const [searchQuery, setSearchQuery] = useState('');
   const [result, setResult] = useState<{ imported: number; skipped: number } | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -146,8 +147,32 @@ export default function BookmarkImport({ onBack, onImported }: BookmarkImportPro
   const handleBack = () => {
     setResult(null);
     setSelectedIds(new Set());
+    setSearchQuery('');
     onBack();
   };
+
+  // Recursively filter tree: include a node if its title matches OR any child is included
+  const filterTree = (nodes: BMTreeNode[], query: string): BMTreeNode[] => {
+    return nodes
+      .map((node) => {
+        const filteredChildren = node.children ? filterTree(node.children, query) : [];
+        const titleMatch = query === '' || node.title.toLowerCase().includes(query.toLowerCase());
+        const childMatch = filteredChildren.length > 0;
+        if (titleMatch && childMatch) {
+          return { ...node, children: filteredChildren };
+        }
+        if (titleMatch) {
+          return { ...node };
+        }
+        if (childMatch) {
+          return { ...node, children: filteredChildren };
+        }
+        return null;
+      })
+      .filter((n): n is BMTreeNode => n !== null);
+  };
+
+  const filteredTree = searchQuery === '' ? tree : filterTree(tree, searchQuery);
 
   if (loading) {
     return (
@@ -235,7 +260,14 @@ export default function BookmarkImport({ onBack, onImported }: BookmarkImportPro
       ) : (
         <>
           <div className={styles.treeContainer}>
-            {tree.map((node) => (
+            <input
+              type="text"
+              className={styles.searchInput}
+              placeholder="Filter folders..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            {filteredTree.map((node) => (
               <FolderItem
                 key={node.id}
                 node={node}

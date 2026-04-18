@@ -138,6 +138,28 @@
   box-shadow: 0 0 12px var(--led-amber-soft);
 }
 
+/* Search */
+.searchInput {
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: var(--radius-md);
+  font-size: 12px;
+  background: var(--glass-white);
+  border: 1px solid rgba(255,255,255,0.10);
+  color: rgba(255,255,255,0.80);
+  outline: none;
+  transition: border-color var(--dur-fast);
+  margin-bottom: 8px;
+}
+
+.searchInput::placeholder {
+  color: rgba(255,255,255,0.28);
+}
+
+.searchInput:focus {
+  border-color: rgba(94,231,223,0.50);
+}
+
 /* Tree */
 .treeContainer {
   flex: 1;
