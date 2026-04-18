@@ -97,8 +97,8 @@
 /* ── Focus / navigate ─────────────────────────────────────────── */
 .container.keyboardFocus, .container.navigating {
   background: rgba(94, 231, 223, 0.10);
-  outline: 1.5px solid rgba(94, 231, 223, 0.60);
-  outline-offset: 1px;
+  outline: 2px solid rgba(94, 231, 223, 0.60);
+  outline-offset: 2px;
   box-shadow: 0 0 12px rgba(94, 231, 223, 0.20);
   transition: background var(--dur-fast), outline var(--dur-fast), box-shadow var(--dur-fast);
 }

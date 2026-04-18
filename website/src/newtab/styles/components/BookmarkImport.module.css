@@ -61,8 +61,8 @@
 }
 
 .ledLoading span {
-  width: 8px;
-  height: 8px;
+  width: var(--loading-dot-size);
+  height: var(--loading-dot-size);
   border-radius: 50%;
   background: var(--led-amber);
   animation: dotPulse 1.2s ease-in-out infinite;

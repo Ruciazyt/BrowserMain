@@ -22,7 +22,6 @@
   --accent-aqua: #5ee7df;
   --accent-violet: #7c6aef;
   --accent-rose: #f875aa;
-  --accent-blue: #3b82f6;
 
   /* LED panel colors */
   --panel-turquoise: #7dd3e8;
@@ -67,7 +66,6 @@
   --space-sm: 8px;
   --space-md: 12px;
   --space-lg: 16px;
-  --space-xl: 24px;
 
   /* Transitions */
   --dur-fast: 150ms ease-out;

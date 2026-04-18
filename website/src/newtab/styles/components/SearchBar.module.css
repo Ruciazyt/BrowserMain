@@ -145,7 +145,6 @@
 .kbdBadge {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
   padding: 2px 8px;
   background: color-mix(in srgb, var(--led-amber) 12%, transparent);
   border: 1px solid color-mix(in srgb, var(--led-amber) 30%, transparent);
@@ -169,7 +168,6 @@
 
 .kbdBadge svg {
   flex-shrink: 0;
-  opacity: 0.85;
 }
 
 .hintText {
