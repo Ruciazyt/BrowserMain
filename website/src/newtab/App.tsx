@@ -41,26 +41,7 @@ export default function App() {
     }
   }, []);
 
-  // Keyboard shortcut to add current page as shortcut
-  useEffect(() => {
-    const handleCommand = (command: string) => {
-      if (command === 'add-shortcut') {
-        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-          const tab = tabs[0];
-          if (tab?.url?.startsWith('http')) {
-            setAddDialogData({
-              url: tab.url || '',
-              title: tab.title || '',
-              favicon: tab.favIconUrl || '',
-            });
-            setAddDialogOpen(true);
-          }
-        });
-      }
-    };
-    chrome.commands.onCommand.addListener(handleCommand);
-    return () => { chrome.commands.onCommand.removeListener(handleCommand); };
-  }, []);
+
 
   // ESC key to close settings panel
   useEffect(() => {

@@ -75,18 +75,29 @@ function getTimeOfDayIndex(): number {
 // ── Component ───────────────────────────────────────────────────
 export default function LEDDisplay() {
   const timeIndex = useRef(getTimeOfDayIndex());
-  const [patternIdx, setPatternIdx] = useState(timeIndex.current);
+  const [oldPatternIdx, setOldPatternIdx] = useState(timeIndex.current);
+  const [newPatternIdx, setNewPatternIdx] = useState(timeIndex.current);
   const [frame, setFrame] = useState(0);
-  const [fadeIdx, setFadeIdx] = useState(timeIndex.current);
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
-  // Cycle pattern every 5 seconds
+  // Cycle pattern every 5 seconds with crossfade transition
   useEffect(() => {
     const id = setInterval(() => {
-      setPatternIdx(i => (i + 1) % PATTERNS.length);
-      setFadeIdx(i => (i + 1) % PATTERNS.length);
+      setNewPatternIdx(i => (i + 1) % PATTERNS.length);
+      setIsTransitioning(true);
     }, 5000);
     return () => clearInterval(id);
   }, []);
+
+  // After 400ms crossfade completes: lock in final opacity states
+  useEffect(() => {
+    if (!isTransitioning) return;
+    const id = setTimeout(() => {
+      setOldPatternIdx(newPatternIdx);
+      setIsTransitioning(false);
+    }, 400);
+    return () => clearTimeout(id);
+  }, [isTransitioning, newPatternIdx]);
 
   // Advance animation frame at ~2fps for smooth wave/ripple/scan
   useEffect(() => {
@@ -94,30 +105,63 @@ export default function LEDDisplay() {
     return () => clearInterval(id);
   }, []);
 
-  const current = PATTERNS[patternIdx].fn(frame);
-  const label = PATTERNS[fadeIdx].label;
+  const oldPattern = PATTERNS[oldPatternIdx].fn(frame);
+  const newPattern = PATTERNS[newPatternIdx].fn(frame);
+  const label = PATTERNS[newPatternIdx].label;
+
+  // Crossfade: old fades 1→0, new fades 0→1 (both over 400ms)
+  // When transition ends, lock both to their final values inline so CSS class doesn't override.
+  const oldLayerStyle: React.CSSProperties = isTransitioning
+    ? { opacity: 0, transition: 'opacity 400ms ease-in-out' }
+    : { opacity: 0 }; // resting: invisible
+
+  const newLayerStyle: React.CSSProperties = isTransitioning
+    ? { opacity: 1, transition: 'opacity 400ms ease-in-out' }
+    : { opacity: 1 }; // resting: visible
 
   return (
     <div className={styles.container}>
       <div className={styles.dotMatrix}>
-        {current.map((on, i) => {
-          const row = Math.floor(i / COLS);
-          const col = i % COLS;
-          const diagonalIndex = row + col;
-          return (
-            <div
-              key={i}
-              className={`${styles.dot} ${on ? '' : styles.off}`}
-              style={
-                on
-                  ? ({ '--delay': `${diagonalIndex * 0.1}s` } as React.CSSProperties)
-                  : undefined
-              }
-            />
-          );
-        })}
+        {/* Old pattern layer — fades out during crossfade */}
+        <div className={`${styles.dotMatrix} ${styles.layer} ${styles.oldLayer}`} style={oldLayerStyle}>
+          {oldPattern.map((on, i) => {
+            const row = Math.floor(i / COLS);
+            const col = i % COLS;
+            const diagonalIndex = row + col;
+            return (
+              <div
+                key={i}
+                className={`${styles.dot} ${on ? '' : styles.off}`}
+                style={
+                  on
+                    ? ({ '--delay': `${diagonalIndex * 0.1}s` } as React.CSSProperties)
+                    : undefined
+                }
+              />
+            );
+          })}
+        </div>
+        {/* New pattern layer — fades in during crossfade */}
+        <div className={`${styles.dotMatrix} ${styles.layer} ${styles.newLayer}`} style={newLayerStyle}>
+          {newPattern.map((on, i) => {
+            const row = Math.floor(i / COLS);
+            const col = i % COLS;
+            const diagonalIndex = row + col;
+            return (
+              <div
+                key={i}
+                className={`${styles.dot} ${on ? '' : styles.off}`}
+                style={
+                  on
+                    ? ({ '--delay': `${diagonalIndex * 0.1}s` } as React.CSSProperties)
+                    : undefined
+                }
+              />
+            );
+          })}
+        </div>
       </div>
-      <div className={styles.label}>System Active</div>
+      <div className={styles.label}>{label}</div>
     </div>
   );
 }
