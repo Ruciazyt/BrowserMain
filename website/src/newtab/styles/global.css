@@ -84,7 +84,7 @@
   --radius-input: var(--radius-md);
 
   /* Loading dot token */
-  --loading-dot-size: 6px;
+  --loading-dot-size: 4px;
 }
 
 /* ── Blob Scene ──────────────────────────────────────────────── */
@@ -115,8 +115,9 @@
 
 @keyframes blobFloat {
   0%, 100% { transform: translate(0, 0) scale(1); }
-  33% { transform: translate(2%, 3%) scale(1.03); }
-  66% { transform: translate(-1.5%, -2%) scale(0.98); }
+  25%       { transform: translate(2%, 3%) scale(1.03); }
+  50%       { transform: translate(-1.5%, -2%) scale(0.98); }
+  75%       { transform: translate(1%, -1%) scale(1.01); }
 }
 
 /* --- Reset --- */
@@ -126,7 +127,6 @@ html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
 
 body {
   font-family: var(--font-ui);
-  font-weight: 400;
   color: var(--text-primary);
   background: var(--bg-primary);
   overflow-x: hidden;
@@ -156,9 +156,9 @@ h1, h2, h3, h4 {
 a {
   color: var(--led-amber);
   text-decoration: none;
-  transition: color 150ms ease-out;
+  transition: color 150ms ease-out, opacity 150ms ease-out;
 }
-a:hover { opacity: 1; color: var(--led-amber-warm); }
+a:hover { color: var(--led-amber-warm); }
 button {
   font-family: var(--font-ui);
   cursor: pointer;

@@ -1,6 +1,10 @@
 /* ── Container ───────────────────────────────────────────────── */
 .container {
   position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
   transition: all var(--dur-fast);
 }
 
@@ -20,8 +24,15 @@
 /* ── Title ────────────────────────────────────────────────────── */
 .title {
   font-size: 11px; color: rgba(255,255,255,0.65);
-  text-align: center; max-width: 72px;
+  text-align: center; max-width: 68px;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1.3;
+}
+
+/* ── Domain subtitle ─────────────────────────────────────────── */
+.domain {
+  font-size: 9px; color: rgba(255,255,255,0.35);
+  text-align: center; max-width: 68px;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1.2;
 }
 
 /* ── Delete (hover) ───────────────────────────────────────────── */
@@ -125,19 +136,24 @@
   outline: 1.5px solid rgba(255, 149, 0, 0.50);
   outline-offset: 2px;
   box-shadow: 0 0 14px rgba(255, 149, 0, 0.25);
-  transition: background var(--dur-fast), outline var(--dur-fast), box-shadow var(--dur-fast);
+  transition: background var(--dur-fast), outline var(--dur-fast), box-shadow var(--dur-fast), transform var(--dur-fast);
 }
 .container.dropBefore {
   background: rgba(255, 149, 0, 0.12);
   outline: 2px solid var(--led-amber);
   outline-offset: -3px;
   box-shadow: -3px 0 10px rgba(255, 149, 0, 0.35);
-  transition: background var(--dur-fast), outline var(--dur-fast), box-shadow var(--dur-fast);
+  transition: background var(--dur-fast), outline var(--dur-fast), box-shadow var(--dur-fast), transform var(--dur-fast);
 }
 .container.dropAfter {
   background: rgba(255, 149, 0, 0.12);
   outline: 2px solid var(--led-amber);
   outline-offset: -3px;
   box-shadow: 3px 0 10px rgba(255, 149, 0, 0.35);
-  transition: background var(--dur-fast), outline var(--dur-fast), box-shadow var(--dur-fast);
+  transition: background var(--dur-fast), outline var(--dur-fast), box-shadow var(--dur-fast), transform var(--dur-fast);
+}
+
+.container.dragging {
+  opacity: 0.35;
+  transition: opacity var(--dur-mid) var(--ease-smooth);
 }
