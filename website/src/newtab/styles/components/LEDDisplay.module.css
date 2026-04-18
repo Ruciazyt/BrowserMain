@@ -1,8 +1,4 @@
 /* ── LED Display ─────────────────────────────────────────────── */
-.wrapper {
-  padding: 6px 16px 12px;
-  display: flex; flex-direction: column; align-items: center;
-}
 .container { display: flex; flex-direction: column; align-items: center; gap: 5px; }
 
 .dotMatrix {
