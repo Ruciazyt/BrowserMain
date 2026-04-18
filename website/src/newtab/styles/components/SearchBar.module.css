@@ -115,7 +115,7 @@
   cursor: pointer;
 }
 .searchBtn:hover {
-  box-shadow: 0 0 16px var(--led-amber-glow);
+  box-shadow: var(--shadow-search-btn);
   transform: scale(1.06);
 }
 .searchBtn svg { width: 15px; height: 15px; }

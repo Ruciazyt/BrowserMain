@@ -15,6 +15,7 @@
   --led-amber-warm: #ffb347;
   --led-amber-rgb: 255, 149, 0;
   --led-amber-glow: rgba(255, 149, 0, 0.6);
+  --led-amber-mid: rgba(255, 149, 0, 0.35);
   --led-amber-soft: rgba(255, 149, 0, 0.35);
 
   /* Panel Colors */
@@ -45,6 +46,7 @@
 
   /* Transitions */
   --transition-fast: 200ms ease-out;
+  --transition: var(--transition-fast);
   --dur-fast: 150ms ease-out;
   --dur-mid: 250ms ease-out;
   --ease-liquid: cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -58,6 +60,7 @@
   --radius-xl: 24px;
   --radius-2xl: 32px;
   --radius-pill: 999px;
+  --radius-input: var(--radius-md);
 
   /* Glass surfaces */
   --glass-white: rgba(255, 255, 255, 0.10);
@@ -77,6 +80,8 @@
   /* Liquid glass shadows */
   --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.08);
   --shadow-float: 0 16px 48px rgba(0, 0, 0, 0.38), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  --shadow-led-glow: 0 0 8px var(--led-amber-glow), 0 0 20px rgba(255, 149, 0, 0.4);
+  --shadow-search-btn: 0 0 16px var(--led-amber-glow);
 
   /* Accent colors */
   --accent-aqua: #5ee7df;

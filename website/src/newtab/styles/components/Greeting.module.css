@@ -8,11 +8,11 @@
   text-align: center;
   letter-spacing: 2px;
   text-transform: uppercase;
-  text-shadow: 0 0 8px var(--led-amber-glow), 0 0 16px rgba(255, 149, 0, 0.3);
+  text-shadow: var(--shadow-led-glow);
   animation: greetingPulse 3s ease-in-out infinite;
 }
 
 @keyframes greetingPulse {
-  0%, 100% { opacity: 0.75; text-shadow: 0 0 8px var(--led-amber-glow), 0 0 16px rgba(255, 149, 0, 0.3); }
-  50% { opacity: 1; text-shadow: 0 0 12px var(--led-amber-glow), 0 0 24px rgba(255, 149, 0, 0.5); }
+  0%, 100% { opacity: 0.75; text-shadow: 0 0 8px var(--led-amber-glow), 0 0 16px var(--led-amber-mid); }
+  50% { opacity: 1; text-shadow: 0 0 12px var(--led-amber-glow), 0 0 24px var(--led-amber-glow); }
 }

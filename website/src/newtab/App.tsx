@@ -120,15 +120,13 @@ export default function App() {
         </div>
       )}
 
-      <div className={styles.content}>
-
-        {/* ── Search bar ── */}
+      {/* ── Header (glass) ── */}
+      <div className={styles.header}>
         <SearchBar defaultEngine={settings.defaultEngine} />
+        <Greeting />
+      </div>
 
-        {/* ── Greeting ── */}
-        <div className={styles.card}>
-          <Greeting />
-        </div>
+      <div className={styles.content}>
 
         {/* ── Clock card ── */}
         <div className={styles.card}>
