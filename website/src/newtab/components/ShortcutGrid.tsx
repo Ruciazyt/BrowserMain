@@ -17,15 +17,18 @@ export default function ShortcutGrid({ shortcuts, onDelete, onUpdate, onReorder,
   const [dragIndex, setDragIndex] = useState<number | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
   const [dropPosition, setDropPosition] = useState<'before' | 'after' | null>(null);
+  const [isDraggingAny, setIsDraggingAny] = useState(false);
 
   const handleDragStart = (index: number) => {
     setDragIndex(index);
+    setIsDraggingAny(true);
   };
 
   const handleDragEnd = () => {
     setDragIndex(null);
     setDragOverIndex(null);
     setDropPosition(null);
+    setIsDraggingAny(false);
   };
 
   const handleDragOver = (index: number, offsetX: number, tileWidth: number) => {
@@ -131,5 +134,5 @@ export default function ShortcutGrid({ shortcuts, onDelete, onUpdate, onReorder,
     </>
   );
 
-  return <div className={styles.panel}>{panel}</div>;
+  return <div className={`${styles.panel} ${isDraggingAny ? styles.dragActive : ''}`}>{panel}</div>;
 }

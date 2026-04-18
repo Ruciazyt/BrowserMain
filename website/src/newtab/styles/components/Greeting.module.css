@@ -1,10 +1,18 @@
 /* ── Greeting ───────────────────────────────────────────────── */
 .wrapper { width: 100%; padding: 0 16px; }
 .greeting {
-  font-family: var(--font-body);
-  font-size: 13px; font-weight: 400;
-  color: rgba(255,255,255,0.36);
+  font-family: var(--font-led);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--led-amber);
   text-align: center;
-  letter-spacing: 0.3px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  text-shadow: 0 0 8px var(--led-amber-glow), 0 0 16px rgba(255, 149, 0, 0.3);
+  animation: greetingPulse 3s ease-in-out infinite;
 }
 
+@keyframes greetingPulse {
+  0%, 100% { opacity: 0.75; text-shadow: 0 0 8px var(--led-amber-glow), 0 0 16px rgba(255, 149, 0, 0.3); }
+  50% { opacity: 1; text-shadow: 0 0 12px var(--led-amber-glow), 0 0 24px rgba(255, 149, 0, 0.5); }
+}

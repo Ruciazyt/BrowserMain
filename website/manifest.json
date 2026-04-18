@@ -32,6 +32,14 @@
         "mac": "Command+Shift+B"
       },
       "description": "Add current page to BrowserMain"
+    },
+    "add-shortcut": {
+      "suggested_key": {
+        "default": "Command+Shift+U",
+        "mac": "Command+Shift+U",
+        "linux": "Ctrl+Shift+U"
+      },
+      "description": "Open Add Shortcut dialog"
     }
   },
   "chrome_url_overrides": {
