@@ -1,9 +1,9 @@
 /* ============================================
    BrowserMain - Global Styles
-   LED-Matrix / Retro-Futuristic Theme
+   Liquid Glass + LED-Matrix Hybrid Theme
    ============================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Italiana&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Italiana&family=DM+Sans:wght@300;400;500;600&family=Inter:wght@300;400;500;600&display=swap');
 
 /* --- CSS Variables --- */
 :root {
@@ -16,7 +16,6 @@
   --led-amber-rgb: 255, 149, 0;
   --led-amber-glow: rgba(255, 149, 0, 0.6);
   --led-amber-soft: rgba(255, 149, 0, 0.35);
-
 
   /* Panel Colors */
   --panel-turquoise: #7dd3e8;
@@ -33,28 +32,33 @@
 
   /* Typography */
   --font-led: 'JetBrains Mono', monospace;
-  --font-ui: 'DM Sans', sans-serif;
+  --font-ui: 'Inter', sans-serif;
   --font-display: 'Italiana', serif;
+  --font-body: 'DM Sans', sans-serif;
 
-  /* Border Radius */
-  --radius-card: 24px;
-  --radius-btn: 16px;
-  --radius-input: 12px;
-  --radius-xs: 4px;
-
-  /* LED Glow Effect */
-  --glow-led: 0 0 12px #ff9500, 0 0 24px rgba(255, 149, 0, 0.3);
-
-  /* Spacing */
-  --space-unit: 8px;
+  /* Spacing tokens */
+  --space-xs: 4px;
+  --space-sm: 8px;
+  --space-md: 12px;
+  --space-lg: 16px;
+  --space-xl: 24px;
 
   /* Transitions */
   --transition-fast: 200ms ease-out;
-  --transition: var(--transition-fast);
-}
+  --dur-fast: 150ms ease-out;
+  --dur-mid: 250ms ease-out;
+  --ease-liquid: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
 
-/* --- Liquid Glass Design Tokens --- */
-:root {
+  /* Border Radius */
+  --radius-card: 24px;
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
+  --radius-2xl: 32px;
+  --radius-pill: 999px;
+
   /* Glass surfaces */
   --glass-white: rgba(255, 255, 255, 0.10);
   --glass-white-md: rgba(255, 255, 255, 0.14);
@@ -79,24 +83,6 @@
   --accent-violet: #7c6aef;
   --accent-rose: #f875aa;
   --accent-blue: #3b82f6;
-
-  /* Animation timings */
-  --dur-fast: 150ms ease-out;
-  --dur-mid: 250ms ease-out;
-
-  /* Easing */
-  --ease-liquid: cubic-bezier(0.34, 1.56, 0.64, 1);
-  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
-
-  /* Border radius tokens */
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 24px;
-  --radius-2xl: 32px;
-
-  /* Font alias */
-  --font-body: 'DM Sans', sans-serif;
 }
 
 /* --- Reset --- */
@@ -116,15 +102,15 @@ body {
 
 #root { width: 100%; min-height: 100vh; }
 
-/* --- Scrollbar (Amber Themed) --- */
+/* --- Scrollbar (Aqua Accent) --- */
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb {
-  background: rgba(255, 149, 0, 0.4);
+  background: rgba(94, 231, 223, 0.35);
   border-radius: 2px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 149, 0, 0.6);
+  background: rgba(94, 231, 223, 0.55);
 }
 
 /* --- Typography --- */
@@ -161,7 +147,7 @@ input, textarea {
 
 /* --- Selection --- */
 ::selection {
-  background: rgba(255, 149, 0, 0.25);
+  background: rgba(94, 231, 223, 0.22);
   color: var(--text-bright);
 }
 
