@@ -8,31 +8,33 @@ export default function Clock() {
   const [time, setTime] = useState('');
   const [date, setDate] = useState('');
   const [day, setDay] = useState('');
-  const [displayTime, setDisplayTime] = useState('');
   const { settings, updateClockFormat } = useSettings();
   // Ref so the interval callback always reads the latest 24h setting without deps
   const is24hRef = useRef(settings.clockIs24h !== false);
 
-  // Keep ref in sync when settings change
+  // Keep ref in sync when settings change (e.g. from Settings panel)
   useEffect(() => {
     is24hRef.current = settings.clockIs24h !== false;
   }, [settings.clockIs24h]);
 
-const toggleFormat = () => {
+  // Toggle 24h/12h on click — updates the ref; the interval picks it up on next tick
+  const toggleFormat = () => {
     const newIs24h = !is24hRef.current;
     updateClockFormat(newIs24h);
-    // Immediately update displayTime with new format for instant feedback
+    is24hRef.current = newIs24h;
+    // Trigger immediate re-render with the new format by calling update once
     const now = new Date();
-    let hh = now.getHours();
+    const hh = now.getHours();
     const mm = now.getMinutes().toString().padStart(2, '0');
     const ss = now.getSeconds().toString().padStart(2, '0');
     let ampm = '';
+    let dispHh = hh;
     if (!newIs24h) {
       ampm = hh >= 12 ? ' PM' : ' AM';
-      hh = hh % 12 || 12;
+      dispHh = hh % 12 || 12;
     }
-    const hhStr = hh.toString().padStart(2, '0');
-    setDisplayTime(`${hhStr}:${mm}:${ss}${ampm}`);
+    const hhStr = dispHh.toString().padStart(2, '0');
+    setTime(`${hhStr}:${mm}:${ss}${ampm}`);
   };
 
   useEffect(() => {
@@ -50,14 +52,14 @@ const toggleFormat = () => {
       setTime(`${hhStr}:${mm}:${ss}${ampm}`);
       const yyyy = now.getFullYear();
       const mo = (now.getMonth() + 1).toString().padStart(2, '0');
-      const dd = now.getDate().toString().padStart(2, '0');
+      const dd = now.getDate().toString().toString().padStart(2, '0');
       setDate(`${yyyy}-${mo}-${dd}`);
       setDay(now.toLocaleDateString(undefined, { weekday: 'long' }));
     };
     update();
     const interval = setInterval(update, 1000);
     return () => clearInterval(interval);
-  }, []); // interval set up once; uses is24hRef for current format
+  }, []); // interval set up once; reads is24hRef directly each tick
 
   return (
     <div className={styles.panel}>
@@ -66,8 +68,15 @@ const toggleFormat = () => {
           <div key={i} className={`${styles.dot} ${on ? '' : styles.dotOff}`} />
         ))}
       </div>
-      <div className={styles.container} onClick={toggleFormat} role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') toggleFormat(); }} aria-label={`Clock, currently ${settings.clockIs24h ? '24-hour' : '12-hour'} format. Click to toggle.`}>
-        <div className={styles.time}>{displayTime || time}</div>
+      <div
+        className={styles.container}
+        onClick={toggleFormat}
+        role="button"
+        tabIndex={0}
+        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') toggleFormat(); }}
+        aria-label={`Clock, currently ${settings.clockIs24h !== false ? '24-hour' : '12-hour'} format. Click to toggle.`}
+      >
+        <div className={styles.time}>{time}</div>
         <div className={styles.date}>{date}</div>
         <div className={styles.day}>{day}</div>
       </div>
