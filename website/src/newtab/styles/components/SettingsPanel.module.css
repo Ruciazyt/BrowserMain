@@ -5,7 +5,7 @@
   backdrop-filter: blur(12px) saturate(150%);
   -webkit-backdrop-filter: blur(12px) saturate(150%);
   z-index: 200; opacity: 0; pointer-events: none;
-  transition: opacity 300ms ease;
+  transition: opacity var(--dur-mid) var(--ease-smooth);
 }
 .overlay.open { opacity: 1; pointer-events: all; }
 
@@ -19,7 +19,7 @@
   border-left: 1px solid var(--glass-border);
   z-index: 201;
   transform: translateX(100%);
-  transition: transform 300ms var(--ease-smooth);
+  transition: transform var(--dur-mid) var(--ease-smooth);
   display: flex; flex-direction: column; overflow: hidden;
   box-shadow: -8px 0 40px rgba(0,0,0,0.30);
 }
@@ -220,10 +220,9 @@
   align-items: center; justify-content: center; gap: 10px; padding: 36px 20px;
 }
 .ledLoading { display: flex; gap: 5px; align-items: center; }
-.ledLoading span { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.45); animation: ledDotPulse 1.2s ease-in-out infinite; }
+.ledLoading span { width: var(--loading-dot-size); height: var(--loading-dot-size); border-radius: 50%; background: rgba(255,255,255,0.45); animation: ledDotPulse 1.2s ease-in-out infinite; }
 .ledLoading span:nth-child(2) { animation-delay: .2s; }
 .ledLoading span:nth-child(3) { animation-delay: .4s; }
-@keyframes ledDotPulse { 0%,100% { opacity: 0.3; transform: scale(0.8); } 50% { opacity: 1; transform: scale(1); } }
 .loadingText { font-size: 12px; color: rgba(255,255,255,0.32); }
 .emptyIcon, .errorIcon { font-size: 28px; }
 .emptyText, .errorText { font-size: 12px; color: rgba(255,255,255,0.28); text-align: center; }

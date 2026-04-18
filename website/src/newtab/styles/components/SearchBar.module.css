@@ -16,7 +16,7 @@
   border: 1px solid var(--glass-border);
   border-radius: 28px;
   padding: 10px 14px;
-  transition: background var(--transition-fast), border-color var(--transition-fast), box-shadow var(--transition-fast);
+  transition: background var(--dur-fast), border-color var(--dur-fast), box-shadow var(--dur-fast);
 }
 
 /* Top edge refraction highlight */
@@ -156,7 +156,7 @@
   font-weight: 500;
   letter-spacing: 0.3px;
   text-shadow: 0 0 8px var(--led-amber-glow);
-  transition: background 200ms ease-out, border-color 200ms ease-out, box-shadow 200ms ease-out;
+  transition: background var(--dur-fast), border-color var(--dur-fast), box-shadow var(--dur-fast);
   cursor: default;
   user-select: none;
 }
@@ -164,7 +164,7 @@
 .kbdBadge:hover {
   background: color-mix(in srgb, var(--led-amber) 20%, transparent);
   border-color: var(--led-amber);
-  box-shadow: 0 0 10px var(--led-amber-soft);
+  box-shadow: var(--shadow-glass), 0 0 10px var(--led-amber-soft);
 }
 
 .kbdBadge svg {
