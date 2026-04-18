@@ -84,7 +84,7 @@
   width: 100%;
 }
 .input::placeholder { color: rgba(255,255,255,0.28); }
-.input:focus { border-color: rgba(94,231,223,0.50); background: var(--glass-white-md); }
+.input:focus { border-color: rgba(94,231,223,0.50); background: var(--glass-white-md); box-shadow: 0 0 0 3px rgba(94,231,223,0.12); }
 
 /* ── Footer ───────────────────────────────────────────────────── */
 .footer {
