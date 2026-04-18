@@ -36,6 +36,7 @@ const GRADIENT_DIRECTIONS = [
 
 export default function SettingsPanel({ open, onClose, onBookmarkImportComplete, onShowTour }: SettingsPanelProps) {
   const { settings, updateEngine, updateBackground } = useSettings();
+  const { shortcuts, refreshShortcuts } = useShortcuts();
   const [bgType, setBgType] = useState(settings.background.type);
   const [solidColor, setSolidColor] = useState(settings.background.color || '#0a0a0f');
   const [gradientFrom, setGradientFrom] = useState(settings.background.gradientFrom || '#0a0a0f');
@@ -46,6 +47,8 @@ export default function SettingsPanel({ open, onClose, onBookmarkImportComplete,
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [showBookmarkImport, setShowBookmarkImport] = useState(false);
   const [showShortcutImport, setShowShortcutImport] = useState(false);
+  const [showClearConfirm, setShowClearConfirm] = useState(false);
+  const [showClearSuccess, setShowClearSuccess] = useState(false);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -281,6 +284,45 @@ export default function SettingsPanel({ open, onClose, onBookmarkImportComplete,
                     Import
                   </button>
                 </div>
+                {!showClearConfirm && !showClearSuccess && (
+                  <button
+                    className={styles.clearAllBtn}
+                    onClick={() => setShowClearConfirm(true)}
+                  >
+                    Clear All Shortcuts
+                  </button>
+                )}
+                {showClearConfirm && (
+                  <div className={styles.confirmState}>
+                    <span className={styles.confirmText}>Are you sure? This will delete all shortcuts.</span>
+                    <div className={styles.confirmBtnRow}>
+                      <button
+                        className={styles.confirmCancelBtn}
+                        onClick={() => setShowClearConfirm(false)}
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        className={styles.confirmDangerBtn}
+                        onClick={async () => {
+                          // Clear shortcuts via chrome.storage directly
+                          await new Promise<void>((resolve) => {
+                            chrome.storage.local.set({ 'browsermain_shortcuts': [] }, () => resolve());
+                          });
+                          await refreshShortcuts();
+                          setShowClearConfirm(false);
+                          setShowClearSuccess(true);
+                          setTimeout(() => setShowClearSuccess(false), 2500);
+                        }}
+                      >
+                        Confirm
+                      </button>
+                    </div>
+                  </div>
+                )}
+                {showClearSuccess && (
+                  <div className={styles.successMessage}>✓ All shortcuts cleared</div>
+                )}
               </div>
 
               <div className={styles.section}>

@@ -95,7 +95,6 @@ export default function AddShortcutDialog({ open, url, title, favicon, onClose }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') handleSave();
     if (e.key === 'Escape') onClose();
   };
 
@@ -113,7 +112,7 @@ export default function AddShortcutDialog({ open, url, title, favicon, onClose }
         </div>
 
         {/* Body */}
-        <div className={styles.body}>
+        <form className={styles.body} onSubmit={(e) => { e.preventDefault(); handleSave(); }} noValidate>
           {/* Favicon preview — GlobeIcon shown when both Google S2 and favicon.ico fail */}
           {(faviconUrl || inputUrl.trim()) && (
             <div className={styles.faviconRow}>
@@ -135,7 +134,7 @@ export default function AddShortcutDialog({ open, url, title, favicon, onClose }
             <label className={styles.label}>URL</label>
             <input
               className={styles.input}
-              type="url"
+              type="text"
               value={inputUrl}
               onChange={(e) => setInputUrl(e.target.value)}
               onPaste={(e) => {
@@ -179,7 +178,7 @@ export default function AddShortcutDialog({ open, url, title, favicon, onClose }
             />
             {pasteHint && <span className={styles.pasteHint}>{pasteHint}</span>}
           </div>
-        </div>
+        </form>
 
         {/* Footer */}
         <div className={styles.footer}>
@@ -190,7 +189,7 @@ export default function AddShortcutDialog({ open, url, title, favicon, onClose }
               <button className={styles.cancelBtn} onClick={onClose} disabled={saving}>
                 Cancel
               </button>
-              <button className={styles.saveBtn} onClick={handleSave} disabled={saving || !inputUrl.trim() || isInvalidUrl}>
+              <button type="submit" className={styles.saveBtn} disabled={saving || !inputUrl.trim() || isInvalidUrl}>
                 {saving ? 'Saving…' : 'Save'}
               </button>
             </>
