@@ -88,7 +88,7 @@
   background: var(--glass-white-md);
   border-color: var(--glass-border-bright);
   color: rgba(255, 255, 255, 0.85);
-  transform: scale(1.08) rotate(30deg);
+  transform: scale(1.08);
   box-shadow: var(--shadow-float);
 }
 
