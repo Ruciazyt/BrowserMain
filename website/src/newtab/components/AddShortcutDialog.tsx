@@ -16,6 +16,7 @@ export default function AddShortcutDialog({ open, url, title, favicon, onClose }
   const [inputUrl, setInputUrl] = useState(url);
   const [inputTitle, setInputTitle] = useState(title);
   const [faviconUrl, setFaviconUrl] = useState(favicon || (url ? getSmartFaviconUrl(url) : ''));
+  const [fetchingTitle, setFetchingTitle] = useState(false);
   // 2-stage favicon fallback: Google S2 → favicon.ico → GlobeIcon
   const [faviconTriedIco, setFaviconTriedIco] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -62,6 +63,33 @@ export default function AddShortcutDialog({ open, url, title, favicon, onClose }
       setFaviconUrl(getSmartFaviconUrl(inputUrl.trim()));
       setFaviconTriedIco(false);
     }
+  }, [inputUrl]);
+
+  // Auto-fetch page title when a valid URL is entered and title is empty
+  useEffect(() => {
+    const trimmedUrl = inputUrl.trim();
+    if (!trimmedUrl || !isUrl(trimmedUrl) || inputTitle.trim()) return;
+
+    setFetchingTitle(true);
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 3000);
+
+    fetch(trimmedUrl, { signal: controller.signal })
+      .then((res) => res.text())
+      .then((html) => {
+        clearTimeout(timeout);
+        const match = html.match(/<title[^>]*>([^<]+)<\/title>/i);
+        if (match && match[1]) {
+          setInputTitle(match[1].trim());
+          setPasteHint('Title auto-filled from page.');
+        }
+      })
+      .catch(() => {
+        clearTimeout(timeout);
+      })
+      .finally(() => {
+        setFetchingTitle(false);
+      });
   }, [inputUrl]);
 
   const handleFaviconError = () => {
@@ -193,7 +221,7 @@ export default function AddShortcutDialog({ open, url, title, favicon, onClose }
               }}
               placeholder="My Shortcut"
             />
-            {pasteHint && <span className={styles.pasteHint}>{pasteHint}</span>}
+            {(pasteHint || fetchingTitle) && <span className={styles.pasteHint}>{fetchingTitle ? 'Fetching title…' : pasteHint}</span>}
           </div>
 
           {/* Footer */}

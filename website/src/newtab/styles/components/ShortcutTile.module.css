@@ -81,6 +81,16 @@
   border-radius: var(--radius-md);
   width: 100%;
 }
+.editIconRow {
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 2px;
+}
+.editFavicon {
+  width: 28px; height: 28px; object-fit: contain; border-radius: 4px;
+}
+.editFaviconGlobe {
+  width: 24px; height: 24px; color: var(--led-amber); opacity: 0.70;
+}
 .editInput {
   background: rgba(0,0,0,0.20);
   border: 1px solid rgba(255,255,255,0.10);

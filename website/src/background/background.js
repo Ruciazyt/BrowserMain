@@ -1,9 +1,50 @@
 // BrowserMain - Background Service Worker (MV3)
-chrome.runtime.onInstalled.addListener(() => {
-  console.log('[BrowserMain] Extension installed');
-});
+// Self-contained classic script — no ES module imports/exports allowed in MV3 service workers.
 
-// Helper: build extension page URL with optional "add shortcut" query params
+const SHORTCUTS_KEY = 'browsermain_shortcuts';
+const SETTINGS_KEY = 'browsermain_settings';
+
+// ---------------------------------------------------------------------------
+// Storage helpers (inlined from ../newtab/utils/storage.ts)
+// ---------------------------------------------------------------------------
+
+function getFaviconUrl(url) {
+  try {
+    const { hostname } = new URL(url);
+    return 'https://' + hostname + '/favicon.ico';
+  } catch {
+    return '';
+  }
+}
+
+function getSmartFaviconUrl(url) {
+  try {
+    const { hostname } = new URL(url);
+    const domain = encodeURIComponent(hostname);
+    return 'https://www.google.com/s2/favicons?domain=' + domain + '&sz=64';
+  } catch {
+    return '';
+  }
+}
+
+function getShortcuts() {
+  return new Promise((resolve) => {
+    chrome.storage.local.get(SHORTCUTS_KEY, (result) => {
+      resolve(result[SHORTCUTS_KEY] || []);
+    });
+  });
+}
+
+function saveShortcuts(shortcuts) {
+  return new Promise((resolve) => {
+    chrome.storage.local.set({ [SHORTCUTS_KEY]: shortcuts }, resolve);
+  });
+}
+
+// ---------------------------------------------------------------------------
+// Extension URL builder
+// ---------------------------------------------------------------------------
+
 async function buildExtensionUrl(addData) {
   const extensionPageUrl = chrome.runtime.getURL('index.html');
 
@@ -38,7 +79,14 @@ async function buildExtensionUrl(addData) {
   return url.toString();
 }
 
-// Toolbar button clicked → open extension page in a new tab
+// ---------------------------------------------------------------------------
+// Chrome event listeners
+// ---------------------------------------------------------------------------
+
+chrome.runtime.onInstalled.addListener(() => {
+  console.log('[BrowserMain] Extension installed');
+});
+
 chrome.action.onClicked.addListener(async (tab) => {
   try {
     const targetUrl = await buildExtensionUrl(null);
@@ -48,7 +96,6 @@ chrome.action.onClicked.addListener(async (tab) => {
   }
 });
 
-// Keyboard shortcut Ctrl+Shift+U / Command+Shift+U → open new tab with "add shortcut" intent
 chrome.commands.onCommand.addListener(async (command) => {
   if (command !== 'add-shortcut') return;
   try {

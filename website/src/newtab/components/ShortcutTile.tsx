@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { getSmartFaviconUrl, getFaviconIcoUrl, getDomainFromUrl } from '../utils/storage';
+import { isUrl } from '../utils/engines';
 import { Shortcut } from '../utils/storage';
 import styles from '../styles/components/ShortcutTile.module.css';
 
@@ -49,6 +50,8 @@ export default function ShortcutTile({
   const [editMode, setEditMode] = useState(false);
   const [editTitle, setEditTitle] = useState(shortcut.title);
   const [editUrl, setEditUrl] = useState(shortcut.url);
+  const [editFaviconSrc, setEditFaviconSrc] = useState(shortcut.favicon || getSmartFaviconUrl(shortcut.url));
+  const [editFaviconTriedIco, setEditFaviconTriedIco] = useState(false);
   const [editError, setEditError] = useState(false);
   const [keyboardFocus, setKeyboardFocus] = useState(false);
   const [isNavigating, setIsNavigating] = useState(false);
@@ -165,18 +168,38 @@ export default function ShortcutTile({
     setShowContextMenu(true);
   };
 
+  // When editUrl changes in edit mode, auto-update the favicon
+  useEffect(() => {
+    if (!editMode) return;
+    if (editUrl && isUrl(editUrl.trim())) {
+      setEditFaviconSrc(getSmartFaviconUrl(editUrl.trim()));
+      setEditFaviconTriedIco(false);
+    }
+  }, [editUrl, editMode]);
+
+  const handleEditFaviconError = () => {
+    if (!editFaviconTriedIco) {
+      setEditFaviconSrc(getFaviconIcoUrl(editUrl.trim() || shortcut.url));
+      setEditFaviconTriedIco(true);
+    } else {
+      setEditFaviconSrc('');
+    }
+  };
+
   const handleEdit = (e: React.MouseEvent) => {
     e.stopPropagation();
     setShowContextMenu(false);
     setEditTitle(shortcut.title);
     setEditUrl(shortcut.url);
+    setEditFaviconSrc(shortcut.favicon || getSmartFaviconUrl(shortcut.url));
+    setEditFaviconTriedIco(false);
     setEditError(false);
     setEditMode(true);
   };
 
   const handleSaveEdit = () => {
     if (editTitle.trim() && editUrl.trim()) {
-      onUpdate(shortcut.id, { title: editTitle.trim(), url: editUrl.trim() });
+      onUpdate(shortcut.id, { title: editTitle.trim(), url: editUrl.trim(), favicon: editFaviconSrc });
       setEditMode(false);
     } else {
       setEditError(true);
@@ -190,6 +213,17 @@ export default function ShortcutTile({
   if (editMode) {
     return (
       <div className={styles.editMode}>
+        <div className={styles.editIconRow}>
+          {editFaviconSrc ? (
+            <img src={editFaviconSrc} alt="" onError={handleEditFaviconError} className={styles.editFavicon} />
+          ) : (
+            <svg className={styles.editFaviconGlobe} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <line x1="2" y1="12" x2="22" y2="12"/>
+              <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+            </svg>
+          )}
+        </div>
         <input
           className={`${styles.editInput} ${editError && !editTitle.trim() ? styles.editInputError : ''}`}
           value={editTitle}

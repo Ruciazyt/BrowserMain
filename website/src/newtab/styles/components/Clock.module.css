@@ -12,16 +12,6 @@
   align-items: center;
   padding: 2px 0;
 }
-.dotRow::before,
-.dotRow::after {
-  content: '';
-  display: block;
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: var(--led-amber);
-  box-shadow: 0 0 4px var(--led-amber-glow);
-}
 
 .container {
   cursor: pointer;
@@ -53,8 +43,44 @@
 }
 
 .day {
-  font-family: var(--font-body);
-  font-size: 9px;
-  color: rgba(255,255,255,0.26);
-  letter-spacing: 1px;
+  display: flex;
+  align-items: center;
+  gap: 1px;
+  justify-content: center;
+  flex-wrap: wrap;
+  max-width: 100%;
+}
+
+.dayChar {
+  font-family: var(--font-led);
+  font-size: 8px;
+  font-weight: 600;
+  color: var(--led-amber);
+  letter-spacing: 0;
+  line-height: 1;
+  /* LED glow per character */
+  text-shadow: 0 0 5px rgba(255, 149, 0, 0.7), 0 0 10px rgba(255, 149, 0, 0.35);
+  /* Tiny chip background */
+  background: rgba(255, 149, 0, 0.08);
+  border: 1px solid rgba(255, 149, 0, 0.25);
+  border-radius: 2px;
+  padding: 1px 1px 0;
+  /* Subtle pulse animation — staggered via nth-child */
+  animation: ledCharPulse 3s ease-in-out infinite;
+  animation-delay: calc(var(--char-index, 0) * 0.07s);
+}
+
+/* First 3 letters get slightly brighter to hint at abbreviation */
+.dayChar:nth-child(-n+3) {
+  color: var(--led-amber-warm);
+  text-shadow: 0 0 6px rgba(255, 179, 71, 0.8), 0 0 12px rgba(255, 179, 71, 0.4);
+}
+
+.daySpace {
+  width: 4px;
+}
+
+@keyframes ledCharPulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.75; }
 }
