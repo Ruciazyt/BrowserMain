@@ -1,3 +1,6 @@
+/* ── Container ───────────────────────────────────────────────── */
+.container { transition: all var(--dur-fast); }
+
 /* ── Icon ─────────────────────────────────────────────────────── */
 .iconWrapper {
   width: 36px; height: 36px;
@@ -96,10 +99,10 @@
 .cancelBtn:hover { background: var(--glass-white); color: rgba(255,255,255,0.70); }
 /* ── Focus / navigate ─────────────────────────────────────────── */
 .container.keyboardFocus, .container.navigating {
-  background: rgba(94, 231, 223, 0.10);
-  outline: 2px solid rgba(94, 231, 223, 0.60);
+  background: rgba(255, 149, 0, 0.10);
+  outline: 2px solid rgba(255, 149, 0, 0.60);
   outline-offset: 2px;
-  box-shadow: 0 0 12px rgba(94, 231, 223, 0.20);
+  box-shadow: 0 0 12px rgba(255, 149, 0, 0.30);
   transition: background var(--dur-fast), outline var(--dur-fast), box-shadow var(--dur-fast);
 }
 .keyboardHint {
@@ -111,4 +114,27 @@
   color: var(--led-amber); opacity: 0.75;
   white-space: nowrap; pointer-events: none; z-index: 20;
   box-shadow: 0 2px 8px rgba(0,0,0,0.30);
+}
+
+/* ── Drag-over drop zone indicator ─────────────────────────── */
+.container.dragOver {
+  background: rgba(255, 149, 0, 0.12);
+  outline: 1.5px solid rgba(255, 149, 0, 0.50);
+  outline-offset: 2px;
+  box-shadow: 0 0 14px rgba(255, 149, 0, 0.25);
+  transition: background var(--dur-fast), outline var(--dur-fast), box-shadow var(--dur-fast);
+}
+.container.dropBefore {
+  background: rgba(255, 149, 0, 0.12);
+  outline: 2px solid var(--led-amber);
+  outline-offset: -3px;
+  box-shadow: -3px 0 10px rgba(255, 149, 0, 0.35);
+  transition: background var(--dur-fast), outline var(--dur-fast), box-shadow var(--dur-fast);
+}
+.container.dropAfter {
+  background: rgba(255, 149, 0, 0.12);
+  outline: 2px solid var(--led-amber);
+  outline-offset: -3px;
+  box-shadow: 3px 0 10px rgba(255, 149, 0, 0.35);
+  transition: background var(--dur-fast), outline var(--dur-fast), box-shadow var(--dur-fast);
 }

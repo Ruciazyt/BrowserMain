@@ -89,10 +89,10 @@
 }
 .prevBtn:hover, .nextBtn:hover { background: var(--glass-white); border-color: rgba(255,255,255,0.30); color: rgba(255,255,255,0.95); }
 .getStartedBtn {
-  background: linear-gradient(135deg, rgba(94,231,223,0.85) 0%, rgba(59,130,246,0.85) 100%);
+  background: linear-gradient(135deg, var(--accent-aqua) 0%, var(--accent-violet) 100%);
   color: rgba(0,0,0,0.85); font-size: 13px; font-weight: 600;
   padding: 8px 20px; border-radius: var(--radius-md);
   border: none; cursor: pointer; transition: all var(--dur-fast); font-family: var(--font-body);
   box-shadow: 0 4px 16px rgba(94,231,223,0.25);
 }
-.getStartedBtn:hover { background: linear-gradient(135deg, rgba(94,231,223,1) 0%, rgba(59,130,246,1) 100%); box-shadow: 0 6px 24px rgba(94,231,223,0.40); transform: translateY(-1px); }
+.getStartedBtn:hover { background: linear-gradient(135deg, var(--accent-aqua) 0%, var(--accent-violet) 100%); box-shadow: 0 6px 24px rgba(94,231,223,0.40); transform: translateY(-1px); }

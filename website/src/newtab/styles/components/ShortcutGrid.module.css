@@ -32,7 +32,7 @@
   justify-content: center;
   align-items: center;
   gap: 12px;
-  margin-bottom: 12px;
+  margin-bottom: 8px;
 }
 
 .dot {
@@ -49,6 +49,31 @@
   border-radius: 50%;
   background: color-mix(in srgb, var(--led-amber) 15%, transparent);
   box-shadow: none;
+}
+
+/* ── Header row ─────────────────────────────────────────────── */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.count {
+  font-family: var(--font-led);
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--led-amber);
+  text-shadow: var(--shadow-led-glow);
+  opacity: 0.7;
+}
+
+.hint {
+  font-size: 10px;
+  color: rgba(255,255,255,0.22);
+  font-family: var(--font-led);
+  letter-spacing: 0.5px;
 }
 
 /* ── Shortcut Grid ──────────────────────────────────────────── */
