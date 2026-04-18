@@ -3,9 +3,7 @@
 
 .dotMatrix {
   position: relative;
-  display: grid;
-  grid-template-columns: repeat(8, 1fr);
-  gap: 4px; padding: 5px;
+  /* outer div is ONLY a positioned container — dots live in .layer children */
 }
 
 .layer {
@@ -15,8 +13,8 @@
   grid-template-columns: repeat(8, 1fr);
   gap: 4px; padding: 5px;
 }
-.oldLayer { opacity: 1; }
-.newLayer { opacity: 1; }
+.oldLayer { /* opacity driven by inline style */ }
+.newLayer { /* opacity driven by inline style */ }
 
 .dot {
   width: 5px; height: 5px; border-radius: 50%;

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from '../styles/components/LEDDisplay.module.css';
 
 const COLS = 8;
@@ -22,12 +22,12 @@ function buildDiagonalPattern(frame: number): number[] {
   return Array.from({ length: ROWS * COLS }, (_, i) => {
     const row = Math.floor(i / COLS);
     const col = i % COLS;
-    const diagonalIndex = row + col; // 0–14
+    const diagonalIndex = row + col; // 0-14
     return diagonalIndex === frame % 15 ? 1 : 0;
   });
 }
 
-// Evening: heartbeat — center pulses, ripples outward
+// Evening: heartbeat -- center pulses, ripples outward
 function buildHeartbeatPattern(frame: number): number[] {
   const center = { row: 3.5, col: 3.5 };
   return Array.from({ length: ROWS * COLS }, (_, i) => {
@@ -39,7 +39,7 @@ function buildHeartbeatPattern(frame: number): number[] {
   });
 }
 
-// Night: radar scan — sweeping line rotates across the matrix
+// Night: radar scan -- sweeping line rotates across the matrix
 function buildRadarPattern(frame: number): number[] {
   const cx = 3.5, cy = 3.5;
   const angle = (frame / 8) * Math.PI; // full sweep every 16 frames (8s at 500ms)
@@ -57,10 +57,10 @@ function buildRadarPattern(frame: number): number[] {
 type PatternFn = (frame: number) => number[];
 
 const PATTERNS: { fn: PatternFn; label: string }[] = [
-  { fn: (_) => PATTERN_MORNING,      label: 'Morning'   },  // 6–12
-  { fn: buildDiagonalPattern,        label: 'Afternoon' },  // 12–18
-  { fn: buildHeartbeatPattern,       label: 'Evening'   },  // 18–24
-  { fn: buildRadarPattern,           label: 'Night'     },  // 0–6
+  { fn: (_) => PATTERN_MORNING,      label: 'Morning'   },  // 6-12
+  { fn: buildDiagonalPattern,        label: 'Afternoon' },  // 12-18
+  { fn: buildHeartbeatPattern,       label: 'Evening'   },  // 18-24
+  { fn: buildRadarPattern,           label: 'Night'     },  // 0-6
 ];
 
 // ── Helpers ─────────────────────────────────────────────────────
@@ -69,35 +69,40 @@ function getTimeOfDayIndex(): number {
   if (h >= 6  && h < 12) return 0;
   if (h >= 12 && h < 18) return 1;
   if (h >= 18 && h < 24) return 2;
-  return 3; // 0–6
+  return 3; // 0-6
+}
+
+interface DotLayerProps {
+  pattern: number[];
+  className?: string;
+  style?: React.CSSProperties;
+}
+
+function DotLayer({ pattern, className, style }: DotLayerProps) {
+  return (
+    <div className={`${styles.layer} ${className ?? ''}`} style={style} aria-hidden="true">
+      {pattern.map((on, i) => {
+        const row = Math.floor(i / COLS);
+        const col = i % COLS;
+        const diagonalIndex = row + col;
+        return (
+          <div
+            key={i}
+            className={`${styles.dot} ${on ? '' : styles.off}`}
+            style={on ? ({ '--delay': `${diagonalIndex * 0.1}s` } as React.CSSProperties) : undefined}
+          />
+        );
+      })}
+    </div>
+  );
 }
 
 // ── Component ───────────────────────────────────────────────────
 export default function LEDDisplay() {
-  const timeIndex = useRef(getTimeOfDayIndex());
-  const [oldPatternIdx, setOldPatternIdx] = useState(timeIndex.current);
-  const [newPatternIdx, setNewPatternIdx] = useState(timeIndex.current);
+  const timeIndex = getTimeOfDayIndex();
+  const [patternIdx, setPatternIdx] = useState(timeIndex);
+  const [nextPatternIdx, setNextPatternIdx] = useState<number | null>(null);
   const [frame, setFrame] = useState(0);
-  const [isTransitioning, setIsTransitioning] = useState(false);
-
-  // Cycle pattern every 5 seconds with crossfade transition
-  useEffect(() => {
-    const id = setInterval(() => {
-      setNewPatternIdx(i => (i + 1) % PATTERNS.length);
-      setIsTransitioning(true);
-    }, 5000);
-    return () => clearInterval(id);
-  }, []);
-
-  // After 400ms crossfade completes: lock in final opacity states
-  useEffect(() => {
-    if (!isTransitioning) return;
-    const id = setTimeout(() => {
-      setOldPatternIdx(newPatternIdx);
-      setIsTransitioning(false);
-    }, 400);
-    return () => clearTimeout(id);
-  }, [isTransitioning, newPatternIdx]);
 
   // Advance animation frame at ~2fps for smooth wave/ripple/scan
   useEffect(() => {
@@ -105,63 +110,49 @@ export default function LEDDisplay() {
     return () => clearInterval(id);
   }, []);
 
-  const oldPattern = PATTERNS[oldPatternIdx].fn(frame);
-  const newPattern = PATTERNS[newPatternIdx].fn(frame);
-  const label = PATTERNS[newPatternIdx].label;
+  // Cycle pattern every 5 seconds with crossfade
+  useEffect(() => {
+    const id = setInterval(() => {
+      setNextPatternIdx(prev => {
+        const current = prev !== null ? prev : patternIdx;
+        return (current + 1) % PATTERNS.length;
+      });
+    }, 5000);
+    return () => clearInterval(id);
+  }, [patternIdx]);
 
-  // Crossfade: old fades 1→0, new fades 0→1 (both over 400ms)
-  // When transition ends, lock both to their final values inline so CSS class doesn't override.
-  const oldLayerStyle: React.CSSProperties = isTransitioning
+  // After 400ms crossfade completes, commit the new pattern
+  useEffect(() => {
+    if (nextPatternIdx === null) return;
+    const id = setTimeout(() => {
+      setPatternIdx(nextPatternIdx);
+      setNextPatternIdx(null);
+    }, 400);
+    return () => clearTimeout(id);
+  }, [nextPatternIdx]);
+
+  const currentPattern = PATTERNS[patternIdx].fn(frame);
+  const nextPattern = nextPatternIdx !== null ? PATTERNS[nextPatternIdx].fn(frame) : null;
+  const label = PATTERNS[patternIdx].label;
+  const isTransitioning = nextPatternIdx !== null;
+
+  // Crossfade: current fades 1->0, next fades 0->1 (CSS transition handles the animation)
+  const currentStyle: React.CSSProperties = isTransitioning
     ? { opacity: 0, transition: 'opacity 400ms ease-in-out' }
-    : { opacity: 0 }; // resting: invisible
+    : { opacity: 1 };
 
-  const newLayerStyle: React.CSSProperties = isTransitioning
+  const nextStyle: React.CSSProperties = isTransitioning
     ? { opacity: 1, transition: 'opacity 400ms ease-in-out' }
-    : { opacity: 1 }; // resting: visible
+    : { opacity: 0 };
 
   return (
     <div className={styles.container}>
+      {/* Grid host -- positions layers; dots live in the layer divs */}
       <div className={styles.dotMatrix}>
-        {/* Old pattern layer — fades out during crossfade */}
-        <div className={`${styles.dotMatrix} ${styles.layer} ${styles.oldLayer}`} style={oldLayerStyle}>
-          {oldPattern.map((on, i) => {
-            const row = Math.floor(i / COLS);
-            const col = i % COLS;
-            const diagonalIndex = row + col;
-            return (
-              <div
-                key={i}
-                className={`${styles.dot} ${on ? '' : styles.off}`}
-                style={
-                  on
-                    ? ({ '--delay': `${diagonalIndex * 0.1}s` } as React.CSSProperties)
-                    : undefined
-                }
-              />
-            );
-          })}
-        </div>
-        {/* New pattern layer — fades in during crossfade */}
-        <div className={`${styles.dotMatrix} ${styles.layer} ${styles.newLayer}`} style={newLayerStyle}>
-          {newPattern.map((on, i) => {
-            const row = Math.floor(i / COLS);
-            const col = i % COLS;
-            const diagonalIndex = row + col;
-            return (
-              <div
-                key={i}
-                className={`${styles.dot} ${on ? '' : styles.off}`}
-                style={
-                  on
-                    ? ({ '--delay': `${diagonalIndex * 0.1}s` } as React.CSSProperties)
-                    : undefined
-                }
-              />
-            );
-          })}
-        </div>
+        <DotLayer pattern={currentPattern} style={currentStyle} />
+        {nextPattern && <DotLayer pattern={nextPattern} style={nextStyle} />}
       </div>
-      <div className={styles.label}>{label}</div>
+      <div className={styles.label} aria-label={`Time of day: ${label}`}>{label}</div>
     </div>
   );
 }
