@@ -53,25 +53,47 @@
 .emptyTitle { font-size: 14px; color: rgba(255,255,255,0.48); margin-bottom: 6px; }
 .emptyHint { font-size: 12px; color: rgba(255,255,255,0.25); }
 
-/* Add tile */
+/* Add tile — glass style */
 .addTile {
+  position: relative;
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   padding: 10px 6px;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   cursor: pointer;
-  background: transparent;
-  border: 1px dashed rgba(255,255,255,0.12);
-  transition: all var(--dur-fast);
-  min-height: 74px;
-  color: rgba(255,255,255,0.30);
-}
-.addTile:hover {
   background: var(--glass-white);
-  border-color: rgba(255,255,255,0.22);
-  color: rgba(255,255,255,0.65);
-  transform: translateY(-2px);
+  backdrop-filter: var(--blur-sm);
+  -webkit-backdrop-filter: var(--blur-sm);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--shadow-glass);
+  transition: all var(--dur-fast) var(--ease-liquid);
+  min-height: 74px;
+  color: rgba(255,255,255,0.45);
 }
-.addTileIcon { font-size: 22px; line-height: 1; opacity: 0.6; margin-bottom: 4px; }
+
+/* Top edge refraction */
+.addTile::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 6px; right: 6px;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    rgba(255,255,255,0) 0%,
+    rgba(255,255,255,0.40) 40%,
+    rgba(255,255,255,0) 100%
+  );
+  pointer-events: none;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+
+.addTile:hover {
+  background: var(--glass-white-md);
+  border-color: rgba(255,255,255,0.28);
+  color: rgba(255,255,255,0.80);
+  transform: translateY(-2px) scale(1.04);
+  box-shadow: var(--shadow-float);
+}
+.addTileIcon { font-size: 22px; line-height: 1; opacity: 0.7; margin-bottom: 4px; }
 .addTileLabel { font-size: 10px; letter-spacing: 0.3px; }
 
 .draggingOver { outline: 2px dashed rgba(94,231,223,0.4); outline-offset: 2px; border-radius: var(--radius-lg); }
