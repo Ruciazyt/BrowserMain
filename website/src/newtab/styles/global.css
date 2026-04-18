@@ -15,7 +15,6 @@
   --led-amber-warm: #ffb347;
   --led-amber-rgb: 255, 149, 0;
   --led-amber-glow: rgba(255, 149, 0, 0.6);
-  --led-amber-mid: rgba(255, 149, 0, 0.35);
   --led-amber-soft: rgba(255, 149, 0, 0.35);
 
   /* Panel Colors */

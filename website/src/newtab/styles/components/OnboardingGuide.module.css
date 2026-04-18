@@ -33,6 +33,7 @@
   height: 2px;
   background: linear-gradient(90deg, var(--accent-aqua) 0%, var(--accent-violet) 50%, var(--accent-rose) 100%);
   pointer-events: none; z-index: 10;
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
 }
 
 /* ── Header ───────────────────────────────────────────────────── */
