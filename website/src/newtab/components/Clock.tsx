@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import styles from '../styles/components/Clock.module.css';
 
 const DECORATIVE_DOTS = [1, 0, 1, 0, 1, 0, 1, 0];
@@ -8,6 +8,12 @@ export default function Clock() {
   const [date, setDate] = useState('');
   const [day, setDay] = useState('');
   const [is24h, setIs24h] = useState(true);
+  const is24hRef = useRef(is24h);
+
+  // Keep ref in sync with state
+  useEffect(() => {
+    is24hRef.current = is24h;
+  }, [is24h]);
 
   // Load 12/24h preference on mount
   useEffect(() => {
@@ -32,7 +38,7 @@ export default function Clock() {
       const mm = now.getMinutes().toString().padStart(2, '0');
       const ss = now.getSeconds().toString().padStart(2, '0');
       let ampm = '';
-      if (!is24h) {
+      if (!is24hRef.current) {
         ampm = hh >= 12 ? ' PM' : ' AM';
         hh = hh % 12 || 12;
       }
@@ -47,7 +53,7 @@ export default function Clock() {
     update();
     const interval = setInterval(update, 1000);
     return () => clearInterval(interval);
-  }, [is24h]);
+  }, []);
 
   return (
     <div className={styles.panel}>
