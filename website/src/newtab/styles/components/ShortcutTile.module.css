@@ -47,7 +47,7 @@
   border: none; cursor: pointer; line-height: 1;
 }
 .container:hover .deleteBtn { opacity: 1; }
-.deleteBtn:hover { background: rgba(239,68,68,0.70); color: #fff; }
+.deleteBtn:hover { background: rgba(239,68,68,0.70); color: var(--text-bright); }
 
 /* ── Context menu ─────────────────────────────────────────────── */
 .contextMenu {
@@ -129,7 +129,7 @@
 }
 .keyboardHint {
   position: absolute; bottom: -24px; left: 50%; transform: translateX(-50%);
-  background: rgba(12,14,24,0.95);
+  background: var(--bg-primary);
   border: 1px solid rgba(255,255,255,0.14);
   border-radius: var(--radius-sm);
   padding: 3px 8px; font-size: 10px;
