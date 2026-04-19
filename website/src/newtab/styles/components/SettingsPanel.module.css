@@ -118,7 +118,7 @@
 
 .imageSection { margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
 .imageRow { display: flex; align-items: center; gap: 6px; position: relative; }
-.imageInputWrapper { flex: 1; position: relative; display: flex; align-items: center; }
+.imageInputWrapper { flex: 1; position: relative; display: flex; align-items: center; min-width: 0; }
 .imageInput {
   flex: 1; padding: 7px 32px 7px 10px; border-radius: var(--radius-md);
   font-size: 12px;
@@ -196,6 +196,8 @@
   border: 1px solid rgba(255,255,255,0.10);
   color: rgba(255,255,255,0.85); outline: none;
   transition: border-color var(--dur-fast);
+  min-width: 0;
+  word-break: break-word;
 }
 .displayNameInput::placeholder { color: rgba(255,255,255,0.28); }
 .displayNameInput:focus { border-color: rgba(94,231,223,0.45); }

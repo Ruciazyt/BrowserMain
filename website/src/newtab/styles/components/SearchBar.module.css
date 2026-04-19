@@ -3,6 +3,7 @@
   width: 100%;
   max-width: 500px;
   transition: max-width 0.35s ease;
+  min-width: 0;
 }
 
 .outer:focus-within {
@@ -93,6 +94,8 @@
   border: 1px solid rgba(255, 255, 255, 0.22);
   border-radius: 12px;
   overflow: hidden;
+  max-height: 420px;
+  overflow-y: auto;
   box-shadow:
     0 2px 0 rgba(0, 0, 0, 0.35) inset,
     0 16px 48px rgba(0, 0, 0, 0.65);

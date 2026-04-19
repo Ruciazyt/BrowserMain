@@ -47,6 +47,8 @@
   align-self: start;
   width: 100%;
   max-width: 92px;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .sortableItem:active {
