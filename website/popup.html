@@ -254,6 +254,10 @@
       border-bottom: 2px solid var(--accent-aqua);
       transform: rotate(-45deg) translate(1px, -1px);
     }
+
+    datalist {
+      display: none;
+    }
   </style>
 </head>
 <body>
@@ -291,6 +295,19 @@
       >
     </div>
 
+    <div class="field">
+      <label for="group-input">Group <span style="opacity:0.4;font-size:9px">(optional)</span></label>
+      <input
+        id="group-input"
+        type="text"
+        placeholder="e.g. Work, Social"
+        autocomplete="off"
+        spellcheck="false"
+        list="group-suggestions"
+      >
+      <datalist id="group-suggestions"></datalist>
+    </div>
+
     <div class="msg-bar" id="msg-bar"></div>
 
     <div class="btn-row">
@@ -308,29 +325,95 @@
     (function () {
       'use strict';
 
-      var urlInput      = document.getElementById('url-input');
-      var titleInput   = document.getElementById('title-input');
-      var faviconPrev   = document.getElementById('favicon-preview');
-      var faviconDomain = document.getElementById('favicon-domain');
-      var msgBar        = document.getElementById('msg-bar');
-      var form          = document.getElementById('form');
-      var btnSave       = document.getElementById('btn-save');
-      var btnCancel     = document.getElementById('btn-cancel');
-      var successFlash  = document.getElementById('success-flash');
+      const urlInput = document.getElementById('url-input');
+      const titleInput = document.getElementById('title-input');
+      const groupInput = document.getElementById('group-input');
+      const faviconPreview = document.getElementById('favicon-preview');
+      const faviconDomain = document.getElementById('favicon-domain');
+      const msgBar = document.getElementById('msg-bar');
+      const form = document.getElementById('form');
+      const btnSave = document.getElementById('btn-save');
+      const btnCancel = document.getElementById('btn-cancel');
+      const successFlash = document.getElementById('success-flash');
+      const groupDatalist = document.getElementById('group-suggestions');
 
-      // ── Helpers ──────────────────────────────────────────────────
+      // ── URL param helpers ────────────────────────────────────────────────────
+
+      function getUrlParam(name) {
+        const params = new URLSearchParams(window.location.search);
+        return params.get(name) || '';
+      }
 
       function getSmartFavicon(url) {
         try {
-          var hostname = new URL(url).hostname;
+          const { hostname } = new URL(url);
           return 'https://www.google.com/s2/favicons?domain=' + encodeURIComponent(hostname) + '&sz=64';
-        } catch (e) {
+        } catch {
           return '';
         }
       }
 
-      function showMsg(msg, type) {
-        msgBar.className = 'msg-bar visible ' + type;
+      // ── Init from URL params ────────────────────────────────────────────────
+
+      const initUrl = decodeURIComponent(getUrlParam('add_url'));
+      const initTitle = decodeURIComponent(getUrlParam('add_title'));
+      let initFavicon = decodeURIComponent(getUrlParam('add_favicon'));
+
+      urlInput.value = initUrl;
+      titleInput.value = initTitle;
+
+      if (initFavicon) {
+        faviconPreview.src = initFavicon;
+      } else if (initUrl) {
+        faviconPreview.src = getSmartFavicon(initUrl);
+      }
+
+      if (initUrl) {
+        try {
+          faviconDomain.textContent = new URL(initUrl).hostname;
+        } catch {
+          faviconDomain.textContent = initUrl;
+        }
+      }
+
+      // ── Dynamic favicon on URL change ───────────────────────────────────────
+
+      urlInput.addEventListener('input', function () {
+        const val = urlInput.value.trim();
+        urlInput.classList.remove('input-error');
+        clearMsg();
+
+        if (val) {
+          try {
+            const { hostname } = new URL(val);
+            faviconDomain.textContent = hostname;
+            faviconPreview.src = getSmartFavicon(val);
+          } catch {
+            faviconDomain.textContent = val;
+            faviconPreview.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+          }
+        } else {
+          faviconDomain.textContent = '—';
+          faviconPreview.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+        }
+      });
+
+      // ── Clear error on input ─────────────────────────────────────────────────
+
+      urlInput.addEventListener('input', function () {
+        urlInput.classList.remove('input-error');
+        clearMsg();
+      });
+
+      // ── Helpers ───────────────────────────────────────────────────────────────
+
+      function showError(msg) {
+        msgBar.className = 'msg-bar visible error';
+        msgBar.textContent = msg;
+      }
+
+      function showWarning(msg) {
+        msgBar.className = 'msg-bar visible warning';
         msgBar.textContent = msg;
       }
 
@@ -339,99 +422,94 @@
         msgBar.textContent = '';
       }
 
-      function isValidUrl(val) {
+      function validateUrl(val) {
         try {
-          var u = new URL(val);
+          const u = new URL(val);
           return u.protocol === 'http:' || u.protocol === 'https:';
-        } catch (e) {
+        } catch {
           return false;
         }
       }
 
-      // ── Dynamic favicon on URL change ────────────────────────────
-
-      urlInput.addEventListener('input', function () {
-        var val = urlInput.value.trim();
-        urlInput.classList.remove('input-error');
-        clearMsg();
-
-        if (val) {
-          try {
-            var u = new URL(val);
-            faviconDomain.textContent = u.hostname;
-            faviconPrev.src = getSmartFavicon(val);
-          } catch (e) {
-            faviconDomain.textContent = val;
-            faviconPrev.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
-          }
-        } else {
-          faviconDomain.textContent = '—';
-          faviconPrev.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
-        }
-      });
-
-      // ── Save ────────────────────────────────────────────────────
+      // ── Save ─────────────────────────────────────────────────────────────────
 
       form.addEventListener('submit', function (e) {
         e.preventDefault();
         clearMsg();
 
-        var url = urlInput.value.trim();
-        var title = titleInput.value.trim();
+        const url = urlInput.value.trim();
+        const title = titleInput.value.trim();
 
         if (!url) {
           urlInput.classList.add('input-error');
-          showMsg('URL is required', 'error');
+          showError('URL is required');
           urlInput.focus();
           return;
         }
 
-        if (!isValidUrl(url)) {
+        if (!validateUrl(url)) {
           urlInput.classList.add('input-error');
-          showMsg('Enter a valid http/https URL', 'error');
+          showError('Enter a valid http/https URL');
           urlInput.focus();
           return;
         }
 
-        var favicon = faviconPrev.src && !faviconPrev.src.startsWith('data:')
-          ? faviconPrev.src
+        const favicon = faviconPreview.src && !faviconPreview.src.startsWith('data:')
+          ? faviconPreview.src
           : getSmartFavicon(url);
+
+        const group = groupInput.value.trim() || undefined;
 
         btnSave.disabled = true;
 
         chrome.runtime.sendMessage(
-          { type: 'ADD_SHORTCUT', url: url, title: title, favicon: favicon },
+          { type: 'ADD_SHORTCUT', url, title, favicon, group },
           function (response) {
             btnSave.disabled = false;
 
             if (chrome.runtime.lastError) {
-              showMsg('Extension error: ' + chrome.runtime.lastError.message, 'error');
+              showError('Extension error: ' + chrome.runtime.lastError.message);
               return;
             }
 
             if (response && response.success) {
+              chrome.runtime.sendMessage({ type: 'SHORTCUT_ADDED' });
               form.style.display = 'none';
               successFlash.classList.add('visible');
               setTimeout(function () { window.close(); }, 800);
             } else if (response && response.duplicate) {
-              showMsg('Already in your shortcuts', 'warning');
+              showWarning('Already in your shortcuts');
             } else {
-              showMsg('Could not save. Try again.', 'error');
+              showError('Could not save. Try again.');
             }
           }
         );
       });
 
-      // ── Cancel ──────────────────────────────────────────────────
+      // ── Cancel ────────────────────────────────────────────────────────────────
 
       btnCancel.addEventListener('click', function () {
         window.close();
       });
 
-      // ── Escape closes popup ────────────────────────────────────
+      // ── Escape closes popup ───────────────────────────────────────────────────
 
       document.addEventListener('keydown', function (e) {
         if (e.key === 'Escape') window.close();
+      });
+
+      // ── Load existing groups for datalist suggestions ─────────────────────────
+
+      chrome.storage.local.get('browsermain_shortcuts', function (result) {
+        const shortcuts = result['browsermain_shortcuts'] || [];
+        const groups = Array.from(
+          new Set(shortcuts.map(function (s) { return s.group; }).filter(function (g) { return !!g; }))
+        ).sort();
+        groups.forEach(function (g) {
+          const option = document.createElement('option');
+          option.value = g;
+          groupDatalist.appendChild(option);
+        });
       });
 
     }());
