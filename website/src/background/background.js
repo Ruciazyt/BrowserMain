@@ -119,8 +119,8 @@ chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
     const { url, title, favicon, group } = msg;
 
     getShortcuts().then((shortcuts) => {
-      // Duplicate check
-      if (shortcuts.some((s) => s.url === url)) {
+      // Duplicate check (case-insensitive)
+      if (shortcuts.some((s) => s.url.toLowerCase() === url.toLowerCase())) {
         sendResponse({ success: false, duplicate: true });
         return;
       }
@@ -131,7 +131,7 @@ chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
         title: title || '',
         favicon: favicon || '',
         group: group || undefined,
-        createdAt: Date.now(),
+        order: shortcuts.length,
       };
 
       shortcuts.unshift(entry);
