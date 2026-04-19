@@ -24,6 +24,12 @@ export default function ShortcutGrid({ shortcuts, onDelete, onUpdate, onReorder,
   const [dropPosition, setDropPosition] = useState<'before' | 'after' | null>(null);
   const [isDraggingAny, setIsDraggingAny] = useState(false);
 
+  // All existing group names for autocomplete suggestions
+  const existingGroups = useMemo(() =>
+    Array.from(new Set(shortcuts.map(s => s.group).filter((g): g is string => !!g))).sort(),
+    [shortcuts]
+  );
+
   // Group shortcuts: undefined/null group → 'Default'
   const groups = useMemo<Group[]>(() => {
     const groupMap = new Map<string, Shortcut[]>();
@@ -174,6 +180,7 @@ export default function ShortcutGrid({ shortcuts, onDelete, onUpdate, onReorder,
                         onDrop={handleDrop}
                         onMoveLeft={() => handleMoveLeft(globalIdx)}
                         onMoveRight={() => handleMoveRight(globalIdx)}
+                        existingGroups={existingGroups}
                       />
                     );
                   })}

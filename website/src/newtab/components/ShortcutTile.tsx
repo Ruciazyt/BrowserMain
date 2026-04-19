@@ -27,6 +27,7 @@ interface ShortcutTileProps {
   onDrop: () => void;
   onMoveLeft?: (index: number) => void;
   onMoveRight?: (index: number) => void;
+  existingGroups?: string[];
 }
 
 export default function ShortcutTile({
@@ -44,12 +45,14 @@ export default function ShortcutTile({
   onDrop,
   onMoveLeft,
   onMoveRight,
+  existingGroups,
 }: ShortcutTileProps) {
   const [showContextMenu, setShowContextMenu] = useState(false);
   const [contextMenuPos, setContextMenuPos] = useState({ x: 0, y: 0 });
   const [editMode, setEditMode] = useState(false);
   const [editTitle, setEditTitle] = useState(shortcut.title);
   const [editUrl, setEditUrl] = useState(shortcut.url);
+  const [editGroup, setEditGroup] = useState(shortcut.group || '');
   const [editFaviconSrc, setEditFaviconSrc] = useState(shortcut.favicon || getSmartFaviconUrl(shortcut.url));
   const [editFaviconTriedIco, setEditFaviconTriedIco] = useState(false);
   const [editError, setEditError] = useState(false);
@@ -188,6 +191,7 @@ export default function ShortcutTile({
     setShowContextMenu(false);
     setEditTitle(shortcut.title);
     setEditUrl(shortcut.url);
+    setEditGroup(shortcut.group || '');
     setEditFaviconSrc(shortcut.favicon || getSmartFaviconUrl(shortcut.url));
     setEditFaviconTriedIco(false);
     setEditError(false);
@@ -196,7 +200,7 @@ export default function ShortcutTile({
 
   const handleSaveEdit = () => {
     if (editTitle.trim() && editUrl.trim()) {
-      onUpdate(shortcut.id, { title: editTitle.trim(), url: editUrl.trim(), favicon: editFaviconSrc });
+      onUpdate(shortcut.id, { title: editTitle.trim(), url: editUrl.trim(), favicon: editFaviconSrc, group: editGroup.trim() || undefined });
       setEditMode(false);
     } else {
       setEditError(true);
@@ -234,6 +238,20 @@ export default function ShortcutTile({
           onChange={(e) => { setEditUrl(e.target.value); setEditError(false); }}
           placeholder="URL"
         />
+        <input
+          className={`${styles.editInput} ${styles.editGroupInput}`}
+          value={editGroup}
+          onChange={(e) => setEditGroup(e.target.value)}
+          placeholder="Group (optional)"
+          list={existingGroups && existingGroups.length > 0 ? "edit-shortcut-group-suggestions" : undefined}
+        />
+        {existingGroups && existingGroups.length > 0 && (
+          <datalist id="edit-shortcut-group-suggestions">
+            {existingGroups.filter(g => g !== shortcut.group).map((g) => (
+              <option key={g} value={g} />
+            ))}
+          </datalist>
+        )}
         <div className={styles.editActions}>
           <button className={styles.saveBtn} onClick={handleSaveEdit}>Save</button>
           <button className={styles.cancelBtn} onClick={handleCancelEdit}>Cancel</button>

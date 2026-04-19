@@ -107,7 +107,7 @@
   border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
   background: var(--led-amber);
-  border: 1px solid color-mix(in srgb, var(--led-amber) 40%, transparent);
+  border: 1px solid rgba(255, 149, 0, 0.40);
   color: rgba(255,255,255,0.90);
   flex-shrink: 0;
   transition: all var(--dur-fast);
@@ -145,8 +145,8 @@
   display: inline-flex;
   align-items: center;
   padding: 2px 8px;
-  background: color-mix(in srgb, var(--led-amber) 12%, transparent);
-  border: 1px solid color-mix(in srgb, var(--led-amber) 30%, transparent);
+  background: rgba(255, 149, 0, 0.12);
+  border: 1px solid rgba(255, 149, 0, 0.30);
   border-radius: 6px;
   color: var(--led-amber);
   font-family: var(--font-led);
@@ -160,9 +160,9 @@
 }
 
 .kbdBadge:hover {
-  background: color-mix(in srgb, var(--led-amber) 20%, transparent);
+  background: rgba(255, 149, 0, 0.20);
   border-color: var(--led-amber);
-  box-shadow: 0 0 10px var(--led-amber-soft), 0 0 20px color-mix(in srgb, var(--led-amber) 25%, transparent);
+  box-shadow: 0 0 10px var(--led-amber-soft), 0 0 20px rgba(255, 149, 0, 0.25);
 }
 
 .kbdBadge svg {

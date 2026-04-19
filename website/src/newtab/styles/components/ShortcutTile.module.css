@@ -30,8 +30,8 @@
   border-radius: var(--radius-sm);
   overflow: hidden;
   display: flex; align-items: center; justify-content: center;
-  background: linear-gradient(135deg, color-mix(in srgb, var(--led-amber) 20%, transparent) 0%, color-mix(in srgb, var(--led-amber) 10%, transparent) 100%);
-  border: 1px solid color-mix(in srgb, var(--led-amber) 30%, transparent);
+  background: linear-gradient(135deg, rgba(255, 149, 0, 0.20) 0%, rgba(255, 149, 0, 0.10) 100%);
+  border: 1px solid rgba(255, 149, 0, 0.30);
   flex-shrink: 0;
 }
 .iconWrapper img { width: 20px; height: 20px; object-fit: contain; border-radius: 3px; }
@@ -134,17 +134,17 @@
   transition: border-color var(--dur-fast);
   width: 100%;
 }
-.editInput:focus { border-color: color-mix(in srgb, var(--led-amber) 55%, transparent); }
+.editInput:focus { border-color: rgba(255, 149, 0, 0.55); }
 .editActions { display: flex; gap: 4px; }
 .saveBtn {
   flex: 1; padding: 4px 8px;
-  background: linear-gradient(135deg, color-mix(in srgb, var(--led-amber) 40%, transparent) 0%, color-mix(in srgb, var(--led-amber) 20%, transparent) 100%);
-  border: 1px solid color-mix(in srgb, var(--led-amber) 40%, transparent);
+  background: linear-gradient(135deg, rgba(255, 149, 0, 0.40) 0%, rgba(255, 149, 0, 0.20) 100%);
+  border: 1px solid rgba(255, 149, 0, 0.40);
   color: rgba(255,255,255,0.90);
   border-radius: var(--radius-sm); font-size: 11px; font-weight: 500;
   cursor: pointer; transition: background var(--dur-fast);
 }
-.saveBtn:hover { background: linear-gradient(135deg, color-mix(in srgb, var(--led-amber) 60%, transparent) 0%, color-mix(in srgb, var(--accent-aqua) 50%, transparent) 100%); }
+.saveBtn:hover { background: linear-gradient(135deg, rgba(255, 149, 0, 0.60) 0%, rgba(94, 231, 223, 0.50) 100%); }
 .cancelBtn {
   flex: 1; padding: 4px 8px;
   background: transparent;
@@ -154,6 +154,16 @@
   cursor: pointer; transition: all var(--dur-fast);
 }
 .cancelBtn:hover { background: var(--glass-white); color: rgba(255,255,255,0.70); }
+/* ── Group edit input ─────────────────────────────────────────── */
+.editGroupInput {
+  width: 100%;
+  margin-top: 6px;
+  font-size: 11px;
+  opacity: 0.7;
+}
+.editGroupInput::placeholder {
+  opacity: 0.5;
+}
 /* ── Focus / navigate ─────────────────────────────────────────── */
 .container.keyboardFocus, .container.navigating {
   background: rgba(255, 149, 0, 0.12);

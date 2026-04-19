@@ -48,7 +48,7 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: color-mix(in srgb, var(--led-amber) 15%, transparent);
+  background: rgba(255, 149, 0, 0.15);
   box-shadow: none;
 }
 
