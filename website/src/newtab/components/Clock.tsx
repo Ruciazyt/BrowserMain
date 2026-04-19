@@ -16,7 +16,7 @@ function formatTime(is24h: boolean) {
     dispHh = hh % 12 || 12;
   }
   const hhStr = dispHh.toString().padStart(2, '0');
-  const time = `${hhStr}:${mm}:${ss}${ampm}`;
+  const time = is24h ? `${hhStr}:${mm}:${ss}` : `${hhStr}:${mm}${ampm}`;
   const yyyy = now.getFullYear();
   const mo = (now.getMonth() + 1).toString().padStart(2, '0');
   const dd = now.getDate().toString().padStart(2, '0');

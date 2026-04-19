@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import { getSmartFaviconUrl, getFaviconIcoUrl, getDomainFromUrl } from '../utils/storage';
 import { isMac } from '../utils/platform';
 import { isUrl } from '../utils/engines';
@@ -152,22 +152,31 @@ export default function ShortcutTile({
   const handleContextMenu = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    const MENU_WIDTH = 120;
-    const MENU_HEIGHT = 80;
-    const EDGE_BUFFER = 8;
-    let x = e.clientX;
-    let y = e.clientY;
-    if (x + MENU_WIDTH + EDGE_BUFFER > window.innerWidth) {
-      x = window.innerWidth - MENU_WIDTH - EDGE_BUFFER;
-    }
-    if (x < EDGE_BUFFER) x = EDGE_BUFFER;
-    if (y + MENU_HEIGHT + EDGE_BUFFER > window.innerHeight) {
-      y = window.innerHeight - MENU_HEIGHT - EDGE_BUFFER;
-    }
-    if (y < EDGE_BUFFER) y = EDGE_BUFFER;
-    setContextMenuPos({ x, y });
+    setContextMenuPos({ x: e.clientX, y: e.clientY });
     setShowContextMenu(true);
   };
+
+  // Measure actual menu dimensions and adjust position to avoid viewport overflow
+  useLayoutEffect(() => {
+    if (!showContextMenu || !contextMenuRef.current) return;
+    const menu = contextMenuRef.current;
+    const menuWidth = menu.offsetWidth;
+    const menuHeight = menu.offsetHeight;
+    const EDGE_BUFFER = 8;
+    setContextMenuPos((prev) => {
+      let x = prev.x;
+      let y = prev.y;
+      if (x + menuWidth + EDGE_BUFFER > window.innerWidth) {
+        x = window.innerWidth - menuWidth - EDGE_BUFFER;
+      }
+      if (x < EDGE_BUFFER) x = EDGE_BUFFER;
+      if (y + menuHeight + EDGE_BUFFER > window.innerHeight) {
+        y = window.innerHeight - menuHeight - EDGE_BUFFER;
+      }
+      if (y < EDGE_BUFFER) y = EDGE_BUFFER;
+      return { x, y };
+    });
+  }, [showContextMenu]);
 
   // When editUrl changes in edit mode, auto-update the favicon
   useEffect(() => {
