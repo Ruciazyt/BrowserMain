@@ -76,14 +76,28 @@ export function useBookmarkImport() {
             skipped++;
             return false;
           }
+          // Validate http/https URL before creating shortcut
+          if (!url.startsWith('http://') && !url.startsWith('https://')) {
+            return false;
+          }
+          try {
+            new URL(url);
+          } catch {
+            return false;
+          }
           return true;
         })
-        .map((url, i) => ({
-          id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
-          title: new URL(url).hostname.replace(/^www\./, ''),
-          url,
-          order: existing.length + i,
-        }));
+        .map((url, i) => {
+          const { hostname } = new URL(url);
+          const domain = encodeURIComponent(hostname);
+          return {
+            id: `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`,
+            title: hostname.replace(/^www\./, ''),
+            url,
+            favicon: `https://www.google.com/s2/favicons?domain=${domain}&sz=64`,
+            order: existing.length + i,
+          };
+        });
 
       if (newShortcuts.length > 0) {
         await saveShortcuts([...existing, ...newShortcuts]);
