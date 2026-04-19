@@ -37,7 +37,7 @@
     },
     "add-shortcut": {
       "suggested_key": {
-        "default": "Command+Shift+U",
+        "default": "Ctrl+Shift+U",
         "mac": "Command+Shift+U",
         "linux": "Ctrl+Shift+U"
       },

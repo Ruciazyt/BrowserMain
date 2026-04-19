@@ -60,7 +60,6 @@ export default function ShortcutTile({
   const [faviconTriedIco, setFaviconTriedIco] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const contextMenuRef = useRef<HTMLDivElement>(null);
-  const navigatingRef = useRef(false);
 
   // When shortcut changes, reset favicon state
   useEffect(() => {
@@ -95,12 +94,10 @@ export default function ShortcutTile({
     if (e.key === 'ArrowLeft') {
       e.preventDefault();
       setIsNavigating(true);
-      navigatingRef.current = true;
       onMoveLeft?.(index);
     } else if (e.key === 'ArrowRight') {
       e.preventDefault();
       setIsNavigating(true);
-      navigatingRef.current = true;
       onMoveRight?.(index);
     } else if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
@@ -269,7 +266,6 @@ export default function ShortcutTile({
         onBlur={() => {
           setIsNavigating(false);
           setKeyboardFocus(false);
-          navigatingRef.current = false;
         }}
       >
         <div className={styles.iconWrapper}>

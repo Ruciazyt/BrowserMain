@@ -82,7 +82,7 @@ export default function Clock() {
           {day.split('').map((char, i) => (
             char === ' '
               ? <span key={i} className={styles.daySpace}> </span>
-              : <span key={i} className={styles.dayChar}>{char}</span>
+              : <span key={i} className={styles.dayChar} style={{ '--char-index': i } as React.CSSProperties}>{char}</span>
           ))}
         </div>
         <div
