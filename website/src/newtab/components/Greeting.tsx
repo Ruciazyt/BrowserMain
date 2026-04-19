@@ -14,21 +14,25 @@ function getGreeting(hour: number): string {
 
 export default function Greeting({ userName }: { userName?: string }) {
   const [greeting, setGreeting] = useState('');
-  const [, forceUpdate] = useState(0);
-  const lastDayRef = useRef<number>(-1);
+  // Track last hour to detect boundary crossings (midnight etc.)
+  const lastHourRef = useRef<number>(-1);
+  // Trigger re-render when hour changes so greeting text updates immediately
+  const [, onHourChange] = useState(0);
 
   useEffect(() => {
     const update = () => {
       const now = new Date();
-      const currentDay = now.getDate();
-      if (currentDay !== lastDayRef.current) {
-        lastDayRef.current = currentDay;
-        forceUpdate(n => n + 1);
+      const currentHour = now.getHours();
+      setGreeting(getGreeting(currentHour));
+      // Detect hour boundary crossing (e.g. 23:59 → 00:00 midnight)
+      if (currentHour !== lastHourRef.current) {
+        lastHourRef.current = currentHour;
+        onHourChange((n) => n + 1);
       }
-      setGreeting(getGreeting(now.getHours()));
     };
     update();
-    const interval = setInterval(update, 30000);
+    // Poll every 60 s — greeting only changes at hour boundaries, 30 s was wasteful
+    const interval = setInterval(update, 60000);
     return () => clearInterval(interval);
   }, []);
 
