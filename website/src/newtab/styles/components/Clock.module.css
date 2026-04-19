@@ -1,60 +1,30 @@
-/* ── Clock — compact rounded square ──────────────────────────── */
-.panel {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  padding: 12px 12px 6px;
-}
-
-.dotRow {
-  display: flex;
-  gap: 4px;
-  align-items: center;
-  padding: 2px 0;
-}
-.dotRow::before,
-.dotRow::after {
-  content: '';
-  display: block;
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: var(--led-amber);
-  box-shadow: 0 0 4px var(--led-amber-glow, rgba(255, 149, 0, 0.6));
-}
-
-.container {
+/* ── Clock — 云端神庙：大号时间 + 细日期 ─────────────────────── */
+.heroClock {
   cursor: pointer;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 3px;
+  user-select: none;
   transition: opacity var(--dur-fast);
 }
-.container:hover { opacity: 0.82; }
+
+.heroClock:hover {
+  opacity: 0.92;
+}
 
 .time {
-  font-family: var(--font-led);
-  font-size: 22px;
-  font-weight: 300;
-  color: var(--led-amber);
-  letter-spacing: 2px;
-  line-height: 1;
-  text-shadow: var(--shadow-led-glow);
+  font-family: var(--font-ui), 'Segoe UI', system-ui, sans-serif;
+  font-size: clamp(2.5rem, 8vw, 4rem);
+  font-weight: 200;
+  letter-spacing: 0.2em;
+  line-height: 1.1;
+  color: rgba(255, 255, 255, 0.96);
+  text-shadow: 0 4px 24px rgba(0, 0, 0, 0.35), 0 2px 8px rgba(0, 0, 0, 0.2);
+  margin-bottom: 0.35em;
 }
 
-.date {
+.dateLine {
   font-family: var(--font-body);
-  font-size: 10px;
+  font-size: clamp(0.85rem, 2vw, 1rem);
   font-weight: 400;
-  color: var(--led-amber);
-  opacity: 0.55;
-  letter-spacing: 1px;
-}
-
-.day {
-  font-family: var(--font-body);
-  font-size: 9px;
-  color: rgba(255,255,255,0.26);
-  letter-spacing: 1px;
+  letter-spacing: 0.12em;
+  color: rgba(255, 255, 255, 0.72);
+  text-shadow: 0 2px 12px rgba(0, 0, 0, 0.25);
 }

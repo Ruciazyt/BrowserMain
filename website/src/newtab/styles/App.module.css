@@ -13,13 +13,12 @@
   z-index: 1;
 }
 
-/* ── Header ─────────────────────────────────────────────────── */
+/* ── Header (云端神庙风格) ─────────────────────────────────── */
 .header {
   width: 100%;
   max-width: 720px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
   align-items: center;
   position: relative;
   z-index: 1;
@@ -29,16 +28,44 @@
   box-shadow: none;
 }
 
-/* ── Content column ─────────────────────────────────────────── */
-.content {
+.hero {
   width: 100%;
-  max-width: 720px;
+  text-align: center;
+  padding-top: clamp(24px, 8vh, 56px);
+  animation: fadeInDown 1s ease-out;
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-1rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.searchRow {
+  width: 100%;
   display: flex;
-  flex-direction: column;
-  gap: 12px;
-  align-items: center;
+  justify-content: center;
+  margin-top: clamp(28px, 5vh, 48px);
+  padding: 0 8px;
+  animation: fadeInDown 1s ease-out 0.12s both;
+}
+
+/* ── 快捷方式区：相对父级左右各 20% 边距，中间 60%（比 vw padding 更稳定） ── */
+.shortcutsWrap {
+  width: 60%;
+  max-width: min(960px, calc(100vw - 32px));
+  margin-left: 20%;
+  margin-right: 20%;
+  box-sizing: border-box;
+  margin-top: clamp(16px, 4vh, 32px);
   position: relative;
   z-index: 1;
+  animation: fadeInDown 1s ease-out 0.2s both;
 }
 
 /* ── Liquid Glass Card ───────────────────────────────────────── */

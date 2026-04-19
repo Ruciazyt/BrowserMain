@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import { useSettings } from '../hooks/useSettings';
 import { SEARCH_ENGINES } from '../utils/engines';
+import EngineIcon from './EngineIcon';
 import BookmarkImport from './BookmarkImport';
 import ShortcutImport from './ShortcutImport';
 import { useShortcuts } from '../hooks/useShortcuts';
@@ -101,7 +102,7 @@ export default function SettingsPanel({ open, onClose, onBookmarkImportComplete,
                       className={`${styles.engineItem} ${eng.id === settings.defaultEngine ? styles.selected : ''}`}
                       onClick={() => updateEngine(eng.id)}
                     >
-                      <span dangerouslySetInnerHTML={{ __html: eng.icon }} />
+                      <EngineIcon engineId={eng.id} />
                       <span className={styles.engineName}>{eng.name}</span>
                       {eng.id === settings.defaultEngine && (
                         <span className={styles.checkmark}><CheckIcon /></span>

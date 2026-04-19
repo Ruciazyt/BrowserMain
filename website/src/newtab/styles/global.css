@@ -142,12 +142,21 @@ input, textarea {
   outline: none;
 }
 
+/* --- Autofill Override (remove yellow background) --- */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px var(--bg-primary) inset !important;
+  -webkit-text-fill-color: rgba(255, 255, 255, 0.90) !important;
+  caret-color: rgba(255, 255, 255, 0.90) !important;
+  background-color: var(--bg-primary) !important;
+}
+
 /* --- Focus --- */
 :focus { outline: none; }
 :focus-visible {
-  outline: 2px solid var(--led-amber);
-  outline-offset: 3px;
-  border-radius: var(--radius-input);
+  outline: none;
 }
 
 /* --- Selection --- */

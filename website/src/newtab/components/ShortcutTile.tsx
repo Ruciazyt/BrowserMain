@@ -16,14 +16,6 @@ interface ShortcutTileProps {
   onDelete: (id: string) => void;
   onUpdate: (id: string, updates: Partial<Shortcut>) => void;
   index: number;
-  isDragging: boolean;
-  isDragOver: boolean;
-  dropPosition?: 'before' | 'after' | null;
-  onDragStart: (index: number) => void;
-  onDragEnd: () => void;
-  onDragOver: (index: number, offsetX: number, tileWidth: number) => void;
-  onDragLeave: () => void;
-  onDrop: () => void;
   onMoveLeft?: (index: number) => void;
   onMoveRight?: (index: number) => void;
 }
@@ -33,14 +25,6 @@ export default function ShortcutTile({
   onDelete,
   onUpdate,
   index,
-  isDragging,
-  isDragOver,
-  dropPosition,
-  onDragStart,
-  onDragEnd,
-  onDragOver,
-  onDragLeave,
-  onDrop,
   onMoveLeft,
   onMoveRight,
 }: ShortcutTileProps) {
@@ -52,14 +36,12 @@ export default function ShortcutTile({
   const [editError, setEditError] = useState(false);
   const [keyboardFocus, setKeyboardFocus] = useState(false);
   const [isNavigating, setIsNavigating] = useState(false);
-  // Simplified: 2-stage favicon fallback
   const [faviconSrc, setFaviconSrc] = useState(shortcut.favicon || getSmartFaviconUrl(shortcut.url));
   const [faviconTriedIco, setFaviconTriedIco] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const contextMenuRef = useRef<HTMLDivElement>(null);
   const navigatingRef = useRef(false);
 
-  // When shortcut changes, reset favicon state
   useEffect(() => {
     const initial = shortcut.favicon || getSmartFaviconUrl(shortcut.url);
     setFaviconSrc(initial);
@@ -68,16 +50,13 @@ export default function ShortcutTile({
 
   const handleFaviconError = () => {
     if (!faviconTriedIco) {
-      // Try favicon.ico as second attempt
       setFaviconSrc(getFaviconIcoUrl(shortcut.url));
       setFaviconTriedIco(true);
     } else {
-      // Give up — show globe icon
       setFaviconSrc('');
     }
   };
 
-  // Consolidated keyboard handler: arrow keys for reorder, Enter/Space to open, Escape to blur
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (editMode) {
       if (e.key === 'Enter' || e.key === ' ') {
@@ -108,7 +87,6 @@ export default function ShortcutTile({
     }
   };
 
-  // Close context menu on outside click or Escape
   useEffect(() => {
     if (!showContextMenu) return;
     const handleClickOutside = (e: MouseEvent) => {
@@ -138,7 +116,6 @@ export default function ShortcutTile({
       }
     });
   };
-
 
   const handleDelete = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -214,15 +191,10 @@ export default function ShortcutTile({
   return (
     <>
       <div
-        className={`${styles.container} ${isDragging ? styles.dragging : ''} ${isDragOver ? styles.dragOver : ''} ${dropPosition === 'before' ? styles.dropBefore : ''} ${dropPosition === 'after' ? styles.dropAfter : ''} ${keyboardFocus ? styles.keyboardFocus : ''} ${isNavigating ? styles.navigating : ''}`}
+        className={`${styles.container} ${keyboardFocus ? styles.keyboardFocus : ''} ${isNavigating ? styles.navigating : ''}`}
         ref={containerRef}
         onContextMenu={handleContextMenu}
-        draggable
-        onDragStart={() => onDragStart(index)}
-        onDragEnd={onDragEnd}
-        onDragOver={(e) => { e.preventDefault(); const tileWidth = e.currentTarget.getBoundingClientRect().width; onDragOver(index, e.nativeEvent.offsetX, tileWidth); }}
-        onDragLeave={onDragLeave}
-        onDrop={onDrop}
+        title="拖动可排序，点击进入"
         onClick={navigateToShortcut}
         onKeyDown={handleKeyDown}
         tabIndex={0}
@@ -235,14 +207,16 @@ export default function ShortcutTile({
       >
         <div className={styles.iconWrapper}>
           {faviconSrc ? (
-            <img src={faviconSrc} alt="" onError={handleFaviconError} />
+            <img src={faviconSrc} alt="" draggable={false} onDragStart={(e) => e.preventDefault()} onError={handleFaviconError} />
           ) : (
             <GlobeIcon />
           )}
         </div>
         <div className={styles.title}>{shortcut.title}</div>
         <button
+          type="button"
           className={styles.deleteBtn}
+          onMouseDown={(e) => e.stopPropagation()}
           onClick={handleDelete}
           aria-label="Delete shortcut"
         >

@@ -3,13 +3,14 @@
   display: flex; flex-direction: column; align-items: center;
   gap: 6px; padding: 11px 6px;
   border-radius: var(--radius-md);
-  cursor: pointer;
+  cursor: grab;
   transition: background var(--dur-fast), transform var(--dur-fast) var(--ease-liquid);
   background: transparent;
   position: relative; user-select: none;
 }
+.container:active { cursor: grabbing; }
 .container:hover { background: var(--glass-white); transform: translateY(-2px); }
-.container.dragging { opacity: 0 !important; pointer-events: none; }
+.container.dragging { opacity: 0 !important; cursor: grabbing; pointer-events: none; }
 .container.dragOver { background: var(--glass-white-md); }
 .container.dropBefore { border-left: 2px solid var(--led-amber); box-shadow: -4px 0 8px var(--led-amber-soft); }
 .container.dropAfter { border-right: 2px solid var(--led-amber); box-shadow: 4px 0 8px var(--led-amber-soft); }
@@ -24,7 +25,15 @@
   border: 1px solid color-mix(in srgb, var(--led-amber) 30%, transparent);
   flex-shrink: 0;
 }
-.iconWrapper img { width: 20px; height: 20px; object-fit: contain; border-radius: 3px; }
+.iconWrapper img {
+  width: 20px;
+  height: 20px;
+  object-fit: contain;
+  border-radius: 3px;
+  -webkit-user-drag: none;
+  user-select: none;
+  pointer-events: none;
+}
 .iconFallback { width: 20px; height: 20px; color: var(--led-amber); opacity: 0.70; }
 
 /* ── Title ────────────────────────────────────────────────────── */

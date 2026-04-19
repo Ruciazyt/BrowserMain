@@ -4,7 +4,6 @@ import { useSettings } from './hooks/useSettings';
 import SearchBar from './components/SearchBar';
 import Greeting from './components/Greeting';
 import Clock from './components/Clock';
-import LEDDisplay from './components/LEDDisplay';
 import ShortcutGrid from './components/ShortcutGrid';
 import SettingsPanel from './components/SettingsPanel';
 import AddShortcutDialog from './components/AddShortcutDialog';
@@ -21,7 +20,7 @@ const SettingsIcon = () => (
 
 export default function App() {
   const { shortcuts, loading: shortcutsLoading, removeShortcut, updateShortcut, reorderShortcuts, refreshShortcuts } = useShortcuts();
-  const { settings, loading: settingsLoading } = useSettings();
+  const { settings, loading: settingsLoading, updateEngine } = useSettings();
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [restartOnboardingSignal, setRestartOnboardingSignal] = useState(0);
 
@@ -120,34 +119,29 @@ export default function App() {
         </div>
       )}
 
-      {/* ── Header (glass) ── */}
+      {/* ── Header: time + greeting + glass search ── */}
       <div className={styles.header}>
-        <SearchBar defaultEngine={settings.defaultEngine} />
-        <Greeting />
+        <div className={styles.hero}>
+          <Clock />
+          <Greeting />
+        </div>
+        <div className={styles.searchRow}>
+          <SearchBar defaultEngine={settings.defaultEngine} onEngineChange={updateEngine} />
+        </div>
       </div>
 
-      <div className={styles.content}>
-
-        {/* ── Clock card ── */}
-        <div className={styles.card}>
-          <Clock />
-          <LEDDisplay />
-        </div>
-
-        {/* ── Shortcuts card ── */}
-        <div className={styles.card}>
-          <ShortcutGrid
-            shortcuts={shortcuts}
-            onDelete={removeShortcut}
-            onUpdate={updateShortcut}
-            onReorder={reorderShortcuts}
-            onAdd={() => {
-              setAddDialogData({ url: '', title: '', favicon: '' });
-              setAddDialogOpen(true);
-            }}
-          />
-        </div>
-
+      {/* 快捷入口：左右各留约 20% 视口边距，中间区域更宽 */}
+      <div className={styles.shortcutsWrap}>
+        <ShortcutGrid
+          shortcuts={shortcuts}
+          onDelete={removeShortcut}
+          onUpdate={updateShortcut}
+          onReorder={reorderShortcuts}
+          onAdd={() => {
+            setAddDialogData({ url: '', title: '', favicon: '' });
+            setAddDialogOpen(true);
+          }}
+        />
       </div>
 
       {/* ── Settings button ── */}

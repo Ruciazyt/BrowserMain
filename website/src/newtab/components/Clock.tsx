@@ -1,15 +1,11 @@
 import { useState, useEffect } from 'react';
 import styles from '../styles/components/Clock.module.css';
 
-const DECORATIVE_DOTS = [1, 0, 1, 0, 1, 0, 1, 0];
-
 export default function Clock() {
   const [time, setTime] = useState('');
-  const [date, setDate] = useState('');
-  const [day, setDay] = useState('');
+  const [dateLine, setDateLine] = useState('');
   const [is24h, setIs24h] = useState(true);
 
-  // Load 12/24h preference on mount
   useEffect(() => {
     chrome.storage.local.get('clockIs24h', (result) => {
       if (chrome.runtime.lastError) return;
@@ -41,8 +37,8 @@ export default function Clock() {
       const yyyy = now.getFullYear();
       const mo = (now.getMonth() + 1).toString().padStart(2, '0');
       const dd = now.getDate().toString().padStart(2, '0');
-      setDate(`${yyyy}-${mo}-${dd}`);
-      setDay(now.toLocaleDateString(undefined, { weekday: 'long' }));
+      const weekday = now.toLocaleDateString(undefined, { weekday: 'long' });
+      setDateLine(`${yyyy}-${mo}-${dd} · ${weekday}`);
     };
     update();
     const interval = setInterval(update, 1000);
@@ -50,17 +46,18 @@ export default function Clock() {
   }, [is24h]);
 
   return (
-    <div className={styles.panel}>
-      <div className={styles.dotRow}>
-        {DECORATIVE_DOTS.map((on, i) => (
-          <div key={i} className={`${styles.dot} ${on ? '' : styles.dotOff}`} />
-        ))}
-      </div>
-      <div className={styles.container} onClick={toggleFormat} role="button" tabIndex={0} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') toggleFormat(); }} aria-label={`Clock, currently ${is24h ? '24-hour' : '12-hour'} format. Click to toggle.`}>
-        <div className={styles.time}>{time}</div>
-        <div className={styles.date}>{date}</div>
-        <div className={styles.day}>{day}</div>
-      </div>
+    <div
+      className={styles.heroClock}
+      onClick={toggleFormat}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') toggleFormat();
+      }}
+      aria-label={`Clock, ${is24h ? '24-hour' : '12-hour'} format. Click to toggle.`}
+    >
+      <div className={styles.time}>{time}</div>
+      <div className={styles.dateLine}>{dateLine}</div>
     </div>
   );
 }

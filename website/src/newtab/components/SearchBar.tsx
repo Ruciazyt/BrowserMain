@@ -1,45 +1,78 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useLayoutEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { SEARCH_ENGINES, SearchEngine, buildSearchUrl, isUrl } from '../utils/engines';
+import EngineIcon from './EngineIcon';
 import styles from '../styles/components/SearchBar.module.css';
 
 interface SearchBarProps {
   defaultEngine?: string;
+  /** 切换搜索引擎时写入 storage，下次打开保留 */
+  onEngineChange?: (engineId: string) => void;
 }
 
 const SearchIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 18, height: 18 }}>
     <circle cx="11" cy="11" r="8"/>
     <line x1="21" y1="21" x2="16.65" y2="16.65"/>
   </svg>
 );
 
 const ChevronDownIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 14, height: 14 }}>
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 12, height: 12 }}>
     <polyline points="6 9 12 15 18 9"/>
   </svg>
 );
 
 const CheckIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 16, height: 16 }}>
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" style={{ width: 14, height: 14 }}>
     <polyline points="20 6 9 17 4 12"/>
   </svg>
 );
 
-export default function SearchBar({ defaultEngine = 'google' }: SearchBarProps) {
+export default function SearchBar({ defaultEngine = 'bing', onEngineChange }: SearchBarProps) {
   const [query, setQuery] = useState('');
-  const [focused, setFocused] = useState(false);
   const [engine, setEngine] = useState<SearchEngine>(
     SEARCH_ENGINES.find((e) => e.id === defaultEngine) || SEARCH_ENGINES[0]
   );
+
+  useEffect(() => {
+    const found = SEARCH_ENGINES.find((e) => e.id === defaultEngine);
+    if (found) setEngine(found);
+  }, [defaultEngine]);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const portalRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const [dropdownLayout, setDropdownLayout] = useState<{ top: number; left: number; minWidth: number } | null>(null);
+
+  useLayoutEffect(() => {
+    if (!dropdownOpen || !dropdownRef.current) {
+      setDropdownLayout(null);
+      return;
+    }
+    const update = () => {
+      if (!dropdownRef.current) return;
+      const rect = dropdownRef.current.getBoundingClientRect();
+      setDropdownLayout({
+        top: rect.bottom + 8,
+        left: rect.left,
+        minWidth: Math.max(168, rect.width),
+      });
+    };
+    update();
+    window.addEventListener('scroll', update, true);
+    window.addEventListener('resize', update);
+    return () => {
+      window.removeEventListener('scroll', update, true);
+      window.removeEventListener('resize', update);
+    };
+  }, [dropdownOpen]);
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
-        setDropdownOpen(false);
-      }
+      const t = e.target as Node;
+      if (dropdownRef.current?.contains(t) || portalRef.current?.contains(t)) return;
+      setDropdownOpen(false);
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
@@ -55,12 +88,6 @@ export default function SearchBar({ defaultEngine = 'google' }: SearchBarProps) 
     document.addEventListener('keydown', handleKeydown);
     return () => document.removeEventListener('keydown', handleKeydown);
   }, []);
-
-  // Sync engine state when defaultEngine prop changes (e.g., user changed setting)
-  useEffect(() => {
-    const found = SEARCH_ENGINES.find((e) => e.id === defaultEngine);
-    if (found) setEngine(found);
-  }, [defaultEngine]);
 
   const navigateTo = (url: string) => {
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
@@ -87,49 +114,72 @@ export default function SearchBar({ defaultEngine = 'google' }: SearchBarProps) 
     }
   };
 
+  const dropdownContent =
+    dropdownOpen &&
+    dropdownLayout &&
+    createPortal(
+      <div
+        ref={portalRef}
+        className={styles.dropdown}
+        style={{
+          position: 'fixed',
+          top: dropdownLayout.top,
+          left: dropdownLayout.left,
+          minWidth: dropdownLayout.minWidth,
+          zIndex: 2147483646,
+        }}
+      >
+        {SEARCH_ENGINES.map((eng) => (
+          <button
+            key={eng.id}
+            type="button"
+            className={`${styles.dropdownItem} ${eng.id === engine.id ? styles.selected : ''}`}
+            onClick={() => {
+              setEngine(eng);
+              onEngineChange?.(eng.id);
+              setDropdownOpen(false);
+            }}
+          >
+            <EngineIcon engineId={eng.id} variant="onDark" />
+            {eng.name}
+            {eng.id === engine.id && <CheckIcon />}
+          </button>
+        ))}
+      </div>,
+      document.body
+    );
+
   return (
-    <>
+    <div className={styles.outer}>
       <form className={styles.container} onSubmit={handleSubmit}>
+        <div className={styles.searchIcon}>
+          <SearchIcon />
+        </div>
         <div className={styles.engineSwitcher} ref={dropdownRef}>
           <button
             type="button"
             className={styles.engineButton}
             onClick={() => setDropdownOpen(!dropdownOpen)}
             aria-label="Select search engine"
+            aria-expanded={dropdownOpen}
           >
-            <span dangerouslySetInnerHTML={{ __html: engine.icon }} />
+            <EngineIcon engineId={engine.id} />
+            <ChevronDownIcon />
           </button>
-          {dropdownOpen && (
-            <div className={styles.dropdown}>
-              {SEARCH_ENGINES.map((eng) => (
-                <button
-                  key={eng.id}
-                  type="button"
-                  className={`${styles.dropdownItem} ${eng.id === engine.id ? styles.selected : ''}`}
-                  onClick={() => {
-                    setEngine(eng);
-                    setDropdownOpen(false);
-                  }}
-                >
-                  <span dangerouslySetInnerHTML={{ __html: eng.icon }} />
-                  {eng.name}
-                  {eng.id === engine.id && <CheckIcon />}
-                </button>
-              ))}
-            </div>
-          )}
         </div>
         <div className={styles.divider} />
         <input
           ref={inputRef}
           type="text"
           className={styles.input}
-          placeholder="Search or enter URL..."
+          placeholder="在新世界搜索…"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           onPaste={handlePaste}
-          onFocus={() => setFocused(true)}
-          onBlur={() => setFocused(false)}
+          autoComplete="off"
+          autoCorrect="off"
+          autoCapitalize="off"
+          spellCheck={false}
         />
         {query.length > 0 && (
           <button
@@ -148,19 +198,10 @@ export default function SearchBar({ defaultEngine = 'google' }: SearchBarProps) 
           </button>
         )}
         <button type="submit" className={styles.searchBtn} aria-label="Search">
-          <SearchIcon />
+          搜索
         </button>
       </form>
-      <div className={styles.shortcutHint} aria-hidden="true">
-        <kbd className={styles.kbdBadge}>
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 11, height: 11 }}>
-            <rect x="2" y="4" width="20" height="16" rx="2"/>
-            <path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M8 12h.01M12 12h.01M16 12h.01M7 16h10"/>
-          </svg>
-          Ctrl+K
-        </kbd>
-        <span className={styles.hintText}>to focus</span>
-      </div>
-    </>
+      {dropdownContent}
+    </div>
   );
 }
