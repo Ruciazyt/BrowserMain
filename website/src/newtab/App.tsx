@@ -67,6 +67,20 @@ export default function App() {
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [settingsOpen]);
 
+  // Ctrl+Shift+U opens the Add Shortcut dialog directly from the new tab page
+  useEffect(() => {
+    const handleKeyboardShortcuts = (e: KeyboardEvent) => {
+      const modKey = navigator.platform.startsWith('Mac') ? e.metaKey : e.ctrlKey;
+      if (modKey && e.shiftKey && e.key.toLowerCase() === 'u') {
+        e.preventDefault();
+        setAddDialogData({ url: '', title: '', favicon: '' });
+        setAddDialogOpen(true);
+      }
+    };
+    document.addEventListener('keydown', handleKeyboardShortcuts);
+    return () => document.removeEventListener('keydown', handleKeyboardShortcuts);
+  }, []);
+
   // Apply background settings from user preferences
   useEffect(() => {
     if (settingsLoading) return;

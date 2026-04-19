@@ -1,6 +1,8 @@
+
 import { useState, useRef, useEffect } from 'react';
 import { SEARCH_ENGINES, SearchEngine, buildSearchUrl, isUrl } from '../utils/engines';
 import { isMac, modKey } from '../utils/platform';
+import { saveSettings, getSettings } from '../utils/storage';
 import styles from '../styles/components/SearchBar.module.css';
 
 interface SearchBarProps {
@@ -35,6 +37,7 @@ export default function SearchBar({ defaultEngine = 'google' }: SearchBarProps) 
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -101,6 +104,9 @@ export default function SearchBar({ defaultEngine = 'google' }: SearchBarProps) 
                 onClick={() => {
                   setEngine(eng);
                   setDropdownOpen(false);
+                  getSettings().then((s) => {
+                    saveSettings({ ...s, defaultEngine: eng.id });
+                  });
                 }}
               >
                 <span dangerouslySetInnerHTML={{ __html: eng.icon }} />
