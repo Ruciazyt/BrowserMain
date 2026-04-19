@@ -124,7 +124,7 @@
 
 .dropdownItem.selected {
   background: rgba(94, 231, 223, 0.18);
-  color: #7ee8e0;
+  color: var(--accent-aqua);
 }
 
 .dropdownItem svg {
@@ -194,7 +194,7 @@
   text-shadow: 0 0 8px var(--led-amber-glow);
   cursor: default;
   user-select: none;
-  opacity: 0.75;
+  opacity: 0.90;
   transition: opacity var(--dur-fast);
 }
 
