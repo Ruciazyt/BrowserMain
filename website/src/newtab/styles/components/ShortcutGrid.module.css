@@ -155,6 +155,12 @@
   box-shadow: var(--shadow-float);
 }
 
+.addTile:focus-visible {
+  outline: 2px solid var(--led-amber);
+  outline-offset: 2px;
+  box-shadow: 0 0 12px var(--led-amber);
+}
+
 .addTileIcon {
   font-size: 22px;
   line-height: 1;

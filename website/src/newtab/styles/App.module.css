@@ -36,14 +36,8 @@
 }
 
 @keyframes fadeInDown {
-  from {
-    opacity: 0;
-    transform: translateY(-1rem);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(-1rem); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
 .searchRow {
@@ -56,6 +50,14 @@
 }
 
 /* ── 快捷方式区：相对父级左右各 20% 边距，中间 60%（比 vw padding 更稳定） ── */
+.ledDisplay {
+  width: 100%;
+  max-width: 720px;
+  margin: 12px 0;
+  position: relative;
+  z-index: 1;
+}
+
 .shortcutsWrap {
   width: 60%;
   max-width: min(960px, calc(100vw - 32px));

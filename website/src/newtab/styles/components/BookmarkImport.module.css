@@ -9,7 +9,7 @@
   color: rgba(255,255,255,0.80);
   outline: none;
   transition: border-color var(--dur-fast);
-  margin-bottom: 8px;
+  margin-bottom: var(--space-sm);
 }
 
 .searchInput::placeholder {

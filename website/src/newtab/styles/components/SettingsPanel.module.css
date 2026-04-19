@@ -2,8 +2,8 @@
 .overlay {
   position: fixed; top: 0; right: 0; bottom: 0; left: 0;
   background: rgba(0,0,0,0.50);
-  backdrop-filter: var(--blur-sm);
-  -webkit-backdrop-filter: var(--blur-sm);
+  backdrop-filter: var(--blur-md);
+  -webkit-backdrop-filter: var(--blur-md);
   z-index: 200; opacity: 0; pointer-events: none;
   transition: opacity var(--dur-mid) var(--ease-smooth);
 }
