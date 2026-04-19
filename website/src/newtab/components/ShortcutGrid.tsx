@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import {
   DndContext,
   closestCenter,
@@ -16,6 +17,9 @@ import {
   useSortable,
 } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+=======
+import { useState, useMemo } from 'react';
+>>>>>>> 719059899cef841cb006f7c36bfcc1629f6750ad
 import { Shortcut } from '../utils/storage';
 import ShortcutTile from './ShortcutTile';
 import styles from '../styles/components/ShortcutGrid.module.css';
@@ -28,6 +32,7 @@ interface ShortcutGridProps {
   onAdd?: () => void;
 }
 
+<<<<<<< HEAD
 function SortableShortcutWrap({
   shortcut,
   index,
@@ -76,6 +81,11 @@ function SortableShortcutWrap({
       />
     </div>
   );
+=======
+interface Group {
+  name: string; // 'Default' for undefined/null group
+  shortcuts: Shortcut[];
+>>>>>>> 719059899cef841cb006f7c36bfcc1629f6750ad
 }
 
 export default function ShortcutGrid({ shortcuts, onDelete, onUpdate, onReorder, onAdd }: ShortcutGridProps) {
@@ -88,6 +98,7 @@ export default function ShortcutGrid({ shortcuts, onDelete, onUpdate, onReorder,
     })
   );
 
+<<<<<<< HEAD
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
@@ -95,8 +106,86 @@ export default function ShortcutGrid({ shortcuts, onDelete, onUpdate, onReorder,
     const newIndex = shortcuts.findIndex((s) => s.id === over.id);
     if (oldIndex < 0 || newIndex < 0) return;
     onReorder(arrayMove(shortcuts, oldIndex, newIndex));
+=======
+  // All existing group names for autocomplete suggestions
+  const existingGroups = useMemo(() =>
+    Array.from(new Set(shortcuts.map(s => s.group).filter((g): g is string => !!g))).sort(),
+    [shortcuts]
+  );
+
+  // Group shortcuts: undefined/null group → 'Default'
+  const groups = useMemo<Group[]>(() => {
+    const groupMap = new Map<string, Shortcut[]>();
+    for (const s of shortcuts) {
+      const key = s.group || 'Default';
+      if (!groupMap.has(key)) groupMap.set(key, []);
+      groupMap.get(key)!.push(s);
+    }
+    // Sort groups by first shortcut's order
+    const sorted = Array.from(groupMap.entries())
+      .sort(([aName, aShortcuts], [bName, bShortcuts]) => {
+        const aFirst = aShortcuts[0]?.order ?? Infinity;
+        const bFirst = bShortcuts[0]?.order ?? Infinity;
+        return aFirst - bFirst;
+      });
+    // Within each group sort by order
+    return sorted.map(([name, groupShortcuts]) => ({
+      name,
+      shortcuts: [...groupShortcuts].sort((a, b) => a.order - b.order),
+    }));
+  }, [shortcuts]);
+
+  // Global shortcut index for drag (across all groups)
+  const globalIndex = (groupIdx: number, shortcutIdx: number) => {
+    let idx = 0;
+    for (let g = 0; g < groupIdx; g++) idx += groups[g].shortcuts.length;
+    return idx + shortcutIdx;
   };
 
+  const handleDragStart = (groupIdx: number, shortcutIdx: number) => {
+    setDragIndex(globalIndex(groupIdx, shortcutIdx));
+    setIsDraggingAny(true);
+  };
+
+  const handleDragEnd = () => {
+    setDragIndex(null);
+    setDragOverIndex(null);
+    setDropPosition(null);
+    setIsDraggingAny(false);
+  };
+
+  const handleDragOver = (groupIdx: number, shortcutIdx: number, offsetX: number, tileWidth: number) => {
+    setDragOverIndex(globalIndex(groupIdx, shortcutIdx));
+    setDropPosition(offsetX < tileWidth / 2 ? 'before' : 'after');
+  };
+
+  const handleDragLeave = (e: React.DragEvent) => {
+    if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+      setDragOverIndex(null);
+      setDropPosition(null);
+    }
+  };
+
+  const handleDrop = () => {
+    if (dragIndex === null || dragOverIndex === null || dragIndex === dragOverIndex) {
+      handleDragEnd();
+      return;
+    }
+    const insertIndex = (() => {
+      if (dropPosition === 'after') {
+        return dragIndex < dragOverIndex ? dragOverIndex : dragOverIndex + 1;
+      }
+      return dragIndex < dragOverIndex ? dragOverIndex - 1 : dragOverIndex;
+    })();
+    const newOrder = [...shortcuts];
+    const [removed] = newOrder.splice(dragIndex, 1);
+    newOrder.splice(insertIndex, 0, removed);
+    onReorder(newOrder);
+    handleDragEnd();
+>>>>>>> 719059899cef841cb006f7c36bfcc1629f6750ad
+  };
+
+  // ShortcutTile calls onMoveLeft/onMoveRight with global index (the tile's global index prop)
   const handleMoveLeft = (fromIndex: number) => {
     if (fromIndex <= 0) return;
     onReorder(arrayMove(shortcuts, fromIndex, fromIndex - 1));
@@ -109,6 +198,7 @@ export default function ShortcutGrid({ shortcuts, onDelete, onUpdate, onReorder,
 
   const panel = (
     <>
+<<<<<<< HEAD
       <div className={styles.cardTitle}>快捷入口</div>
       {shortcuts.length === 0 ? (
         <div className={styles.container}>
@@ -139,15 +229,92 @@ export default function ShortcutGrid({ shortcuts, onDelete, onUpdate, onReorder,
                   onMoveRight={handleMoveRight}
                 />
               ))}
+=======
+      <div className={styles.dotRow}>
+        {DECORATIVE_DOTS.map((on, i) => (
+          <span key={i} className={on ? styles.dot : styles.dotOff} />
+        ))}
+      </div>
+      {shortcuts.length > 0 && (
+        <div className={styles.header}>
+          <span />
+          <span className={styles.count}>({shortcuts.length} shortcuts{groups.length > 1 ? ` · ${groups.length} groups` : ''})</span>
+          <span className={styles.hint}>right-click to edit</span>
+        </div>
+      )}
+      <div className={styles.container}>
+        {shortcuts.length === 0 ? (
+          <>
+            <div className={styles.empty}>
+              <div className={styles.emptyTitle}>No shortcuts yet</div>
+              <div className={styles.emptyHint}>
+                Click the <strong style={{ color: 'var(--led-amber)' }}>+</strong> button to add your first shortcut
+              </div>
+              <div className={styles.emptyHint} style={{ marginTop: 4 }}>
+                Right-click any shortcut to edit or delete
+              </div>
+>>>>>>> 719059899cef841cb006f7c36bfcc1629f6750ad
               {onAdd && (
                 <button className={styles.addTile} onClick={onAdd} aria-label="Add shortcut" title="Add shortcut">
                   <span className={styles.addTileIcon}>+</span>
                 </button>
               )}
             </div>
+<<<<<<< HEAD
           </SortableContext>
         </DndContext>
       )}
+=======
+          </>
+        ) : (
+          <>
+            {groups.map((group, gi) => (
+              <div key={group.name} className={styles.groupSection}>
+                {/* Group header */}
+                {groups.length > 1 && (
+                  <div className={styles.groupHeader}>
+                    <span className={styles.groupName}>{group.name}</span>
+                    <span className={styles.groupCount}>({group.shortcuts.length})</span>
+                  </div>
+                )}
+                {/* Shortcuts in this group */}
+                <div className={styles.groupTiles}>
+                  {group.shortcuts.map((shortcut, si) => {
+                    const globalIdx = globalIndex(gi, si);
+                    return (
+                      <ShortcutTile
+                        key={shortcut.id}
+                        shortcut={shortcut}
+                        onDelete={onDelete}
+                        onUpdate={onUpdate}
+                        index={globalIdx}
+                        isDragging={dragIndex === globalIdx}
+                        isDragOver={dragOverIndex === globalIdx}
+                        dropPosition={dragIndex !== null && dragOverIndex === globalIdx ? dropPosition : null}
+                        onDragStart={() => handleDragStart(gi, si)}
+                        onDragEnd={handleDragEnd}
+                        onDragOver={(idx, ox, tw) => handleDragOver(gi, si, ox, tw)}
+                        onDragLeave={handleDragLeave}
+                        onDrop={handleDrop}
+                        onMoveLeft={() => handleMoveLeft(globalIdx)}
+                        onMoveRight={() => handleMoveRight(globalIdx)}
+                        existingGroups={existingGroups}
+                      />
+                    );
+                  })}
+                  {/* Add button at bottom of last group */}
+                  {onAdd && gi === groups.length - 1 && (
+                    <button className={styles.addTile} onClick={onAdd} aria-label="Add shortcut" title="Add shortcut">
+                      <span className={styles.addTileIcon}>+</span>
+                    </button>
+                  )}
+                </div>
+              </div>
+            ))}
+          </>
+        )}
+      </div>
+>>>>>>> 719059899cef841cb006f7c36bfcc1629f6750ad
     </>
   );
 

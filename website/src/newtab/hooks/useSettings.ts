@@ -33,10 +33,28 @@ export function useSettings() {
     });
   }, []);
 
+  const updateUserName = useCallback(async (name: string) => {
+    setSettings((prev) => {
+      const newSettings = { ...prev, userName: name };
+      saveSettings(newSettings);
+      return newSettings;
+    });
+  }, []);
+
+  const updateClockFormat = useCallback(async (clockIs24h: boolean) => {
+    setSettings((prev) => {
+      const newSettings = { ...prev, clockIs24h };
+      saveSettings(newSettings);
+      return newSettings;
+    });
+  }, []);
+
   return {
     settings,
     loading,
     updateEngine,
     updateBackground,
+    updateUserName,
+    updateClockFormat,
   };
 }

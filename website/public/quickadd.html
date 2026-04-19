@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Add Shortcut</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      width: 300px;
+      background: #0a0a0f;
+      color: #c8c8d0;
+      font-family: 'JetBrains Mono', 'Courier New', monospace;
+      font-size: 11px;
+      padding: 14px 16px 16px;
+      user-select: none;
+      overflow: hidden;
+    }
+
+    /* ── Header ── */
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .header-dot {
+      width: 6px; height: 6px;
+      background: #ff9500;
+      border-radius: 50%;
+      box-shadow: 0 0 6px #ff9500;
+    }
+
+    .header-title {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      color: #ff9500;
+      text-shadow: 0 0 8px #ff950088;
+    }
+
+    /* ── Favicon row ── */
+    .favicon-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 10px;
+      padding: 6px 8px;
+      background: #12121a;
+      border: 1px solid #1e1e2e;
+      border-radius: 4px;
+      min-height: 36px;
+    }
+
+    .favicon-img {
+      width: 16px; height: 16px;
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+
+    .favicon-domain {
+      font-size: 9px;
+      color: #5a5a70;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    /* ── Form fields ── */
+    .field {
+      margin-bottom: 8px;
+    }
+
+    .field-label {
+      display: block;
+      font-size: 9px;
+      letter-spacing: 0.12em;
+      color: #5a5a70;
+      margin-bottom: 4px;
+      text-transform: uppercase;
+    }
+
+    .field-input {
+      width: 100%;
+      background: #12121a;
+      border: 1px solid #1e1e2e;
+      border-radius: 4px;
+      color: #c8c8d0;
+      font-family: 'JetBrains Mono', 'Courier New', monospace;
+      font-size: 11px;
+      padding: 6px 8px;
+      outline: none;
+      transition: border-color 0.15s, box-shadow 0.15s;
+    }
+
+    .field-input:focus {
+      border-color: #ff9500;
+      box-shadow: 0 0 0 2px #ff950022, 0 0 10px #ff950011;
+      color: #fff;
+    }
+
+    .field-input.error {
+      border-color: #ff4a4a;
+      box-shadow: 0 0 0 2px #ff4a4a22;
+    }
+
+    #url-input { margin-bottom: 8px; }
+    #title-input { margin-bottom: 8px; }
+
+    /* ── Group field ── */
+    #group-input { margin-bottom: 12px; }
+    datalist { display: none; } /* hide native datalist dropdowns in this minimal UI */
+
+    /* ── Error / warning message ── */
+    .msg-bar {
+      display: none;
+      font-size: 9px;
+      letter-spacing: 0.06em;
+      padding: 4px 6px;
+      border-radius: 3px;
+      margin-bottom: 8px;
+    }
+    .msg-bar.error   { display: block; background: #ff4a4a18; color: #ff6b6b; border: 1px solid #ff4a4a44; }
+    .msg-bar.warning { display: block; background: #ffb80018; color: #ffb800; border: 1px solid #ffb80044; }
+
+    /* ── Buttons ── */
+    .btn-row {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 7px 0;
+      border: none;
+      border-radius: 4px;
+      font-family: 'JetBrains Mono', 'Courier New', monospace;
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      cursor: pointer;
+      transition: opacity 0.15s, box-shadow 0.15s;
+    }
+
+    .btn-save {
+      background: rgba(125, 211, 232, 0.12);
+      color: #7dd3e8;
+      border: 1px solid rgba(125, 211, 232, 0.3);
+      backdrop-filter: blur(4px);
+      text-shadow: 0 0 8px #7dd3e866;
+    }
+
+    .btn-save:hover {
+      background: rgba(125, 211, 232, 0.2);
+      box-shadow: 0 0 12px #7dd3e833;
+    }
+
+    .btn-cancel {
+      background: #1a1a24;
+      color: #5a5a70;
+      border: 1px solid #2a2a3a;
+    }
+
+    .btn-cancel:hover {
+      color: #888;
+      border-color: #3a3a4a;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="header-dot"></div>
+    <span class="header-title">ADD SHORTCUT</span>
+  </div>
+
+  <div class="favicon-row">
+    <img class="favicon-img" id="favicon-preview" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="" />
+    <span class="favicon-domain" id="favicon-domain">—</span>
+  </div>
+
+  <div class="msg-bar" id="msg-bar"></div>
+
+  <form id="form" novalidate>
+    <div class="field">
+      <label class="field-label" for="url-input">URL</label>
+      <input class="field-input" id="url-input" type="url" placeholder="https://" autocomplete="off" spellcheck="false" />
+    </div>
+
+    <div class="field">
+      <label class="field-label" for="title-input">TITLE</label>
+      <input class="field-input" id="title-input" type="text" placeholder="Page title" autocomplete="off" spellcheck="false" />
+    </div>
+
+    <div class="field">
+      <label class="field-label" for="group-input">GROUP <span style="opacity:0.4;font-size:9px">(optional)</span></label>
+      <input class="field-input" id="group-input" type="text" placeholder="e.g. Work, Social" autocomplete="off" spellcheck="false" list="group-suggestions" />
+      <datalist id="group-suggestions"></datalist>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-save" type="submit">SAVE</button>
+      <button class="btn btn-cancel" type="button" id="btn-cancel">CANCEL</button>
+    </div>
+  </form>
+
+  <script src="quickadd.js"></script>
+</body>
+</html>

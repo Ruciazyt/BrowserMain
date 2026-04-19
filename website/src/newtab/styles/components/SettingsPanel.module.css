@@ -2,10 +2,10 @@
 .overlay {
   position: fixed; top: 0; right: 0; bottom: 0; left: 0;
   background: rgba(0,0,0,0.50);
-  backdrop-filter: blur(12px) saturate(150%);
-  -webkit-backdrop-filter: blur(12px) saturate(150%);
+  backdrop-filter: var(--blur-sm);
+  -webkit-backdrop-filter: var(--blur-sm);
   z-index: 200; opacity: 0; pointer-events: none;
-  transition: opacity 300ms ease;
+  transition: opacity var(--dur-mid) var(--ease-smooth);
 }
 .overlay.open { opacity: 1; pointer-events: all; }
 
@@ -19,7 +19,7 @@
   border-left: 1px solid var(--glass-border);
   z-index: 201;
   transform: translateX(100%);
-  transition: transform 300ms var(--ease-smooth);
+  transition: transform var(--dur-mid) var(--ease-smooth);
   display: flex; flex-direction: column; overflow: hidden;
   box-shadow: -8px 0 40px rgba(0,0,0,0.30);
 }
@@ -80,7 +80,7 @@
 .engineItem:hover { background: var(--glass-white); }
 .engineItem.selected { background: var(--glass-white); border-color: var(--glass-border-subtle); }
 .engineItem svg { width: 18px; height: 18px; color: rgba(255,255,255,0.50); }
-.engineName { font-size: 13px; color: rgba(255,255,255,0.78); flex: 1; }
+.engineName { font-size: 13px; color: rgba(255,255,255,0.75); flex: 1; }
 .checkmark { color: var(--led-amber); opacity: 0.60; font-size: 13px; }
 
 /* ── Background type grid ──────────────────────────────────────── */
@@ -148,15 +148,15 @@
 }
 .applyBtn:hover, .uploadBtn:hover { background: var(--glass-white-md); border-color: rgba(255,255,255,0.22); }
 .applyBtnDirty {
-  background: color-mix(in srgb, var(--led-amber) 15%, transparent);
-  border-color: color-mix(in srgb, var(--led-amber) 50%, transparent);
-  color: color-mix(in srgb, var(--led-amber) 95%, white);
-  box-shadow: 0 0 12px color-mix(in srgb, var(--led-amber) 20%, transparent);
+  background: rgba(255, 149, 0, 0.15);
+  border-color: rgba(255, 149, 0, 0.50);
+  color: rgb(255, 154, 13);
+  box-shadow: 0 0 12px rgba(255, 149, 0, 0.20);
 }
 .applyBtnDirty:hover {
-  background: color-mix(in srgb, var(--led-amber) 22%, transparent);
-  border-color: color-mix(in srgb, var(--led-amber) 65%, transparent);
-  box-shadow: 0 0 18px color-mix(in srgb, var(--led-amber) 30%, transparent);
+  background: rgba(255, 149, 0, 0.22);
+  border-color: rgba(255, 149, 0, 0.65);
+  box-shadow: 0 0 18px rgba(255, 149, 0, 0.30);
 }
 .imagePreviewArea { border-radius: var(--radius-md); overflow: hidden; border: 1px solid rgba(255,255,255,0.08); height: 54px; position: relative; }
 .imagePreviewArea img { width: 100%; height: 100%; object-fit: cover; display: block; }
@@ -168,15 +168,37 @@
   border: 1px solid rgba(255,255,255,0.18);
   background: rgba(0,0,0,0.45);
   cursor: pointer; transition: all var(--dur-fast);
-  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: var(--blur-sm);
+  -webkit-backdrop-filter: var(--blur-sm);
 }
 .removeImageBtn:hover { background: rgba(200,50,50,0.60); border-color: rgba(255,100,100,0.40); color: rgba(255,255,255,0.95); }
 .colorInput {
   width: 36px; height: 28px; border: none; border-radius: var(--radius-sm);
-  cursor: pointer; padding: 2px; background: transparent;
+  cursor: pointer; padding: 2px; background: var(--glass-white);
 }
 .colorInput::-webkit-color-swatch-wrapper { padding: 0; }
-.colorInput::-webkit-color-swatch { border: none; border-radius: 4px; }
+.colorInput::-webkit-color-swatch { border: 1px solid var(--glass-border); border-radius: 4px; }
+
+/* ── Display Name ───────────────────────────────────────────── */
+.displayNameRow {
+  display: flex; align-items: center; gap: 10px;
+  margin-bottom: 12px;
+}
+.displayNameLabel {
+  font-size: 12px; color: rgba(255,255,255,0.50);
+  min-width: 80px; flex-shrink: 0;
+}
+.displayNameInput {
+  flex: 1; padding: 7px 12px;
+  border-radius: var(--radius-md);
+  font-size: 12px;
+  background: var(--glass-white);
+  border: 1px solid rgba(255,255,255,0.10);
+  color: rgba(255,255,255,0.85); outline: none;
+  transition: border-color var(--dur-fast);
+}
+.displayNameInput::placeholder { color: rgba(255,255,255,0.28); }
+.displayNameInput:focus { border-color: rgba(94,231,223,0.45); }
 
 /* ── About ─────────────────────────────────────────────────── */
 .aboutSection { text-align: center; padding: 14px 0 6px; color: rgba(255,255,255,0.28); font-size: 11px; }
@@ -195,8 +217,16 @@
   color: rgba(255,255,255,0.38);
   border: 1px solid rgba(255,255,255,0.08);
   background: transparent; cursor: pointer; transition: all var(--dur-fast);
+  display: flex; align-items: center; gap: 7px;
 }
 .showTourBtn:hover { background: var(--glass-white); color: rgba(255,255,255,0.60); }
+.tourIcon {
+  color: var(--led-amber);
+  text-shadow: 0 0 6px var(--led-amber), 0 0 12px rgba(255, 183, 0, 0.35);
+  font-size: 11px;
+  line-height: 1;
+  flex-shrink: 0;
+}
 
 /* ── Footer ─────────────────────────────────────────────────── */
 .footer {
@@ -212,10 +242,9 @@
   align-items: center; justify-content: center; gap: 10px; padding: 36px 20px;
 }
 .ledLoading { display: flex; gap: 5px; align-items: center; }
-.ledLoading span { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.45); animation: dotPulse 1.2s ease-in-out infinite; }
+.ledLoading span { width: 8px; height: 8px; border-radius: 50%; background: var(--led-amber); animation: ledDotPulse 1.2s ease-in-out infinite; }
 .ledLoading span:nth-child(2) { animation-delay: .2s; }
 .ledLoading span:nth-child(3) { animation-delay: .4s; }
-@keyframes dotPulse { 0%,100% { opacity: 0.3; transform: scale(0.8); } 50% { opacity: 1; transform: scale(1); } }
 .loadingText { font-size: 12px; color: rgba(255,255,255,0.32); }
 .emptyIcon, .errorIcon { font-size: 28px; }
 .emptyText, .errorText { font-size: 12px; color: rgba(255,255,255,0.28); text-align: center; }
@@ -233,3 +262,254 @@
   cursor: pointer; transition: all var(--dur-fast);
 }
 .doneBtn:hover { background: var(--glass-white-md); border-color: rgba(255,255,255,0.25); }
+
+/* ── Clear All Shortcuts ───────────────────────────────────── */
+.clearAllBtn {
+  width: 100%; margin-top: 8px; padding: 8px 16px;
+  border-radius: var(--radius-md);
+  font-size: 12px; font-weight: 500;
+  color: rgba(255, 107, 107, 0.85);
+  border: 1px solid rgba(255, 107, 107, 0.28);
+  background: rgba(255, 107, 107, 0.08);
+  cursor: pointer; transition: all var(--dur-fast);
+}
+.clearAllBtn:hover {
+  background: rgba(255, 107, 107, 0.16);
+  border-color: rgba(255, 107, 107, 0.50);
+  box-shadow: 0 0 12px rgba(255, 107, 107, 0.15);
+}
+
+/* ── Confirm state ─────────────────────────────────────────── */
+.confirmState {
+  margin-top: 10px;
+  padding: 12px;
+  border-radius: var(--radius-md);
+  background: rgba(255, 107, 107, 0.07);
+  border: 1px solid rgba(255, 107, 107, 0.22);
+  display: flex; flex-direction: column; gap: 10px;
+}
+.confirmText {
+  font-size: 12px;
+  color: rgba(255, 107, 107, 0.90);
+  font-family: var(--font-body);
+  line-height: 1.4;
+}
+.confirmBtnRow {
+  display: flex; gap: 8px;
+}
+.confirmCancelBtn {
+  flex: 1; padding: 7px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 12px; font-weight: 500;
+  color: rgba(255,255,255,0.62);
+  border: 1px solid rgba(255,255,255,0.14);
+  background: var(--glass-white);
+  cursor: pointer; transition: all var(--dur-fast);
+}
+.confirmCancelBtn:hover {
+  background: var(--glass-white-md);
+  border-color: rgba(255,255,255,0.22);
+  color: rgba(255,255,255,0.85);
+}
+.confirmDangerBtn {
+  flex: 1; padding: 7px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 12px; font-weight: 600;
+  color: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(255, 107, 107, 0.50);
+  background: rgba(255, 107, 107, 0.22);
+  cursor: pointer; transition: all var(--dur-fast);
+  box-shadow: 0 0 10px rgba(255, 107, 107, 0.12);
+}
+.confirmDangerBtn:hover {
+  background: rgba(255, 107, 107, 0.36);
+  border-color: rgba(255, 107, 107, 0.70);
+  box-shadow: 0 0 16px rgba(255, 107, 107, 0.25);
+}
+
+/* ── Success message ─────────────────────────────────────────── */
+.successMessage {
+  margin-top: 10px; padding: 9px 14px;
+  border-radius: var(--radius-md);
+  font-size: 12px; font-weight: 500;
+  color: var(--success);
+  background: rgba(74, 222, 128, 0.08);
+  border: 1px solid rgba(74, 222, 128, 0.20);
+  text-align: center;
+  animation: fadeIn var(--dur-fast) ease;
+}
+
+.clockFormatRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 10px;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: var(--radius-sm);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.clockFormatLabel {
+  font-family: var(--font-led);
+  font-size: 10px;
+  color: var(--text-primary);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.clockFormatToggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.clockFormatBtn {
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-led);
+  font-size: 10px;
+  letter-spacing: 0.5px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: transparent;
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: all var(--dur-fast);
+}
+
+.clockFormatBtn.active {
+  background: var(--led-amber);
+  border-color: var(--led-amber);
+  color: #0a0a0f;
+  font-weight: 600;
+  box-shadow: 0 0 8px rgba(255, 149, 0, 0.4);
+}
+
+.clockFormatBtn:hover:not(.active) {
+  border-color: rgba(255, 149, 0, 0.4);
+  color: var(--led-amber);
+}
+
+/* ── Groups ──────────────────────────────────────────────────── */
+.noGroupsHint {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.28);
+  padding: 8px 0;
+  line-height: 1.5;
+}
+
+.groupList {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.groupRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.groupRowName {
+  flex: 1;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.72);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.groupRowCount {
+  font-family: var(--font-led);
+  font-size: 9px;
+  letter-spacing: 0.5px;
+  color: rgba(255, 149, 0, 0.55);
+  background: rgba(255, 149, 0, 0.08);
+  border: 1px solid rgba(255, 149, 0, 0.18);
+  padding: 2px 6px;
+  border-radius: 10px;
+}
+
+.groupDeleteBtn {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 107, 107, 0.12);
+  color: rgba(255, 107, 107, 0.70);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  line-height: 1;
+  transition: all var(--dur-fast);
+  flex-shrink: 0;
+}
+.groupDeleteBtn:hover {
+  background: rgba(255, 107, 107, 0.28);
+  color: rgba(255, 107, 107, 0.95);
+  box-shadow: 0 0 8px rgba(255, 107, 107, 0.25);
+}
+
+.groupConfirmState {
+  margin-top: 6px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 107, 107, 0.07);
+  border: 1px solid rgba(255, 107, 107, 0.22);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.groupConfirmText {
+  font-size: 12px;
+  color: rgba(255, 107, 107, 0.90);
+  line-height: 1.4;
+}
+
+.groupConfirmBtns {
+  display: flex;
+  gap: 8px;
+}
+
+.groupCancelBtn {
+  flex: 1;
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: var(--glass-white);
+  cursor: pointer;
+  transition: all var(--dur-fast);
+}
+.groupCancelBtn:hover {
+  background: var(--glass-white-md);
+  color: rgba(255, 255, 255, 0.80);
+}
+
+.groupConfirmBtn {
+  flex: 1;
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(255, 107, 107, 0.50);
+  background: rgba(255, 107, 107, 0.22);
+  cursor: pointer;
+  transition: all var(--dur-fast);
+}
+.groupConfirmBtn:hover {
+  background: rgba(255, 107, 107, 0.36);
+  border-color: rgba(255, 107, 107, 0.70);
+}
+
+

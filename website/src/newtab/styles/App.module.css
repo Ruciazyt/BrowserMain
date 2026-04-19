@@ -92,9 +92,10 @@
   top: 0; left: 0; right: 0;
   height: 1px;
   background: linear-gradient(
-    135deg,
-    rgba(255,255,255,0.45) 0%,
-    rgba(255,255,255,0) 50%
+    90deg,
+    rgba(255,255,255,0) 0%,
+    rgba(255,255,255,0.40) 40%,
+    rgba(255,255,255,0) 100%
   );
   pointer-events: none;
   z-index: 2;
@@ -110,8 +111,7 @@
 .card::after {
   content: '';
   position: absolute;
-  inset: -1px;
-  border-radius: inherit;
+  inset: 0;
   background: linear-gradient(
     135deg,
     rgba(255,255,255,0.20) 0%,
@@ -129,17 +129,17 @@
 /* ── Settings button ────────────────────────────────────────── */
 .settingsBtn {
   position: fixed;
-  bottom: 24px;
-  right: 24px;
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
+  top: 16px;
+  right: 16px;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
   background: var(--glass-white);
   backdrop-filter: var(--blur-sm);
   -webkit-backdrop-filter: var(--blur-sm);
   border: 1px solid var(--glass-border);
   box-shadow: var(--shadow-glass);
-  color: rgba(255,255,255,0.65);
+  color: rgba(255,255,255,0.45);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -151,16 +151,17 @@
 .settingsBtn:hover {
   background: var(--glass-white-md);
   border-color: var(--glass-border-bright);
-  color: rgba(255,255,255,0.92);
+  color: rgba(255,255,255,0.85);
   transform: scale(1.08);
+  box-shadow: var(--shadow-float);
 }
 
-.settingsBtn svg { width: 20px; height: 20px; }
+.settingsBtn svg { width: 18px; height: 18px; }
 
 /* ── Footer ─────────────────────────────────────────────────── */
 .footer {
   position: fixed;
-  bottom: 12px;
+  bottom: 20px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
@@ -168,9 +169,12 @@
   gap: 16px;
   font-size: 10px;
   color: rgba(255,255,255,0.18);
-  font-family: var(--font-body);
+  font-family: var(--font-led);
   letter-spacing: 1.5px;
   text-transform: uppercase;
   pointer-events: none;
   z-index: 1;
+  padding: 0 20px;
+  max-width: calc(100% - 32px);
+  box-sizing: border-box;
 }

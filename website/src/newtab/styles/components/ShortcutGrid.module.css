@@ -1,5 +1,6 @@
 /* ── Panel — 云端神庙玻璃卡片 ───────────────────────────────── */
 .panel {
+<<<<<<< HEAD
   background: rgba(255, 255, 255, 0.12);
   backdrop-filter: blur(20px) saturate(180%);
   -webkit-backdrop-filter: blur(20px) saturate(180%);
@@ -18,6 +19,42 @@
   padding-bottom: 10px;
   margin-bottom: 12px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+=======
+  background: var(--glass-white);
+  backdrop-filter: var(--blur-md);
+  -webkit-backdrop-filter: var(--blur-md);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  padding: 16px;
+  box-shadow: var(--shadow-glass);
+  position: relative;
+}
+
+/* Top-edge refraction highlight — matches global .card */
+.panel::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    rgba(255,255,255,0) 0%,
+    rgba(255,255,255,0.40) 40%,
+    rgba(255,255,255,0) 100%
+  );
+  pointer-events: none;
+  z-index: 2;
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+}
+
+/* ── Decorative dot row ──────────────────────────────────────── */
+.dotRow {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+>>>>>>> 719059899cef841cb006f7c36bfcc1629f6750ad
 }
 
 /* ── @dnd-kit 可排序项 ───────────────────────────────────────── */
@@ -25,8 +62,44 @@
   border-radius: var(--radius-md);
   touch-action: none;
 }
+<<<<<<< HEAD
 .sortableItem:active {
   cursor: grabbing;
+=======
+
+.dotOff {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255, 149, 0, 0.15);
+  box-shadow: none;
+>>>>>>> 719059899cef841cb006f7c36bfcc1629f6750ad
+}
+
+/* ── Header row ─────────────────────────────────────────────── */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.count {
+  font-family: var(--font-led);
+  font-size: 10px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--led-amber);
+  text-shadow: var(--shadow-led-glow);
+  opacity: 0.7;
+}
+
+.hint {
+  font-size: 10px;
+  color: rgba(255,255,255,0.22);
+  font-family: var(--font-led);
+  letter-spacing: 0.5px;
+  opacity: 0.75;
 }
 
 /* ── Shortcut Grid ──────────────────────────────────────────── */
@@ -56,12 +129,12 @@
   border-radius: var(--radius-lg);
   cursor: pointer;
   background: var(--glass-white);
-  backdrop-filter: var(--blur-sm);
-  -webkit-backdrop-filter: var(--blur-sm);
+  backdrop-filter: var(--blur-md);
+  -webkit-backdrop-filter: var(--blur-md);
   border: 1px solid var(--glass-border);
   box-shadow: var(--shadow-glass);
+  overflow: hidden;
   transition: all var(--dur-fast) var(--ease-liquid);
-  min-height: 74px;
   color: rgba(255,255,255,0.45);
 }
 
@@ -69,7 +142,7 @@
 .addTile::before {
   content: '';
   position: absolute;
-  top: 0; left: 6px; right: 6px;
+  top: 0; left: var(--space-sm); right: var(--space-sm);
   height: 1px;
   background: linear-gradient(
     90deg,
@@ -78,7 +151,7 @@
     rgba(255,255,255,0) 100%
   );
   pointer-events: none;
-  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
 }
 
 .addTile:hover {
@@ -98,4 +171,53 @@
 .panel.dragActive {
   border: 1.5px dashed var(--glass-border-bright);
   box-shadow: var(--shadow-float);
+}
+
+/* ── Group section ─────────────────────────────────────────── */
+.groupSection {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* ── Group header ───────────────────────────────────────────── */
+.groupHeader {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 6px;
+  margin-bottom: 2px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(
+    90deg,
+    rgba(255, 149, 0, 0.06) 0%,
+    rgba(255, 149, 0, 0.02) 60%,
+    transparent 100%
+  );
+  border: 1px solid rgba(255, 149, 0, 0.15);
+}
+
+.groupName {
+  font-family: var(--font-led);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--led-amber);
+  text-shadow: 0 0 8px rgba(255, 149, 0, 0.7), 0 0 16px rgba(255, 149, 0, 0.3);
+}
+
+.groupCount {
+  font-family: var(--font-led);
+  font-size: 9px;
+  letter-spacing: 0.5px;
+  color: rgba(255, 149, 0, 0.45);
+}
+
+/* ── Group tiles ────────────────────────────────────────────── */
+.groupTiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(78px, 1fr));
+  gap: 8px;
+  padding-bottom: 28px;
 }

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useShortcuts } from './hooks/useShortcuts';
 import { useSettings } from './hooks/useSettings';
 import SearchBar from './components/SearchBar';
@@ -40,26 +40,22 @@ export default function App() {
     }
   }, []);
 
-  // Keyboard shortcut to add current page as shortcut
+
+
+  // Listen for SHORTCUT_ADDED messages (e.g. from quickadd popup)
+  const isMountedRef = useRef(true);
   useEffect(() => {
-    const handleCommand = (command: string) => {
-      if (command === 'add-shortcut') {
-        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-          const tab = tabs[0];
-          if (tab?.url?.startsWith('http')) {
-            setAddDialogData({
-              url: tab.url || '',
-              title: tab.title || '',
-              favicon: tab.favIconUrl || '',
-            });
-            setAddDialogOpen(true);
-          }
-        });
+    const listener = (message: { type?: string }) => {
+      if (message.type === 'SHORTCUT_ADDED' && isMountedRef.current) {
+        refreshShortcuts();
       }
     };
-    chrome.commands.onCommand.addListener(handleCommand);
-    return () => { chrome.commands.onCommand.removeListener(handleCommand); };
-  }, []);
+    chrome.runtime.onMessage.addListener(listener);
+    return () => {
+      isMountedRef.current = false;
+      chrome.runtime.onMessage.removeListener(listener);
+    };
+  }, [refreshShortcuts]);
 
   // ESC key to close settings panel
   useEffect(() => {
@@ -69,6 +65,20 @@ export default function App() {
     document.addEventListener('keydown', handleKeyDown);
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [settingsOpen]);
+
+  // Ctrl+Shift+U opens the Add Shortcut dialog directly from the new tab page
+  useEffect(() => {
+    const handleKeyboardShortcuts = (e: KeyboardEvent) => {
+      const modKey = navigator.platform.startsWith('Mac') ? e.metaKey : e.ctrlKey;
+      if (modKey && e.shiftKey && e.key.toLowerCase() === 'u') {
+        e.preventDefault();
+        setAddDialogData({ url: '', title: '', favicon: '' });
+        setAddDialogOpen(true);
+      }
+    };
+    document.addEventListener('keydown', handleKeyboardShortcuts);
+    return () => document.removeEventListener('keydown', handleKeyboardShortcuts);
+  }, []);
 
   // Apply background settings from user preferences
   useEffect(() => {
@@ -121,6 +131,7 @@ export default function App() {
 
       {/* ── Header: time + greeting + glass search ── */}
       <div className={styles.header}>
+<<<<<<< HEAD
         <div className={styles.hero}>
           <Clock />
           <Greeting />
@@ -128,6 +139,10 @@ export default function App() {
         <div className={styles.searchRow}>
           <SearchBar defaultEngine={settings.defaultEngine} onEngineChange={updateEngine} />
         </div>
+=======
+        <SearchBar defaultEngine={settings.defaultEngine} />
+        <Greeting userName={settings.userName} />
+>>>>>>> 719059899cef841cb006f7c36bfcc1629f6750ad
       </div>
 
       {/* 快捷入口：左右各留约 20% 视口边距，中间区域更宽 */}

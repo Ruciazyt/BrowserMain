@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useBookmarkImport, BMTreeNode, countBookmarks } from '../hooks/useBookmarkImport';
 import styles from '../styles/components/BookmarkImport.module.css';
 
@@ -16,6 +16,7 @@ function FolderItem({ node, depth, selectedIds, toggleFolder, expandedIds, toggl
   const isExpanded = expandedIds.has(node.id);
   const isSelected = selectedIds.has(node.id);
   const bookmarkCount = countBookmarks(node);
+  const checkboxRef = useRef<HTMLInputElement>(null);
 
   // Determine indeterminate: if some children are selected but not all
   let childSelectedCount = 0;
@@ -29,6 +30,12 @@ function FolderItem({ node, depth, selectedIds, toggleFolder, expandedIds, toggl
     });
   }
   const indeterminate = childTotalCount > 0 && childSelectedCount > 0 && childSelectedCount < childTotalCount;
+
+  useEffect(() => {
+    if (checkboxRef.current) {
+      checkboxRef.current.indeterminate = indeterminate;
+    }
+  }, [indeterminate]);
 
   return (
     <div className={styles.folderItem}>
@@ -60,9 +67,7 @@ function FolderItem({ node, depth, selectedIds, toggleFolder, expandedIds, toggl
           <input
             type="checkbox"
             checked={isSelected}
-            ref={(el) => {
-              if (el) el.indeterminate = indeterminate;
-            }}
+            ref={checkboxRef}
             onChange={() => toggleFolder(node.id)}
             className={styles.checkbox}
           />
@@ -99,6 +104,7 @@ export default function BookmarkImport({ onBack, onImported }: BookmarkImportPro
   const [tree, setTree] = useState<BMTreeNode[]>([]);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
+  const [searchQuery, setSearchQuery] = useState('');
   const [result, setResult] = useState<{ imported: number; skipped: number } | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -146,8 +152,32 @@ export default function BookmarkImport({ onBack, onImported }: BookmarkImportPro
   const handleBack = () => {
     setResult(null);
     setSelectedIds(new Set());
+    setSearchQuery('');
     onBack();
   };
+
+  // Recursively filter tree: include a node if its title matches OR any child is included
+  const filterTree = (nodes: BMTreeNode[], query: string): BMTreeNode[] => {
+    return nodes
+      .map((node) => {
+        const filteredChildren = node.children ? filterTree(node.children, query) : [];
+        const titleMatch = query === '' || node.title.toLowerCase().includes(query.toLowerCase());
+        const childMatch = filteredChildren.length > 0;
+        if (titleMatch && childMatch) {
+          return { ...node, children: filteredChildren };
+        }
+        if (titleMatch) {
+          return { ...node };
+        }
+        if (childMatch) {
+          return { ...node, children: filteredChildren };
+        }
+        return null;
+      })
+      .filter((n): n is BMTreeNode => n !== null);
+  };
+
+  const filteredTree = searchQuery === '' ? tree : filterTree(tree, searchQuery);
 
   if (loading) {
     return (
@@ -235,7 +265,14 @@ export default function BookmarkImport({ onBack, onImported }: BookmarkImportPro
       ) : (
         <>
           <div className={styles.treeContainer}>
-            {tree.map((node) => (
+            <input
+              type="text"
+              className={styles.searchInput}
+              placeholder="Filter folders..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            {filteredTree.map((node) => (
               <FolderItem
                 key={node.id}
                 node={node}

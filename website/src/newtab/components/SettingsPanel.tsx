@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useSettings } from '../hooks/useSettings';
 import { SEARCH_ENGINES } from '../utils/engines';
 import EngineIcon from './EngineIcon';
@@ -36,7 +36,8 @@ const GRADIENT_DIRECTIONS = [
 ];
 
 export default function SettingsPanel({ open, onClose, onBookmarkImportComplete, onShowTour }: SettingsPanelProps) {
-  const { settings, updateEngine, updateBackground } = useSettings();
+  const { settings, updateEngine, updateBackground, updateUserName, updateClockFormat } = useSettings();
+  const { shortcuts, refreshShortcuts, updateShortcut } = useShortcuts();
   const [bgType, setBgType] = useState(settings.background.type);
   const [solidColor, setSolidColor] = useState(settings.background.color || '#0a0a0f');
   const [gradientFrom, setGradientFrom] = useState(settings.background.gradientFrom || '#0a0a0f');
@@ -47,6 +48,23 @@ export default function SettingsPanel({ open, onClose, onBookmarkImportComplete,
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [showBookmarkImport, setShowBookmarkImport] = useState(false);
   const [showShortcutImport, setShowShortcutImport] = useState(false);
+  const [showClearConfirm, setShowClearConfirm] = useState(false);
+  const [showClearSuccess, setShowClearSuccess] = useState(false);
+  const [tourCompleted, setTourCompleted] = useState(false);
+  const [groupToDelete, setGroupToDelete] = useState<string | null>(null);
+  const [newGroupName, setNewGroupName] = useState('');
+  const [groupDeleteSuccess, setGroupDeleteSuccess] = useState('');
+
+  // Unique groups sorted alphabetically
+  const existingGroups = Array.from(
+    new Set(shortcuts.map((s) => s.group).filter((g): g is string => !!g))
+  ).sort();
+
+  useEffect(() => {
+    chrome.storage.local.get('onboardingComplete', (result) => {
+      setTourCompleted(result.onboardingComplete === true);
+    });
+  }, []);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -282,18 +300,161 @@ export default function SettingsPanel({ open, onClose, onBookmarkImportComplete,
                     Import
                   </button>
                 </div>
+                {!showClearConfirm && !showClearSuccess && (
+                  <button
+                    className={styles.clearAllBtn}
+                    onClick={() => setShowClearConfirm(true)}
+                  >
+                    Clear All Shortcuts
+                  </button>
+                )}
+              </div>
+
+              {/* Groups section */}
+              <div className={styles.section}>
+                <div className={styles.sectionTitle}>Groups</div>
+                {existingGroups.length === 0 ? (
+                  <div className={styles.noGroupsHint}>
+                    No groups yet. Groups are created when you assign one to a shortcut.
+                  </div>
+                ) : (
+                  <div className={styles.groupList}>
+                    {existingGroups.map((groupName) => {
+                      const count = shortcuts.filter((s) => s.group === groupName).length;
+                      return (
+                        <div key={groupName} className={styles.groupRow}>
+                          <span className={styles.groupRowName}>{groupName}</span>
+                          <span className={styles.groupRowCount}>{count}</span>
+                          <button
+                            className={styles.groupDeleteBtn}
+                            onClick={async () => {
+                              setGroupToDelete(groupName);
+                            }}
+                            aria-label={`Delete group ${groupName}`}
+                            title={`Remove "${groupName}" from all shortcuts`}
+                          >
+                            ×
+                          </button>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+                {groupToDelete && (
+                  <div className={styles.groupConfirmState}>
+                    <span className={styles.groupConfirmText}>
+                      Remove group <strong>"{groupToDelete}"</strong> from all shortcuts?
+                    </span>
+                    <div className={styles.groupConfirmBtns}>
+                      <button
+                        className={styles.groupCancelBtn}
+                        onClick={() => setGroupToDelete(null)}
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        className={styles.groupConfirmBtn}
+                        onClick={async () => {
+                          // Remove group from all shortcuts in this group
+                          const toUpdate = shortcuts.filter((s) => s.group === groupToDelete);
+                          for (const s of toUpdate) {
+                            await updateShortcut(s.id, { group: undefined });
+                          }
+                          setGroupToDelete(null);
+                          setGroupDeleteSuccess(`"${groupToDelete}" removed from ${toUpdate.length} shortcut(s)`);
+                          setTimeout(() => setGroupDeleteSuccess(''), 2500);
+                          onBookmarkImportComplete?.();
+                        }}
+                      >
+                        Confirm
+                      </button>
+                    </div>
+                  </div>
+                )}
+                {groupDeleteSuccess && (
+                  <div className={styles.successMessage}>{groupDeleteSuccess}</div>
+                )}
+                {showClearConfirm && (
+                  <div className={styles.confirmState}>
+                    <span className={styles.confirmText}>Are you sure? This will delete all shortcuts.</span>
+                    <div className={styles.confirmBtnRow}>
+                      <button
+                        className={styles.confirmCancelBtn}
+                        onClick={() => setShowClearConfirm(false)}
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        className={styles.confirmDangerBtn}
+                        onClick={async () => {
+                          // Clear shortcuts via chrome.storage directly
+                          await new Promise<void>((resolve) => {
+                            chrome.storage.local.set({ 'browsermain_shortcuts': [] }, () => resolve());
+                          });
+                          onBookmarkImportComplete?.();
+                          setShowClearConfirm(false);
+                          setShowClearSuccess(true);
+                          setTimeout(() => setShowClearSuccess(false), 2500);
+                        }}
+                      >
+                        Confirm
+                      </button>
+                    </div>
+                  </div>
+                )}
+                {showClearSuccess && (
+                  <div className={styles.successMessage}>✓ All shortcuts cleared</div>
+                )}
               </div>
 
               <div className={styles.section}>
                 <div className={styles.sectionTitle}>About</div>
+                <div className={styles.displayNameRow}>
+                  <span className={styles.displayNameLabel}>Display Name</span>
+                  <input
+                    type="text"
+                    className={styles.displayNameInput}
+                    placeholder="Your name..."
+                    defaultValue={settings.userName || ''}
+                    onBlur={(e) => updateUserName(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        updateUserName((e.target as HTMLInputElement).value);
+                        (e.target as HTMLInputElement).blur();
+                      }
+                    }}
+                  />
+                </div>
+                <div className={styles.clockFormatRow}>
+                  <span className={styles.clockFormatLabel}>Clock Format</span>
+                  <div className={styles.clockFormatToggle}>
+                    <button
+                      className={`${styles.clockFormatBtn} ${settings.clockIs24h !== false ? styles.active : ''}`}
+                      onClick={() => {
+                        updateClockFormat(true);
+                      }}
+                    >
+                      24H
+                    </button>
+                    <button
+                      className={`${styles.clockFormatBtn} ${settings.clockIs24h === false ? styles.active : ''}`}
+                      onClick={() => {
+                        updateClockFormat(false);
+                      }}
+                    >
+                      12H
+                    </button>
+                  </div>
+                </div>
                 <div className={styles.aboutVersion}>BrowserMain v0.1.0</div>
                 <div className={styles.version}>LED MATRIX UI</div>
                 <button
                   className={styles.showTourBtn}
                   onClick={onShowTour}
                   style={{ marginTop: 12, width: '100%' }}
+                  title="Replay the onboarding tour"
                 >
-                  Show Tour
+                  <span className={styles.tourIcon}>◉</span> {tourCompleted ? 'Replay Tour' : 'Show Tour'}
                 </button>
               </div>
             </>

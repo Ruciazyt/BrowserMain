@@ -1,6 +1,33 @@
+<<<<<<< HEAD
 /* ── Greeting — 参考云端神庙：主标题 + 副句 ─────────────────── */
 .block {
   margin-top: 1rem;
+=======
+/* ── Greeting ───────────────────────────────────────────────── */
+.wrapper { width: 100%; padding: 0 var(--space-lg); }
+.greeting {
+  font-family: var(--font-display);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--led-amber);
+  text-align: center;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  text-shadow: var(--shadow-led-glow);
+  animation: greetingPulse 3s ease-in-out infinite;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+/* Scale down slightly when user name is present (longer text) */
+@media (max-width: 480px) {
+  .greeting {
+    font-size: 9px;
+    letter-spacing: 1.5px;
+  }
+>>>>>>> 719059899cef841cb006f7c36bfcc1629f6750ad
 }
 
 .greeting {

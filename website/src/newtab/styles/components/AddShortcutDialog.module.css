@@ -2,14 +2,14 @@
 .overlay {
   position: fixed; top: 0; left: 0; right: 0; bottom: 0;
   background: rgba(0,0,0,0.55);
-  backdrop-filter: blur(16px) saturate(180%);
-  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  backdrop-filter: var(--blur-md);
+  -webkit-backdrop-filter: var(--blur-md);
   z-index: 300;
   display: flex; align-items: center; justify-content: center;
   padding: 20px;
   animation: fadeIn 200ms ease-out;
 }
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
 
 /* ── Modal card ───────────────────────────────────────────────── */
 .modal {
@@ -49,22 +49,24 @@
   color: rgba(255,255,255,0.42);
   cursor: pointer; transition: all var(--dur-fast); border: none;
 }
-.closeBtn:hover { background: var(--glass-white-md); color: rgba(255,255,255,0.85); transform: rotate(90deg); }
+.closeBtn:hover { background: var(--glass-white-md); color: rgba(255,255,255,0.90); }
 
 /* ── Body ────────────────────────────────────────────────────── */
 .body { padding: 16px 18px; display: flex; flex-direction: column; gap: 13px; }
 
 /* ── Favicon row ──────────────────────────────────────────────── */
 .faviconRow {
-  display: flex; align-items: center; gap: 10px;
-  padding: 8px 12px;
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 8px 12px; min-height: 42px;
   background: var(--glass-white);
   border: 1px solid rgba(255,255,255,0.08);
   border-radius: var(--radius-md);
 }
 .faviconImg { width: 18px; height: 18px; object-fit: contain; border-radius: 3px; }
 .faviconGlobe { width: 18px; height: 18px; color: var(--led-amber); opacity: 0.70; flex-shrink: 0; border-radius: 3px; }
-.faviconHint { font-size: 11px; color: rgba(255,255,255,0.32); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.faviconHint { font-size: 10px; color: rgba(255,255,255,0.24); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.faviconDomain { font-size: 11px; color: rgba(255,255,255,0.56); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500; display: block; }
+.faviconTextCol { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 
 /* ── Form fields ──────────────────────────────────────────────── */
 .field { display: flex; flex-direction: column; gap: 5px; }
@@ -84,7 +86,32 @@
   width: 100%;
 }
 .input::placeholder { color: rgba(255,255,255,0.28); }
-.input:focus { border-color: rgba(94,231,223,0.50); background: var(--glass-white-md); }
+.input:focus { border-color: rgba(94,231,223,0.50); background: var(--glass-white-md); box-shadow: 0 0 0 3px rgba(94,231,223,0.12); }
+
+/* URL input wrapper — positions the status dot inside the field */
+.inputWrapper {
+  position: relative;
+  width: 100%;
+}
+.inputWrapper .input {
+  padding-right: 28px;
+}
+
+/* Inline status dot */
+.statusDot {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  pointer-events: none;
+  flex-shrink: 0;
+}
+.statusDotValid    { background: #22c55e; box-shadow: 0 0 6px rgba(34,197,94,0.60); }
+.statusDotInvalid  { background: #ef4444; box-shadow: 0 0 6px rgba(239,68,68,0.60); }
+.statusDotDuplicate{ background: #f59e0b; box-shadow: 0 0 6px rgba(245,158,11,0.60); }
 
 /* ── Footer ───────────────────────────────────────────────────── */
 .footer {
@@ -104,16 +131,15 @@
 
 .saveBtn {
   padding: 8px 20px; border-radius: var(--radius-md);
-  font-size: 13px; font-weight: 600;
+  font-size: 13px; font-weight: 500;
   color: rgba(0,0,0,0.85);
-  background: linear-gradient(135deg, rgba(94,231,223,0.85) 0%, rgba(59,130,246,0.85) 100%);
+  background: linear-gradient(135deg, var(--accent-aqua) 0%, var(--accent-violet) 100%);
   border: none; cursor: pointer;
   transition: all var(--dur-fast);
   letter-spacing: 0.1px;
   box-shadow: 0 4px 16px rgba(94,231,223,0.25);
 }
 .saveBtn:hover:not(:disabled) {
-  background: linear-gradient(135deg, rgba(94,231,223,1) 0%, rgba(59,130,246,1) 100%);
   box-shadow: 0 6px 24px rgba(94,231,223,0.40);
   transform: translateY(-1px);
 }

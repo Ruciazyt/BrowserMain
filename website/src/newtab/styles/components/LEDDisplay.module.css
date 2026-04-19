@@ -1,29 +1,41 @@
 /* ── LED Display ─────────────────────────────────────────────── */
-.wrapper {
-  padding: 6px 16px 12px;
-  display: flex; flex-direction: column; align-items: center;
+/* Amber LED dot colors — expanded from --led-amber (#ff9500 = rgb(255,149,0)) */
+/* color-mix() replaced with explicit rgba() for full browser compatibility */
+
+/* LED-specific container */
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
 }
-.container { display: flex; flex-direction: column; align-items: center; gap: 5px; }
 
 .dotMatrix {
+  position: relative;
+  /* outer div is ONLY a positioned container — dots live in .layer children */
+}
+
+.layer {
+  position: absolute;
+  top: 0; left: 0;
   display: grid;
   grid-template-columns: repeat(8, 1fr);
   gap: 4px; padding: 5px;
 }
 .dot {
   width: 5px; height: 5px; border-radius: 50%;
-  background: color-mix(in srgb, var(--led-amber) 85%, white);
-  box-shadow: 0 0 4px color-mix(in srgb, var(--led-amber) 55%, transparent);
+  background: rgb(255, 187, 128); /* 85% amber, 15% white */
+  box-shadow: 0 0 4px rgba(255, 149, 0, 0.55);
   animation: ledWave 2.4s ease-in-out infinite;
   animation-delay: var(--delay, 0s);
 }
 .dot.off {
-  background: color-mix(in srgb, var(--led-amber) 12%, transparent);
+  background: rgba(255, 149, 0, 0.12); /* 12% amber */
   box-shadow: none; animation: none;
 }
 @keyframes ledWave {
-  0%, 100% { opacity: 1; box-shadow: 0 0 4px color-mix(in srgb, var(--led-amber) 55%, transparent); }
-  50% { opacity: 0.55; box-shadow: 0 0 2px color-mix(in srgb, var(--led-amber) 30%, transparent); }
+  0%, 100% { opacity: 1; box-shadow: 0 0 4px rgba(255, 149, 0, 0.55); }
+  50% { opacity: 0.55; box-shadow: 0 0 2px rgba(255, 149, 0, 0.30); }
 }
 .label {
   font-family: var(--font-led);
@@ -31,4 +43,13 @@
   color: rgba(255,255,255,0.22);
   letter-spacing: 2px;
   text-transform: uppercase;
+}
+
+/* ── Keyboard shortcut inline (inside dot matrix) ─── */
+.kbdHint {
+  font-family: var(--font-led);
+  font-size: 9px;
+  color: rgba(255,255,255,0.32);
+  letter-spacing: 1px;
+  text-align: center;
 }
