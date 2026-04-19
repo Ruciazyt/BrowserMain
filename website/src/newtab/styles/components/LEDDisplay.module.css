@@ -1,9 +1,8 @@
 /* ── LED Display ─────────────────────────────────────────────── */
 /* Amber LED dot colors — expanded from --led-amber (#ff9500 = rgb(255,149,0)) */
 /* color-mix() replaced with explicit rgba() for full browser compatibility */
-@import url('./ImportShared.module.css');
 
-/* LED-specific container — overrides .container from ImportShared */
+/* LED-specific container */
 .container {
   display: flex;
   flex-direction: column;

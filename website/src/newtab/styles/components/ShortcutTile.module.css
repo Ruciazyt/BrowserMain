@@ -19,7 +19,7 @@
 .container::before {
   content: '';
   position: absolute;
-  top: 0; left: var(--space-sm); right: var(--space-sm);
+  top: 0; left: 0; right: 0;
   height: 1px;
   background: linear-gradient(
     90deg,
@@ -29,7 +29,6 @@
   );
   pointer-events: none;
   z-index: 2;
-  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
 }
 
 /* ── Icon ─────────────────────────────────────────────────────── */
