@@ -268,6 +268,7 @@ export default function ShortcutTile({
         ref={containerRef}
         onContextMenu={handleContextMenu}
         draggable
+        title={shortcut.url}
         onDragStart={() => onDragStart(index)}
         onDragEnd={onDragEnd}
         onDragOver={(e) => { e.preventDefault(); const tileWidth = e.currentTarget.getBoundingClientRect().width; onDragOver(index, e.nativeEvent.offsetX, tileWidth); }}
@@ -289,7 +290,7 @@ export default function ShortcutTile({
       >
         <div className={styles.iconWrapper}>
           {faviconSrc ? (
-            <img src={faviconSrc} alt="" onError={handleFaviconError} />
+            <img src={faviconSrc} alt="" onError={handleFaviconError} title={shortcut.url} />
           ) : (
             <GlobeIcon />
           )}

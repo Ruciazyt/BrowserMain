@@ -451,6 +451,7 @@ export default function SettingsPanel({ open, onClose, onBookmarkImportComplete,
                   className={styles.showTourBtn}
                   onClick={onShowTour}
                   style={{ marginTop: 12, width: '100%' }}
+                  title="Replay the onboarding tour"
                 >
                   <span className={styles.tourIcon}>◉</span> {tourCompleted ? 'Replay Tour' : 'Show Tour'}
                 </button>
