@@ -77,7 +77,7 @@
   backdrop-filter: var(--blur-sm);
   -webkit-backdrop-filter: var(--blur-sm);
   border: 1px solid var(--glass-border);
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--text-dim);
   cursor: pointer;
   transition: all var(--dur-fast) var(--ease-liquid);
   z-index: 100;

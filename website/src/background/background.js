@@ -45,8 +45,9 @@ function saveShortcuts(shortcuts) {
 // Extension URL builder
 // ---------------------------------------------------------------------------
 
-async function buildExtensionUrl(addData) {
-  const extensionPageUrl = chrome.runtime.getURL('index.html');
+async function buildExtensionUrl(addData, targetPage) {
+  const page = targetPage === 'popup' ? 'quickadd.html' : 'index.html';
+  const extensionPageUrl = chrome.runtime.getURL(page);
 
   let webpageUrl = '';
   let webpageTitle = '';
@@ -89,7 +90,7 @@ chrome.runtime.onInstalled.addListener(() => {
 
 chrome.action.onClicked.addListener(async (tab) => {
   try {
-    const targetUrl = await buildExtensionUrl(null);
+    const targetUrl = await buildExtensionUrl(null, 'popup');
     await chrome.tabs.create({ url: targetUrl });
   } catch (err) {
     console.error('[BrowserMain] Tab create error:', err);
@@ -105,7 +106,7 @@ chrome.commands.onCommand.addListener(async (command) => {
       url: activeTab.url,
       title: activeTab.title || '',
       favicon: activeTab.favIconUrl || '',
-    });
+    }, 'popup');
     await chrome.tabs.create({ url: targetUrl });
   } catch (err) {
     console.error('[BrowserMain] commands.onCommand error:', err);

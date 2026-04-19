@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { getSmartFaviconUrl, getFaviconIcoUrl, getDomainFromUrl } from '../utils/storage';
+import { isMac } from '../utils/platform';
 import { isUrl } from '../utils/engines';
 import { Shortcut } from '../utils/storage';
 import styles from '../styles/components/ShortcutTile.module.css';
@@ -304,7 +305,9 @@ export default function ShortcutTile({
           ×
         </button>
         {isNavigating && (
-          <div className={styles.keyboardHint}>← → to move · Esc to exit</div>
+          <div className={styles.keyboardHint}>
+            {isMac() ? '⌘← ⌘→ to move · Esc to exit' : '← → to move · Esc to exit'}
+          </div>
         )}
       </div>
 

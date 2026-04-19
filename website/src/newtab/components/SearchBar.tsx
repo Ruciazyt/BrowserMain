@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { SEARCH_ENGINES, SearchEngine, buildSearchUrl, isUrl } from '../utils/engines';
+import { isMac, modKey } from '../utils/platform';
 import styles from '../styles/components/SearchBar.module.css';
 
 interface SearchBarProps {
@@ -148,7 +149,7 @@ export default function SearchBar({ defaultEngine = 'google' }: SearchBarProps) 
             <rect x="2" y="4" width="20" height="16" rx="2"/>
             <path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M8 12h.01M12 12h.01M16 12h.01M7 16h10"/>
           </svg>
-          Ctrl+K
+          {isMac() ? '⌘K' : 'Ctrl+K'}
         </kbd>
         <span className={styles.hintText}>to focus</span>
       </div>

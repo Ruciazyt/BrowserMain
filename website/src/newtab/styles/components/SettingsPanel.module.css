@@ -2,8 +2,8 @@
 .overlay {
   position: fixed; top: 0; right: 0; bottom: 0; left: 0;
   background: rgba(0,0,0,0.50);
-  backdrop-filter: blur(12px) saturate(150%);
-  -webkit-backdrop-filter: blur(12px) saturate(150%);
+  backdrop-filter: var(--blur-sm);
+  -webkit-backdrop-filter: var(--blur-sm);
   z-index: 200; opacity: 0; pointer-events: none;
   transition: opacity var(--dur-mid) var(--ease-smooth);
 }
@@ -168,7 +168,8 @@
   border: 1px solid rgba(255,255,255,0.18);
   background: rgba(0,0,0,0.45);
   cursor: pointer; transition: all var(--dur-fast);
-  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: var(--blur-sm);
+  -webkit-backdrop-filter: var(--blur-sm);
 }
 .removeImageBtn:hover { background: rgba(200,50,50,0.60); border-color: rgba(255,100,100,0.40); color: rgba(255,255,255,0.95); }
 .colorInput {
