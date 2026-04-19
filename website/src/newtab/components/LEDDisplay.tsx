@@ -110,16 +110,14 @@ export default function LEDDisplay() {
     return () => clearInterval(id);
   }, []);
 
-  // Cycle pattern every 5 seconds with crossfade
+  // Switch pattern when the time-of-day period changes (hour boundary crossing)
   useEffect(() => {
-    const id = setInterval(() => {
-      setNextPatternIdx(prev => {
-        const current = prev !== null ? prev : patternIdx;
-        return (current + 1) % PATTERNS.length;
-      });
-    }, 5000);
-    return () => clearInterval(id);
-  }, [patternIdx]);
+    if (nextPatternIdx !== null) return;
+    const newIdx = getTimeOfDayIndex();
+    if (newIdx !== patternIdx) {
+      setNextPatternIdx(newIdx);
+    }
+  }, [patternIdx, nextPatternIdx, frame]);
 
   // After 400ms crossfade completes, commit the new pattern
   useEffect(() => {
