@@ -14,7 +14,6 @@
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 100%;
-  transition: font-size 0.3s ease;
 }
 
 /* Scale down slightly when user name is present (longer text) */

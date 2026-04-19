@@ -132,10 +132,11 @@ body {
   background: var(--bg-primary);
   overflow-x: hidden;
   min-height: 100vh;
-  line-height: 1.5;
 }
 
-#root { width: 100%; min-height: 100vh; }
+#root { width: 100%; min-height: 100vh;   /* Letter-spacing on body prevents font rendering inconsistency */
+  letter-spacing: 0;
+}
 
 /* --- Scrollbar (Aqua Accent) --- */
 ::-webkit-scrollbar { width: 4px; }

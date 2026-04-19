@@ -109,8 +109,8 @@
   -webkit-backdrop-filter: var(--blur-md);
   border: 1px solid var(--glass-border);
   box-shadow: var(--shadow-glass);
+  overflow: hidden;
   transition: all var(--dur-fast) var(--ease-liquid);
-  min-height: 74px;
   color: rgba(255,255,255,0.45);
 }
 
