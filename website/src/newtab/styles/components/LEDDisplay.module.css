@@ -13,9 +13,6 @@
   grid-template-columns: repeat(8, 1fr);
   gap: 4px; padding: 5px;
 }
-.oldLayer { /* opacity driven by inline style */ }
-.newLayer { /* opacity driven by inline style */ }
-
 .dot {
   width: 5px; height: 5px; border-radius: 50%;
   background: color-mix(in srgb, var(--led-amber) 85%, white);

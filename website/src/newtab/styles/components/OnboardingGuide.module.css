@@ -95,4 +95,4 @@
   border: none; cursor: pointer; transition: all var(--dur-fast); font-family: var(--font-body);
   box-shadow: 0 4px 16px rgba(94,231,223,0.25);
 }
-.getStartedBtn:hover { background: linear-gradient(135deg, var(--accent-aqua) 0%, var(--accent-violet) 100%); box-shadow: 0 6px 24px rgba(94,231,223,0.40); transform: translateY(-1px); }
+.getStartedBtn:hover { box-shadow: 0 6px 24px rgba(94,231,223,0.40); transform: translateY(-1px); filter: brightness(1.08); }
