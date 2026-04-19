@@ -8,6 +8,22 @@
   transition: all var(--dur-fast);
 }
 
+.container::before {
+  content: '';
+  position: absolute;
+  top: 0; left: var(--space-sm); right: var(--space-sm);
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    rgba(255,255,255,0) 0%,
+    rgba(255,255,255,0.38) 40%,
+    rgba(255,255,255,0) 100%
+  );
+  pointer-events: none;
+  z-index: 2;
+  border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+}
+
 /* ── Icon ─────────────────────────────────────────────────────── */
 .iconWrapper {
   width: 36px; height: 36px;
