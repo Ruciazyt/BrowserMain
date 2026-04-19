@@ -161,6 +161,45 @@
   box-shadow: 0 0 12px var(--led-amber);
 }
 
+.emptyAddBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin: 16px auto 0;
+  padding: 10px 24px;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, rgba(255,149,0,0.25) 0%, rgba(255,149,0,0.10) 100%);
+  border: 1px solid rgba(255, 149, 0, 0.45);
+  color: var(--led-amber);
+  font-family: var(--font-led);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  cursor: pointer;
+  text-shadow: 0 0 8px rgba(255,149,0,0.7);
+  box-shadow: 0 0 12px rgba(255,149,0,0.2), 0 4px 12px rgba(0,0,0,0.3);
+  transition: all var(--dur-fast) var(--ease-liquid);
+  text-transform: uppercase;
+}
+
+.emptyAddBtn:hover {
+  background: linear-gradient(135deg, rgba(255,149,0,0.40) 0%, rgba(255,149,0,0.20) 100%);
+  border-color: rgba(255, 149, 0, 0.7);
+  transform: translateY(-2px) scale(1.04);
+  box-shadow: 0 0 20px rgba(255,149,0,0.4), 0 8px 20px rgba(0,0,0,0.35);
+}
+
+.emptyAddBtn:focus-visible {
+  outline: 2px solid var(--led-amber);
+  outline-offset: 2px;
+}
+
+.emptyAddBtnIcon {
+  font-size: 16px;
+  line-height: 1;
+}
+
 .addTileIcon {
   font-size: 22px;
   line-height: 1;

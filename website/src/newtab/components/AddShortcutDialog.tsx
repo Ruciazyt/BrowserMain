@@ -278,10 +278,10 @@ export default function AddShortcutDialog({ open, url, title, favicon, group, on
               <div className={styles.successMsg}>✓ Saved!</div>
             ) : (
               <>
-                <button type="button" className={styles.cancelBtn} form="add-shortcut-form" onClick={onClose} disabled={saving}>
+                <button type="button" className={styles.cancelBtn} onClick={onClose} disabled={saving}>
                   Cancel
                 </button>
-                <button type="submit" form="add-shortcut-form" className={styles.saveBtn} disabled={saving || !inputUrl.trim() || isInvalidUrl}>
+                <button type="submit" className={styles.saveBtn} disabled={saving || !inputUrl.trim() || isInvalidUrl}>
                   {saving ? 'Saving…' : 'Save'}
                 </button>
               </>

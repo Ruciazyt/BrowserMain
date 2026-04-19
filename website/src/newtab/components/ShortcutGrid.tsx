@@ -269,15 +269,13 @@ export default function ShortcutGrid({ shortcuts, onDelete, onUpdate, onReorder,
         <div className={styles.container}>
           <div className={styles.empty}>
             <div className={styles.emptyTitle}>No shortcuts yet</div>
-            <div className={styles.emptyHint}>
-              Click the <strong style={{ color: 'var(--led-amber)' }}>+</strong> button to add your first shortcut
-            </div>
-            <div className={styles.emptyHint} style={{ marginTop: 4 }}>
-              Right-click any shortcut to edit or delete · use group field to organize
+            <div className={styles.emptyHint} style={{ marginTop: 8, opacity: 0.7 }}>
+              Right-click any shortcut to edit or delete
             </div>
             {onAdd && (
-              <button className={styles.addTile} onClick={onAdd} onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onAdd?.(); } }} tabIndex={0} aria-label="Add shortcut" title="Add shortcut" style={{ marginTop: 16 }}>
-                <span className={styles.addTileIcon}>+</span>
+              <button className={styles.emptyAddBtn} onClick={onAdd} tabIndex={0}>
+                <span className={styles.emptyAddBtnIcon}>+</span>
+                Add Shortcut
               </button>
             )}
           </div>
