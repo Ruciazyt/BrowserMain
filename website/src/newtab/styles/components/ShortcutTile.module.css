@@ -6,6 +6,14 @@
   align-items: center;
   gap: 4px;
   transition: all var(--dur-fast);
+  border-radius: var(--radius-lg);
+}
+
+/* ── Hover scale + glow ─────────────────────────────────────── */
+.container:hover {
+  transform: scale(1.06);
+  box-shadow: 0 0 10px rgba(255,149,0,0.30), 0 0 20px rgba(255,149,0,0.15);
+  background: rgba(255,149,0,0.06);
 }
 
 .container::before {
