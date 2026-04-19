@@ -55,6 +55,16 @@
   /* Rounded pill background matching the LED panel vibe */
   border-top: 1px solid rgba(255, 149, 0, 0.08);
   background: rgba(255, 149, 0, 0.03);
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.ticker:hover {
+  background: rgba(255, 149, 0, 0.08);
+}
+
+.ticker:hover .tickerTrack {
+  animation-play-state: paused;
 }
 
 .tickerTrack {
