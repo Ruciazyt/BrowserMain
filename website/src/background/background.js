@@ -111,3 +111,35 @@ chrome.commands.onCommand.addListener(async (command) => {
     console.error('[BrowserMain] commands.onCommand error:', err);
   }
 });
+
+// ── Quick-add popup message handler ───────────────────────────────────────
+
+chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
+  if (msg.type === 'ADD_SHORTCUT') {
+    const { url, title, favicon } = msg;
+
+    getShortcuts().then((shortcuts) => {
+      // Duplicate check
+      if (shortcuts.some((s) => s.url === url)) {
+        sendResponse({ success: false, duplicate: true });
+        return;
+      }
+
+      const entry = {
+        id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+        url: url || '',
+        title: title || '',
+        favicon: favicon || '',
+        createdAt: Date.now(),
+      };
+
+      shortcuts.unshift(entry);
+      saveShortcuts(shortcuts).then(() => {
+        console.log('[BrowserMain] Shortcut added:', entry.title);
+        sendResponse({ success: true });
+      });
+    });
+
+    return true; // async response
+  }
+});
