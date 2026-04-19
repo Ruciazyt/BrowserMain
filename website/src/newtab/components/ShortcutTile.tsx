@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef, useLayoutEffect } from 'react';
-import { createPortal } from 'react-dom';
 import { getSmartFaviconUrl, getFaviconIcoUrl, getDomainFromUrl } from '../utils/storage';
 import { isMac } from '../utils/platform';
 import { isUrl } from '../utils/engines';
@@ -35,6 +34,7 @@ export default function ShortcutTile({
 }: ShortcutTileProps) {
   const [showContextMenu, setShowContextMenu] = useState(false);
   const [contextMenuPos, setContextMenuPos] = useState({ x: 0, y: 0 });
+  const [showMoveSubmenu, setShowMoveSubmenu] = useState(false);
   const [editMode, setEditMode] = useState(false);
   const [editTitle, setEditTitle] = useState(shortcut.title);
   const [editUrl, setEditUrl] = useState(shortcut.url);
@@ -97,11 +97,13 @@ export default function ShortcutTile({
     const handleClickOutside = (e: MouseEvent) => {
       if (contextMenuRef.current && !contextMenuRef.current.contains(e.target as Node)) {
         setShowContextMenu(false);
+        setShowMoveSubmenu(false);
       }
     };
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         setShowContextMenu(false);
+        setShowMoveSubmenu(false);
         if (editMode) setEditMode(false);
       }
     };
@@ -297,35 +299,76 @@ export default function ShortcutTile({
         )}
       </div>
 
-      {showContextMenu &&
-        createPortal(
-          <div
-            ref={contextMenuRef}
-            className={styles.contextMenu}
-            style={{
-              position: 'fixed',
-              left: contextMenuPos.x,
-              top: contextMenuPos.y,
-              zIndex: 2147483645,
-            }}
-          >
-            <button type="button" className={styles.contextMenuItem} onClick={(e) => handleEdit(e)}>
-              ✏️ Edit
-            </button>
-            <button
-              type="button"
-              className={styles.contextMenuItem}
-              onClick={(e) => {
-                e.stopPropagation();
-                onDelete(shortcut.id);
-                setShowContextMenu(false);
-              }}
-            >
-              🗑️ Delete
-            </button>
-          </div>,
-          document.body
-        )}
+      {showContextMenu && (
+        <div
+          ref={contextMenuRef}
+          className={styles.contextMenu}
+          style={{ left: contextMenuPos.x, top: contextMenuPos.y }}
+        >
+          {(() => {
+            const availableGroups = (existingGroups || []).filter(g => g !== shortcut.group);
+            const hasOtherGroups = availableGroups.length > 0;
+            return (
+              <div
+                className={styles.contextMenuItemWrapper}
+                onMouseEnter={() => setShowMoveSubmenu(true)}
+                onMouseLeave={() => setShowMoveSubmenu(false)}
+              >
+                <button
+                  className={styles.contextMenuItem}
+                  onClick={(e) => { e.stopPropagation(); setShowMoveSubmenu(!showMoveSubmenu); }}
+                >
+                  <span>📁 Move to</span>
+                  <span className={styles.submenuArrow}>▾</span>
+                </button>
+                {showMoveSubmenu && (
+                  <div className={styles.submenu}>
+                    {shortcut.group && (
+                      <button
+                        className={styles.contextMenuItem}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onUpdate(shortcut.id, { group: undefined });
+                          setShowContextMenu(false);
+                          setShowMoveSubmenu(false);
+                        }}
+                      >
+                        ✂️ Ungroup
+                      </button>
+                    )}
+                    {hasOtherGroups ? (
+                      availableGroups.map((g) => (
+                        <button
+                          key={g}
+                          className={styles.contextMenuItem}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onUpdate(shortcut.id, { group: g });
+                            setShowContextMenu(false);
+                            setShowMoveSubmenu(false);
+                          }}
+                        >
+                          {g}
+                        </button>
+                      ))
+                    ) : (
+                      <button className={`${styles.contextMenuItem} ${styles.contextMenuItemDisabled}`} disabled>
+                        No other groups
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })()}
+          <button className={styles.contextMenuItem} onClick={(e) => handleEdit(e)}>
+            ✏️ Edit
+          </button>
+          <button className={styles.contextMenuItem} onClick={(e) => { e.stopPropagation(); onDelete(shortcut.id); setShowContextMenu(false); }}>
+            🗑️ Delete
+          </button>
+        </div>
+      )}
     </>
   );
 }

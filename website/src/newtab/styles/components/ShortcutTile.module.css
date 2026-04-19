@@ -179,6 +179,49 @@
   color: rgba(255, 255, 255, 0.95);
 }
 
+/* ── Context menu item with submenu ──────────────────────────── */
+.contextMenuItemWrapper {
+  position: relative;
+}
+.submenuArrow {
+  margin-left: auto;
+  font-size: 10px;
+  opacity: 0.6;
+}
+
+/* ── Submenu ──────────────────────────────────────────────────── */
+.submenu {
+  position: absolute;
+  left: 100%;
+  top: 0;
+  min-width: 140px;
+  background: var(--glass-white-md);
+  backdrop-filter: var(--blur-md);
+  -webkit-backdrop-filter: var(--blur-md);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-float);
+  padding: 4px;
+  z-index: 10000;
+  margin-left: 4px;
+}
+.submenu .contextMenuItem {
+  font-size: 12px;
+  padding: 7px 10px;
+}
+.submenu .contextMenuItem:hover {
+  background: rgba(255, 149, 0, 0.15);
+  color: var(--led-amber);
+}
+.contextMenuItemDisabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.contextMenuItemDisabled:hover {
+  background: transparent !important;
+  color: rgba(255,255,255,0.75) !important;
+}
+
 /* ── Edit mode ──────────────────────────────────────────────── */
 .editMode {
   display: flex;
