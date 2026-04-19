@@ -36,8 +36,8 @@
 
 .container:focus-within {
   background: var(--glass-white-md);
-  border-color: var(--accent-aqua);
-  box-shadow: 0 0 0 3px rgba(94,231,223,0.12), 0 8px 32px rgba(0,0,0,0.28);
+  border-color: var(--led-amber);
+  box-shadow: 0 0 0 3px rgba(255,149,0,0.15), 0 8px 32px rgba(0,0,0,0.28);
 }
 
 /* ── Engine switcher ─────────────────────────────────────────── */
@@ -49,12 +49,16 @@
   display: flex; align-items: center; justify-content: center;
   background: transparent;
   cursor: pointer;
-  transition: background 150ms;
+  transition: background 150ms, box-shadow 150ms, color 150ms;
   color: rgba(255,255,255,0.50);
   flex-shrink: 0;
   border: none;
 }
-.engineButton:hover { background: rgba(255,255,255,0.12); color: rgba(255,255,255,0.90); }
+.engineButton:hover {
+  background: rgba(255,255,255,0.12);
+  color: rgba(255,255,255,0.90);
+  box-shadow: 0 0 12px rgba(255,149,0,0.35), 0 0 24px rgba(255,149,0,0.15);
+}
 .engineButton svg { width: 18px; height: 18px; }
 
 .dropdown {
@@ -91,6 +95,15 @@
 /* ── Divider ─────────────────────────────────────────────────── */
 .divider { width: 1px; height: 22px; background: rgba(255,255,255,0.12); flex-shrink: 0; }
 
+/* ── Input wrapper (input + inline shortcut hint) ─────────────── */
+.inputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+}
+
 /* ── Input ───────────────────────────────────────────────────── */
 .input {
   flex: 1; background: transparent; border: none;
@@ -100,6 +113,42 @@
   outline: none;
 }
 .input::placeholder { color: rgba(255,255,255,0.30); }
+
+/* ── Keyboard shortcut hint inline (shown inside input on focus) */
+.shortcutHintInline {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  margin-left: 8px;
+  pointer-events: none;
+}
+
+.kbdBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  background: rgba(255, 149, 0, 0.12);
+  border: 1px solid rgba(255, 149, 0, 0.30);
+  border-radius: 6px;
+  color: var(--led-amber);
+  font-family: var(--font-led);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+  text-shadow: 0 0 8px var(--led-amber-glow);
+  cursor: default;
+  user-select: none;
+  opacity: 0.75;
+  transition: opacity var(--dur-fast);
+}
+
+.container:focus-within .kbdBadge {
+  opacity: 1;
+}
+
+.kbdBadge svg {
+  flex-shrink: 0;
+}
 
 /* ── Buttons ─────────────────────────────────────────────────── */
 .searchBtn {
@@ -131,50 +180,3 @@
 }
 .clearBtn:hover { background: rgba(255,255,255,0.10); color: rgba(255,255,255,0.70); }
 .clearBtn svg { width: 11px; height: 11px; }
-
-/* ── Keyboard shortcut hint badge ───────────────────────────── */
-.shortcutHint {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
-  margin-top: 10px;
-}
-
-.kbdBadge {
-  display: inline-flex;
-  align-items: center;
-  padding: 2px 8px;
-  background: rgba(255, 149, 0, 0.12);
-  border: 1px solid rgba(255, 149, 0, 0.30);
-  border-radius: 6px;
-  color: var(--led-amber);
-  font-family: var(--font-led);
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.3px;
-  text-shadow: 0 0 8px var(--led-amber-glow);
-  transition: background var(--dur-fast), border-color var(--dur-fast), box-shadow var(--dur-fast);
-  cursor: default;
-  user-select: none;
-}
-
-.kbdBadge:hover {
-  background: rgba(255, 149, 0, 0.20);
-  border-color: var(--led-amber);
-  box-shadow: 0 0 10px var(--led-amber-soft), 0 0 20px rgba(255, 149, 0, 0.25);
-}
-
-.kbdBadge svg {
-  flex-shrink: 0;
-}
-
-.hintText {
-  color: var(--led-amber);
-  opacity: 0.55;
-  font-family: var(--font-led);
-  font-size: 11px;
-  letter-spacing: 0.3px;
-  user-select: none;
-}
-
