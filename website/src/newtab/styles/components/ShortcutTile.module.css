@@ -178,7 +178,7 @@
   transition: background var(--dur-fast), outline var(--dur-fast), box-shadow var(--dur-fast);
 }
 .keyboardHint {
-  position: absolute; bottom: -22px; left: 50%; transform: translateX(-50%);
+  position: absolute; bottom: -26px; left: 50%; transform: translateX(-50%);
   background: var(--bg-primary);
   border: 1px solid rgba(255,255,255,0.14);
   border-radius: var(--radius-sm);
