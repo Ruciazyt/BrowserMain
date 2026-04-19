@@ -42,6 +42,52 @@ function saveShortcuts(shortcuts) {
 }
 
 // ---------------------------------------------------------------------------
+// Chrome Favicons API helpers
+// ---------------------------------------------------------------------------
+
+/**
+ * Get favicon URL for the active tab using Chrome's native favicons API.
+ * Falls back to the tab's built-in favIconUrl if available.
+ * Returns '' if no tab is available or the API fails.
+ */
+async function getActiveTabFavicon() {
+  try {
+    const [activeTab] = await chrome.tabs.query({ active: true, currentWindow: true });
+    if (!activeTab || !activeTab.id) return '';
+    // chrome.favicons.getFaviconUrl returns the resolved favicon URL for the tab
+    const faviconUrl = await chrome.favicons.getFaviconUrl(activeTab.id);
+    return faviconUrl || activeTab.favIconUrl || '';
+  } catch (err) {
+    // Fall back to the tab's built-in favIconUrl on any error
+    try {
+      const [activeTab] = await chrome.tabs.query({ active: true, currentWindow: true });
+      return activeTab?.favIconUrl || '';
+    } catch {
+      return '';
+    }
+  }
+}
+
+/**
+ * Get favicon URL for a given URL by finding a matching tab and using Chrome's favicons API.
+ * Returns '' if no tab is found for the URL or the API fails.
+ */
+async function getFaviconForUrl(url) {
+  if (!url || !url.startsWith('http')) return '';
+  try {
+    // Find a tab that has loaded this URL
+    const tabs = await chrome.tabs.query({ url: url });
+    if (tabs && tabs.length > 0 && tabs[0].id) {
+      const faviconUrl = await chrome.favicons.getFaviconUrl(tabs[0].id);
+      return faviconUrl || tabs[0].favIconUrl || '';
+    }
+    return '';
+  } catch (err) {
+    return '';
+  }
+}
+
+// ---------------------------------------------------------------------------
 // Extension URL builder
 // ---------------------------------------------------------------------------
 
@@ -63,7 +109,9 @@ async function buildExtensionUrl(addData, targetPage) {
       if (activeTab && activeTab.url && activeTab.url.startsWith('http')) {
         webpageUrl = activeTab.url || '';
         webpageTitle = activeTab.title || '';
-        webpageFavicon = activeTab.favIconUrl || '';
+        // Use Chrome's native favicons API first, fall back to tab's built-in favIconUrl
+        const chromeFavicon = await getActiveTabFavicon();
+        webpageFavicon = chromeFavicon || activeTab.favIconUrl || '';
       }
     } catch (err) {
       console.error('[BrowserMain] Tab query error:', err);
@@ -102,10 +150,12 @@ chrome.commands.onCommand.addListener(async (command) => {
   try {
     const [activeTab] = await chrome.tabs.query({ active: true, currentWindow: true });
     if (!activeTab || !activeTab.url || !activeTab.url.startsWith('http')) return;
+    // Use Chrome's native favicons API for best quality favicon
+    const chromeFavicon = await getActiveTabFavicon();
     const targetUrl = await buildExtensionUrl({
       url: activeTab.url,
       title: activeTab.title || '',
-      favicon: activeTab.favIconUrl || '',
+      favicon: chromeFavicon || activeTab.favIconUrl || '',
     }, 'popup');
     await chrome.tabs.create({ url: targetUrl });
   } catch (err) {
@@ -141,6 +191,27 @@ chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
         sendResponse({ success: true });
       });
     });
+
+    return true; // async response
+  }
+
+  // GET_FAVICON: resolve favicon for a given URL using Chrome's native favicons API
+  if (msg.type === 'GET_FAVICON') {
+    const { url } = msg;
+    if (!url) {
+      sendResponse({ favicon: '' });
+      return;
+    }
+
+    getFaviconForUrl(url)
+      .then((favicon) => {
+        // If Chrome API returned nothing, fall back to Google S2
+        const fallback = favicon || getSmartFaviconUrl(url);
+        sendResponse({ favicon: fallback });
+      })
+      .catch(() => {
+        sendResponse({ favicon: getSmartFaviconUrl(url) });
+      });
 
     return true; // async response
   }

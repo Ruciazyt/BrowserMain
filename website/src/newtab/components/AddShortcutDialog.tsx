@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useShortcuts } from '../hooks/useShortcuts';
-import { getSmartFaviconUrl, getFaviconIcoUrl, getDomainFromUrl } from '../utils/storage';
+import { getSmartFaviconUrl, getFaviconIcoUrl, getDomainFromUrl, getChromeFaviconUrl } from '../utils/storage';
 import { isUrl } from '../utils/engines';
 import styles from '../styles/components/AddShortcutDialog.module.css';
 
@@ -68,10 +68,22 @@ export default function AddShortcutDialog({ open, url, title, favicon, group, on
     }
   }, [open, url, title, favicon, group]);
 
-  // Reset favicon state when input URL changes so the new Google S2 URL is used
+  // Reset favicon state when input URL changes — try Chrome API first, fall back to Google S2
   useEffect(() => {
     if (inputUrl && isUrl(inputUrl.trim())) {
-      setFaviconUrl(getSmartFaviconUrl(inputUrl.trim()));
+      const trimmed = inputUrl.trim();
+      // Try Chrome's native favicons API for best quality (async, non-blocking)
+      let cancelled = false;
+      setFaviconUrl(getSmartFaviconUrl(trimmed)); // show Google S2 immediately
+      setFaviconTriedIco(false);
+      getChromeFaviconUrl(trimmed).then((chromeFavicon) => {
+        if (!cancelled && chromeFavicon) {
+          setFaviconUrl(chromeFavicon);
+        }
+      });
+      return () => { cancelled = true; };
+    } else {
+      setFaviconUrl('');
       setFaviconTriedIco(false);
     }
   }, [inputUrl]);

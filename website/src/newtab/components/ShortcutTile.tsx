@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useLayoutEffect } from 'react';
-import { getSmartFaviconUrl, getFaviconIcoUrl, getDomainFromUrl } from '../utils/storage';
+import { getSmartFaviconUrl, getFaviconIcoUrl, getDomainFromUrl, getChromeFaviconUrl } from '../utils/storage';
 import { isMac } from '../utils/platform';
 import { isUrl } from '../utils/engines';
 import { Shortcut } from '../utils/storage';
@@ -20,6 +20,9 @@ interface ShortcutTileProps {
   index: number;
   onMoveLeft?: (index: number) => void;
   onMoveRight?: (index: number) => void;
+  onMoveUp?: (index: number) => void;
+  onMoveDown?: (index: number) => void;
+  onAdd?: () => void;
   existingGroups?: string[];
 }
 
@@ -30,6 +33,9 @@ export default function ShortcutTile({
   index,
   onMoveLeft,
   onMoveRight,
+  onMoveUp,
+  onMoveDown,
+  onAdd,
   existingGroups,
 }: ShortcutTileProps) {
   const [showContextMenu, setShowContextMenu] = useState(false);
@@ -49,11 +55,30 @@ export default function ShortcutTile({
   const containerRef = useRef<HTMLDivElement>(null);
   const contextMenuRef = useRef<HTMLDivElement>(null);
 
+  // Try Chrome's native favicons API when no stored favicon exists — async, non-blocking.
+  // Falls back to Google S2 for the initial render to avoid empty icons.
   useEffect(() => {
-    const initial = shortcut.favicon || getSmartFaviconUrl(shortcut.url);
-    setFaviconSrc(initial);
+    if (shortcut.favicon) {
+      // Shortcut has a stored favicon — use it; handleFaviconError will handle the fallback chain
+      setFaviconSrc(shortcut.favicon);
+      setFaviconTriedIco(false);
+      return;
+    }
+    // No stored favicon — start with Google S2 immediately, then try Chrome API for better quality
+    const googleFavicon = getSmartFaviconUrl(shortcut.url);
+    setFaviconSrc(googleFavicon);
     setFaviconTriedIco(false);
-  }, [shortcut.favicon, shortcut.url]);
+    // Attempt Chrome API for a native-quality favicon; update state if it returns a result
+    let cancelled = false;
+    getChromeFaviconUrl(shortcut.url).then((chromeFavicon) => {
+      if (!cancelled && chromeFavicon && chromeFavicon !== googleFavicon) {
+        setFaviconSrc(chromeFavicon);
+        // Persist the improved favicon so future renders don't need the API call
+        onUpdate(shortcut.id, { favicon: chromeFavicon });
+      }
+    });
+    return () => { cancelled = true; };
+  }, [shortcut.favicon, shortcut.url, onUpdate]);
 
   const handleFaviconError = () => {
     if (!faviconTriedIco) {
@@ -83,6 +108,14 @@ export default function ShortcutTile({
       e.preventDefault();
       setIsNavigating(true);
       onMoveRight?.(index);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setIsNavigating(true);
+      onMoveUp?.(index);
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setIsNavigating(true);
+      onMoveDown?.(index);
     } else if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
       navigateToShortcut();
@@ -201,6 +234,18 @@ export default function ShortcutTile({
     setEditMode(false);
   };
 
+  const handleCopyUrl = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    navigator.clipboard.writeText(shortcut.url);
+    setShowContextMenu(false);
+  };
+
+  const handleCopyTitle = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    navigator.clipboard.writeText(shortcut.title);
+    setShowContextMenu(false);
+  };
+
   if (editMode) {
     return (
       <div className={styles.editMode}>
@@ -294,7 +339,7 @@ export default function ShortcutTile({
         </button>
         {isNavigating && (
           <div className={styles.keyboardHint}>
-            {isMac() ? '⌘← ⌘→ to move · Esc to exit' : '← → to move · Esc to exit'}
+            {isMac() ? '⌘← ⌘→ ↑↓ to move · Esc to exit' : '← → ↑↓ to move · Esc to exit'}
           </div>
         )}
       </div>
@@ -366,6 +411,12 @@ export default function ShortcutTile({
           </button>
           <button className={styles.contextMenuItem} onClick={(e) => { e.stopPropagation(); onDelete(shortcut.id); setShowContextMenu(false); }}>
             🗑️ Delete
+          </button>
+          <button className={styles.contextMenuItem} onClick={handleCopyUrl}>
+            🔗 Copy URL
+          </button>
+          <button className={styles.contextMenuItem} onClick={handleCopyTitle}>
+            📋 Copy Title
           </button>
         </div>
       )}

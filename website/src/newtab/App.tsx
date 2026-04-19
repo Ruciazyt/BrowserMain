@@ -4,6 +4,7 @@ import { useSettings } from './hooks/useSettings';
 import SearchBar from './components/SearchBar';
 import Greeting from './components/Greeting';
 import Clock from './components/Clock';
+import LEDDisplay from './components/LEDDisplay';
 import ShortcutGrid from './components/ShortcutGrid';
 import SettingsPanel from './components/SettingsPanel';
 import AddShortcutDialog from './components/AddShortcutDialog';
@@ -137,6 +138,8 @@ export default function App() {
           <SearchBar defaultEngine={settings.defaultEngine} onEngineChange={updateEngine} />
         </div>
       </div>
+
+      <LEDDisplay />
 
       {/* 快捷入口：左右各留约 20% 视口边距，中间区域更宽 */}
       <div className={styles.shortcutsWrap}>

@@ -49,7 +49,8 @@ export function getDomainFromUrl(url: string): string {
 
 /**
  * Returns the best favicon URL for a given page URL.
- * Uses Google S2 (most reliable, handles edge cases) with favicon.ico fallback.
+ * First tries Chrome's native favicons API via the background service worker,
+ * then falls back to Google S2, then favicon.ico.
  * The caller should render this as an <img> and handle onError to cycle fallbacks.
  */
 export function getSmartFaviconUrl(url: string): string {
@@ -60,6 +61,26 @@ export function getSmartFaviconUrl(url: string): string {
   } catch {
     return '';
   }
+}
+
+/**
+ * Resolves favicon for a URL using Chrome's native favicons API (background worker).
+ * Returns empty string if the API is unavailable or no tab is found for the URL.
+ * The caller should fall back to getSmartFaviconUrl() on empty result.
+ */
+export async function getChromeFaviconUrl(url: string): Promise<string> {
+  return new Promise((resolve) => {
+    if (!url || !url.startsWith('http')) {
+      resolve('');
+      return;
+    }
+    chrome.runtime.sendMessage(
+      { type: 'GET_FAVICON', url },
+      (response: { favicon?: string } | undefined) => {
+        resolve(response?.favicon || '');
+      }
+    );
+  });
 }
 
 /**

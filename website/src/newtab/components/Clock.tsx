@@ -2,8 +2,10 @@ import { useState, useEffect, useRef } from 'react';
 import styles from '../styles/components/Clock.module.css';
 import { useSettings } from '../hooks/useSettings';
 
-function formatClock(is24h: boolean) {
+function formatClock(is24h: boolean, locale: string) {
   const now = new Date();
+
+  // Format time manually for full control over 12h/24h display
   const hh = now.getHours();
   const mm = now.getMinutes().toString().padStart(2, '0');
   const ss = now.getSeconds().toString().padStart(2, '0');
@@ -15,12 +17,17 @@ function formatClock(is24h: boolean) {
   }
   const hhStr = dispHh.toString().padStart(2, '0');
   const time = is24h ? `${hhStr}:${mm}:${ss}` : `${hhStr}:${mm}:${ss}${ampm}`;
-  const yyyy = now.getFullYear();
-  const mo = (now.getMonth() + 1).toString().padStart(2, '0');
-  const dd = now.getDate().toString().padStart(2, '0');
-  const date = `${yyyy}-${mo}-${dd}`;
-  const weekday = now.toLocaleDateString(undefined, { weekday: 'long' });
+
+  // Format date parts explicitly to avoid i18n issues
+  const dateFmt = new Intl.DateTimeFormat(locale, { year: 'numeric', month: '2-digit', day: '2-digit' });
+  const parts = dateFmt.formatToParts(now);
+  const get = (type: string) => parts.find((p) => p.type === type)?.value ?? '';
+  const date = `${get('year')}-${get('month')}-${get('day')}`;
+
+  // Weekday in long format
+  const weekday = new Intl.DateTimeFormat(locale, { weekday: 'long' }).format(now);
   const dateLine = `${date} · ${weekday}`;
+
   return { time, dateLine };
 }
 
@@ -30,6 +37,9 @@ export default function Clock() {
   const { settings, updateClockFormat } = useSettings();
   const is24hRef = useRef(settings.clockIs24h !== false);
 
+  // Computed once at mount — stable locale for the session
+  const localeRef = useRef<string>(Intl.DateTimeFormat().resolvedOptions().locale);
+
   useEffect(() => {
     is24hRef.current = settings.clockIs24h !== false;
   }, [settings.clockIs24h]);
@@ -38,14 +48,14 @@ export default function Clock() {
     const newIs24h = !is24hRef.current;
     await updateClockFormat(newIs24h);
     is24hRef.current = newIs24h;
-    const { time: newTime, dateLine: newDateLine } = formatClock(newIs24h);
+    const { time: newTime, dateLine: newDateLine } = formatClock(newIs24h, localeRef.current);
     setTime(newTime);
     setDateLine(newDateLine);
   };
 
   useEffect(() => {
     const update = () => {
-      const { time: newTime, dateLine: newDateLine } = formatClock(is24hRef.current);
+      const { time: newTime, dateLine: newDateLine } = formatClock(is24hRef.current, localeRef.current);
       setTime(newTime);
       setDateLine(newDateLine);
     };
