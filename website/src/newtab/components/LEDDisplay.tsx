@@ -18,6 +18,8 @@ const FONT_5x7: Record<string, number[]> = {
   '7': [0x1F, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01], // 11111 00001 00001 00001 00001 00001 00001
   '8': [0x1F, 0x11, 0x11, 0x1F, 0x11, 0x11, 0x1F], // 11111 10001 10001 11111 10001 10001 11111
   '9': [0x1F, 0x11, 0x11, 0x1F, 0x01, 0x01, 0x1F], // 11111 10001 10001 11111 00001 00001 11111
+  'W': [0x1F, 0x11, 0x11, 0x1F, 0x11, 0x11, 0x11], // 11111 10001 10001 11111 10001 10001 10001
+  'D': [0x1F, 0x11, 0x11, 0x11, 0x11, 0x11, 0x1F], // 11111 10001 10001 10001 10001 10001 11111
   ':': [0x00, 0x04, 0x04, 0x00, 0x04, 0x04, 0x00], // 00100 00100 00000 00100 00100 00000
   '-': [0x00, 0x00, 0x00, 0x1F, 0x00, 0x00, 0x00], // 11111
   '.': [0x00, 0x00, 0x00, 0x00, 0x00, 0x04, 0x04], // 00100 00100
@@ -244,5 +246,15 @@ function buildTickerText(): string {
   const yyyy = now.getFullYear();
   const mo = String(now.getMonth() + 1).padStart(2, '0');
   const dd = String(now.getDate()).padStart(2, '0');
-  return `${hh}:${mm} ${yyyy}-${mo}-${dd}`;
+
+  // ISO week number
+  const startOfYear = new Date(now.getFullYear(), 0, 1);
+  const days = Math.floor((now.getTime() - startOfYear.getTime()) / 86400000);
+  const isoWeek = String(Math.ceil((days + startOfYear.getDay() + 1) / 7)).padStart(2, '0');
+
+  // Day of year
+  const startOfYear2 = new Date(now.getFullYear(), 0, 1);
+  const doy = String(Math.ceil((now.getTime() - startOfYear2.getTime()) / 86400000) + 1).padStart(3, '0');
+
+  return `W${isoWeek} D${doy} ${hh}:${mm} ${yyyy}-${mo}-${dd}`;
 }
