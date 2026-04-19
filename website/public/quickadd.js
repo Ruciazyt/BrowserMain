@@ -131,7 +131,8 @@
           return;
         }
         if (response && response.success) {
-          window.close();
+          chrome.runtime.sendMessage({ type: 'SHORTCUT_ADDED' });
+          setTimeout(() => window.close(), 50);
         } else if (response && response.duplicate) {
           showWarning('Already in your shortcuts');
         } else {

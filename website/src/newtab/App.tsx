@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useShortcuts } from './hooks/useShortcuts';
 import { useSettings } from './hooks/useSettings';
 import SearchBar from './components/SearchBar';
@@ -42,6 +42,21 @@ export default function App() {
   }, []);
 
 
+
+  // Listen for SHORTCUT_ADDED messages (e.g. from quickadd popup)
+  const isMountedRef = useRef(true);
+  useEffect(() => {
+    const listener = (message: { type?: string }) => {
+      if (message.type === 'SHORTCUT_ADDED' && isMountedRef.current) {
+        refreshShortcuts();
+      }
+    };
+    chrome.runtime.onMessage.addListener(listener);
+    return () => {
+      isMountedRef.current = false;
+      chrome.runtime.onMessage.removeListener(listener);
+    };
+  }, [refreshShortcuts]);
 
   // ESC key to close settings panel
   useEffect(() => {
