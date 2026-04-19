@@ -68,6 +68,7 @@
   --space-lg: 16px;
   --space-xl: 24px;
   --space-2xl: 32px;
+  --space-footer: 80px;
 
   /* Transitions */
   --dur-fast: 150ms ease-out;

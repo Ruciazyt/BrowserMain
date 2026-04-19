@@ -147,4 +147,7 @@
   text-transform: uppercase;
   pointer-events: none;
   z-index: 1;
+  padding: 0 20px;
+  max-width: calc(100% - 32px);
+  box-sizing: border-box;
 }

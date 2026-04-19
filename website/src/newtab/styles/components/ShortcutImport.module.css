@@ -65,7 +65,7 @@
   white-space: nowrap;
 }
 
-.importBtn:hover {
+.importBtn:hover:not(:disabled) {
   background: rgba(255, 149, 0, 0.2);
   box-shadow: 0 0 12px var(--led-amber-soft);
 }

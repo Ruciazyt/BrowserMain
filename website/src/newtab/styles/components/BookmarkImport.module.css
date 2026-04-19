@@ -3,6 +3,7 @@
   flex-direction: column;
   height: 100%;
   background: rgba(12, 12, 16, 0.7);
+  overflow-x: hidden;
 }
 
 .header {

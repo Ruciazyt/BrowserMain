@@ -140,7 +140,6 @@
   box-shadow: 0 4px 16px rgba(94,231,223,0.25);
 }
 .saveBtn:hover:not(:disabled) {
-  background: linear-gradient(135deg, var(--accent-aqua) 0%, var(--accent-violet) 100%);
   box-shadow: 0 6px 24px rgba(94,231,223,0.40);
   transform: translateY(-1px);
 }
