@@ -15,10 +15,10 @@
   display: flex;
   align-items: center;
   gap: 0;
-  background: rgba(255, 255, 255, 0.15);
+  background: var(--glass-white-md);
   backdrop-filter: var(--blur-md);
   -webkit-backdrop-filter: var(--blur-md);
-  border: 1px solid rgba(255, 255, 255, 0.3);
+  border: 1px solid var(--glass-border);
   border-radius: 50px;
   padding: 0;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
@@ -31,7 +31,7 @@
 .container:focus-within {
   background: rgba(255, 255, 255, 0.22);
   box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
-  border-color: rgba(255, 255, 255, 0.42);
+  border-color: var(--glass-border-bright);
 }
 
 .searchIcon {

@@ -515,3 +515,68 @@
 }
 
 
+
+/* ── Keyboard Shortcuts ─────────────────────────────────────── */
+.shortcutsList {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.shortcutRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 7px 10px;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.shortcutKeys {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  flex-shrink: 0;
+  min-width: 140px;
+}
+
+.kbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-led);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  color: var(--led-amber);
+  background: rgba(255, 149, 0, 0.08);
+  border: 1px solid rgba(255, 149, 0, 0.40);
+  box-shadow: 0 0 4px rgba(255, 149, 0, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  white-space: nowrap;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+.kbdSep {
+  font-size: 9px;
+  color: rgba(255, 255, 255, 0.25);
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.kbdOr {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.30);
+  margin: 0 2px;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.shortcutDesc {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.60);
+  flex: 1;
+}
