@@ -1,3 +1,10 @@
+.hero {
+  width: 100%;
+  text-align: center;
+  padding-top: clamp(24px, 8vh, 56px);
+  animation: fadeInDown 1s ease-out;
+}
+
 /* ── App layout ──────────────────────────────────────────────── */
 .page {
   width: 100%;

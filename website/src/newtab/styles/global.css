@@ -33,6 +33,11 @@
   --success: #4ade80;
   --danger: #ff6b6b;
 
+  /* Status dot colors (used in AddShortcutDialog) */
+  --status-valid: #22c55e;
+  --status-invalid: #ef4444;
+  --status-duplicate: #f59e0b;
+
   /* Glass surfaces */
   --glass-white: rgba(255, 255, 255, 0.10);
   --glass-white-md: rgba(255, 255, 255, 0.14);

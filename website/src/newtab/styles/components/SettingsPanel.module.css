@@ -224,7 +224,7 @@
 .showTourBtn:hover { background: var(--glass-white); color: rgba(255,255,255,0.60); }
 .tourIcon {
   color: var(--led-amber);
-  text-shadow: 0 0 6px var(--led-amber), 0 0 12px rgba(255, 183, 0, 0.35);
+  text-shadow: 0 0 6px var(--led-amber), 0 0 12px rgba(255,149,0,0.35);
   font-size: 11px;
   line-height: 1;
   flex-shrink: 0;

@@ -1,6 +1,3 @@
-/* BookmarkImport — tree/list styles only; shared layout imported from ImportShared.module.css */
-@import url('./ImportShared.module.css');
-
 /* Search (bookmark-specific, commented-out in markup) */
 .searchInput {
   width: 100%;
