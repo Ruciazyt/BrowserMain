@@ -51,8 +51,6 @@
   --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.08);
   --shadow-float: 0 16px 48px rgba(0, 0, 0, 0.38), inset 0 1px 0 rgba(255, 255, 255, 0.12);
   --shadow-led-glow: 0 0 8px var(--led-amber-glow), 0 0 20px rgba(255, 149, 0, 0.4);
-  --shadow-search-btn: 0 0 16px var(--led-amber-glow);
-
   /* Typography */
   --font-led: 'JetBrains Mono', monospace;
   --font-ui: 'Inter', sans-serif;
@@ -151,7 +149,7 @@ h1, h2, h3, h4 {
 a {
   color: var(--led-amber);
   text-decoration: none;
-  transition: color 150ms ease-out, opacity 150ms ease-out;
+  transition: color var(--dur-fast), opacity var(--dur-fast);
 }
 a:hover { color: var(--led-amber-warm); }
 button {

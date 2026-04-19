@@ -175,7 +175,7 @@ export default function SearchBar({ defaultEngine = 'bing', onEngineChange }: Se
             ref={inputRef}
             type="text"
             className={styles.input}
-            placeholder="在新世界搜索…"
+            placeholder="Search or enter URL..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onPaste={handlePaste}

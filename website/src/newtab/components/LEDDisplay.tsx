@@ -1,8 +1,30 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import styles from '../styles/components/LEDDisplay.module.css';
 
 const COLS = 8;
 const ROWS = 8;
+
+// ── 5×7 Dot-Matrix Font ─────────────────────────────────────────
+// Each character: 7 rows × 5 columns. Each row stored as an 8-bit
+// integer; bit 4 (value 16) is the leftmost dot. 0=off, 1=on.
+const FONT_5x7: Record<string, number[]> = {
+  '0': [0x1F, 0x11, 0x11, 0x11, 0x11, 0x11, 0x1F], // 011111 10001 10001 10001 10001 10001 11111
+  '1': [0x04, 0x07, 0x04, 0x04, 0x04, 0x04, 0x0F], // 00100  00111 00100 00100 00100 00100 01111
+  '2': [0x1F, 0x01, 0x01, 0x0F, 0x10, 0x10, 0x1F], // 11111 00001 00001 01111 10000 10000 11111
+  '3': [0x1F, 0x01, 0x01, 0x0F, 0x01, 0x01, 0x1F], // 11111 00001 00001 01111 00001 00001 11111
+  '4': [0x11, 0x11, 0x11, 0x1F, 0x01, 0x01, 0x01], // 10001 10001 10001 11111 00001 00001 00001
+  '5': [0x1F, 0x10, 0x10, 0x1F, 0x01, 0x01, 0x1F], // 11111 10000 10000 11111 00001 00001 11111
+  '6': [0x1F, 0x10, 0x10, 0x1F, 0x11, 0x11, 0x1F], // 11111 10000 10000 11111 10001 10001 11111
+  '7': [0x1F, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01], // 11111 00001 00001 00001 00001 00001 00001
+  '8': [0x1F, 0x11, 0x11, 0x1F, 0x11, 0x11, 0x1F], // 11111 10001 10001 11111 10001 10001 11111
+  '9': [0x1F, 0x11, 0x11, 0x1F, 0x01, 0x01, 0x1F], // 11111 10001 10001 11111 00001 00001 11111
+  ':': [0x00, 0x04, 0x04, 0x00, 0x04, 0x04, 0x00], // 00100 00100 00000 00100 00100 00000
+  '-': [0x00, 0x00, 0x00, 0x1F, 0x00, 0x00, 0x00], // 11111
+  '.': [0x00, 0x00, 0x00, 0x00, 0x00, 0x04, 0x04], // 00100 00100
+  ' ': [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00],
+};
+
+type CharBitmap = number[];
 
 // ── Pattern Definitions ─────────────────────────────────────────
 // Morning: classic checkerboard
@@ -97,16 +119,72 @@ function DotLayer({ pattern, className, style }: DotLayerProps) {
   );
 }
 
+// ── Ticker ─────────────────────────────────────────────────────
+// Renders a string as a scrolling flex row of dot-columns.
+// Each character maps to a 5×7 bitmap via FONT_5x7.
+interface TickerProps {
+  text: string;
+}
+
+function Ticker({ text }: TickerProps) {
+  // Pre-render the full ticker content twice for seamless looping.
+  // Each "char cell" is 7 dots high; each char is 5 dots wide plus a 1-dot gap.
+  const chars = useMemo(() => text.split(''), [text]);
+
+  // Build a stable duplicated array so React keys stay stable
+  const doubled = useMemo(() => [...chars, ...chars], [chars]);
+
+  return (
+    <div className={styles.ticker} aria-hidden="true">
+      <div className={styles.tickerTrack}>
+        {doubled.map((char, globalIdx) => (
+          <CharCell key={`${char}-${globalIdx}`} char={char} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+interface CharCellProps {
+  char: string;
+}
+
+function CharCell({ char }: CharCellProps) {
+  const bitmap: CharBitmap = FONT_5x7[char] ?? FONT_5x7[' '];
+  return (
+    <div className={styles.charCell}>
+      {bitmap.map((rowBits, rowIdx) => (
+        <div key={rowIdx} className={styles.charRow}>
+          {/* col 4..0 → left to right. bit 4 (16) is leftmost. */}
+          {([4, 3, 2, 1, 0]).map(bitIdx => (
+            <div
+              key={bitIdx}
+              className={`${styles.tickerDot} ${(rowBits & (1 << bitIdx)) ? '' : styles.off}`}
+            />
+          ))}
+        </div>
+      ))}
+    </div>
+  );
+}
+
 // ── Component ───────────────────────────────────────────────────
 export default function LEDDisplay() {
   const timeIndex = getTimeOfDayIndex();
   const [patternIdx, setPatternIdx] = useState(timeIndex);
   const [nextPatternIdx, setNextPatternIdx] = useState<number | null>(null);
   const [frame, setFrame] = useState(0);
+  const [tickerText, setTickerText] = useState(() => buildTickerText());
 
   // Advance animation frame at ~2fps for smooth wave/ripple/scan
   useEffect(() => {
     const id = setInterval(() => setFrame(f => f + 1), 500);
+    return () => clearInterval(id);
+  }, []);
+
+  // Update ticker text every second
+  useEffect(() => {
+    const id = setInterval(() => setTickerText(buildTickerText()), 1000);
     return () => clearInterval(id);
   }, []);
 
@@ -151,6 +229,20 @@ export default function LEDDisplay() {
         {nextPattern && <DotLayer pattern={nextPattern} style={nextStyle} />}
       </div>
       <div className={styles.label} aria-label={`Time of day: ${label}`}>{label}</div>
+
+      {/* Live scrolling ticker strip */}
+      <Ticker text={tickerText} />
     </div>
   );
+}
+
+// ── Ticker text builder ─────────────────────────────────────────
+function buildTickerText(): string {
+  const now = new Date();
+  const hh = String(now.getHours()).padStart(2, '0');
+  const mm = String(now.getMinutes()).padStart(2, '0');
+  const yyyy = now.getFullYear();
+  const mo = String(now.getMonth() + 1).padStart(2, '0');
+  const dd = String(now.getDate()).padStart(2, '0');
+  return `${hh}:${mm} ${yyyy}-${mo}-${dd}`;
 }

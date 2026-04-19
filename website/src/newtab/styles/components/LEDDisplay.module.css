@@ -45,6 +45,60 @@
   text-transform: uppercase;
 }
 
+/* ── Scrolling Ticker Strip ────────────────────────────────────── */
+.ticker {
+  width: 100%;
+  overflow: hidden;
+  /* Small gap between dot matrix and ticker */
+  margin-top: 6px;
+  padding: 3px 0;
+  /* Rounded pill background matching the LED panel vibe */
+  border-top: 1px solid rgba(255, 149, 0, 0.08);
+  background: rgba(255, 149, 0, 0.03);
+}
+
+.tickerTrack {
+  display: flex;
+  align-items: center;
+  /* Total width = duplicated text. The animation shifts by 50% for a seamless loop. */
+  width: max-content;
+  animation: tickerScroll 20s linear infinite;
+}
+
+@keyframes tickerScroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+/* Each character cell: 5 dot-columns × 7 dot-rows */
+.charCell {
+  display: flex;
+  flex-direction: column;
+  /* 1px gap between characters */
+  margin-right: 1px;
+  flex-shrink: 0;
+}
+
+.charRow {
+  display: flex;
+  gap: 0;
+}
+
+/* Ticker dots — smaller than the main dot matrix (3px) */
+.tickerDot {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: rgb(255, 187, 128);
+  box-shadow: 0 0 3px rgba(255, 149, 0, 0.55);
+  flex-shrink: 0;
+}
+
+.tickerDot.off {
+  background: rgba(255, 149, 0, 0.10);
+  box-shadow: none;
+}
+
 /* ── Keyboard shortcut inline (inside dot matrix) ─── */
 .kbdHint {
   font-family: var(--font-led);
