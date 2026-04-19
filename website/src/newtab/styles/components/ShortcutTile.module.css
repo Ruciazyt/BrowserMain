@@ -87,7 +87,6 @@
   white-space: nowrap;
   line-height: 1.3;
   word-break: break-word;
-  hyphens: auto;
 }
 
 /* ── Domain subtitle ─────────────────────────────────────────── */
@@ -100,7 +99,7 @@
   text-overflow: ellipsis;
   white-space: nowrap;
   line-height: 1.2;
-  word-break: break-all;
+  word-break: break-word;
 }
 
 /* ── Group label ─────────────────────────────────────────────── */
