@@ -14,7 +14,7 @@ export function useShortcuts() {
 
   // All mutations read from chrome.storage.local at call time to avoid stale
   // closure bugs when multiple operations fire in rapid succession.
-  const addShortcut = useCallback(async (title: string, url: string, favicon?: string) => {
+  const addShortcut = useCallback(async (title: string, url: string, favicon?: string, group?: string) => {
     const current = await getShortcuts();
     const faviconUrl = favicon || getFaviconUrl(url);
     const newShortcut: Shortcut = {
@@ -23,6 +23,7 @@ export function useShortcuts() {
       url,
       favicon: faviconUrl,
       order: current.length,
+      group,
     };
     const updated = [...current, newShortcut];
     await saveShortcuts(updated);

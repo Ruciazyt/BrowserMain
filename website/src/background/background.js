@@ -116,7 +116,7 @@ chrome.commands.onCommand.addListener(async (command) => {
 
 chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
   if (msg.type === 'ADD_SHORTCUT') {
-    const { url, title, favicon } = msg;
+    const { url, title, favicon, group } = msg;
 
     getShortcuts().then((shortcuts) => {
       // Duplicate check
@@ -130,6 +130,7 @@ chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
         url: url || '',
         title: title || '',
         favicon: favicon || '',
+        group: group || undefined,
         createdAt: Date.now(),
       };
 

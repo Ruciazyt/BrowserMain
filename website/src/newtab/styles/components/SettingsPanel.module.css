@@ -389,4 +389,126 @@
   color: var(--led-amber);
 }
 
+/* ── Groups ──────────────────────────────────────────────────── */
+.noGroupsHint {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.28);
+  padding: 8px 0;
+  line-height: 1.5;
+}
+
+.groupList {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.groupRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.groupRowName {
+  flex: 1;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.72);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.groupRowCount {
+  font-family: var(--font-led);
+  font-size: 9px;
+  letter-spacing: 0.5px;
+  color: rgba(255, 149, 0, 0.55);
+  background: rgba(255, 149, 0, 0.08);
+  border: 1px solid rgba(255, 149, 0, 0.18);
+  padding: 2px 6px;
+  border-radius: 10px;
+}
+
+.groupDeleteBtn {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255, 107, 107, 0.12);
+  color: rgba(255, 107, 107, 0.70);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  line-height: 1;
+  transition: all var(--dur-fast);
+  flex-shrink: 0;
+}
+.groupDeleteBtn:hover {
+  background: rgba(255, 107, 107, 0.28);
+  color: rgba(255, 107, 107, 0.95);
+  box-shadow: 0 0 8px rgba(255, 107, 107, 0.25);
+}
+
+.groupConfirmState {
+  margin-top: 6px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 107, 107, 0.07);
+  border: 1px solid rgba(255, 107, 107, 0.22);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.groupConfirmText {
+  font-size: 12px;
+  color: rgba(255, 107, 107, 0.90);
+  line-height: 1.4;
+}
+
+.groupConfirmBtns {
+  display: flex;
+  gap: 8px;
+}
+
+.groupCancelBtn {
+  flex: 1;
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.55);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: var(--glass-white);
+  cursor: pointer;
+  transition: all var(--dur-fast);
+}
+.groupCancelBtn:hover {
+  background: var(--glass-white-md);
+  color: rgba(255, 255, 255, 0.80);
+}
+
+.groupConfirmBtn {
+  flex: 1;
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.95);
+  border: 1px solid rgba(255, 107, 107, 0.50);
+  background: rgba(255, 107, 107, 0.22);
+  cursor: pointer;
+  transition: all var(--dur-fast);
+}
+.groupConfirmBtn:hover {
+  background: rgba(255, 107, 107, 0.36);
+  border-color: rgba(255, 107, 107, 0.70);
+}
+
 

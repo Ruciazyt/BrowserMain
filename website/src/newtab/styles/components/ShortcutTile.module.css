@@ -40,15 +40,32 @@
 /* ── Title ────────────────────────────────────────────────────── */
 .title {
   font-size: 11px; color: rgba(255,255,255,0.65);
-  text-align: center; max-width: 68px;
+  text-align: center; max-width: 84px;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1.3;
 }
 
 /* ── Domain subtitle ─────────────────────────────────────────── */
 .domain {
   font-size: 9px; color: rgba(255,255,255,0.35);
-  text-align: center; max-width: 68px;
+  text-align: center; max-width: 84px;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap; line-height: 1.2;
+}
+
+/* ── Group label ─────────────────────────────────────────────── */
+.groupLabel {
+  font-size: 8px;
+  font-family: var(--font-led);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--led-amber);
+  text-shadow: 0 0 6px rgba(255, 149, 0, 0.6), 0 0 12px rgba(255, 149, 0, 0.3);
+  text-align: center;
+  max-width: 84px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 1.2;
+  opacity: 0.85;
 }
 
 /* ── Delete (hover) ───────────────────────────────────────────── */
@@ -127,7 +144,7 @@
   border-radius: var(--radius-sm); font-size: 11px; font-weight: 500;
   cursor: pointer; transition: background var(--dur-fast);
 }
-.saveBtn:hover { background: linear-gradient(135deg, color-mix(in srgb, var(--led-amber) 60%, transparent) 0%, color-mix(in srgb, var(--panel-turquoise) 50%, transparent) 100%); }
+.saveBtn:hover { background: linear-gradient(135deg, color-mix(in srgb, var(--led-amber) 60%, transparent) 0%, color-mix(in srgb, var(--accent-aqua) 50%, transparent) 100%); }
 .cancelBtn {
   flex: 1; padding: 4px 8px;
   background: transparent;
@@ -144,7 +161,7 @@
   transition: background var(--dur-fast), outline var(--dur-fast), box-shadow var(--dur-fast);
 }
 .keyboardHint {
-  position: absolute; bottom: -24px; left: 50%; transform: translateX(-50%);
+  position: absolute; bottom: -22px; left: 50%; transform: translateX(-50%);
   background: var(--bg-primary);
   border: 1px solid rgba(255,255,255,0.14);
   border-radius: var(--radius-sm);

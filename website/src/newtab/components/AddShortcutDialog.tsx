@@ -9,12 +9,14 @@ interface AddShortcutDialogProps {
   url: string;
   title: string;
   favicon?: string;
+  group?: string;
   onClose: () => void;
 }
 
-export default function AddShortcutDialog({ open, url, title, favicon, onClose }: AddShortcutDialogProps) {
+export default function AddShortcutDialog({ open, url, title, favicon, group, onClose }: AddShortcutDialogProps) {
   const [inputUrl, setInputUrl] = useState(url);
   const [inputTitle, setInputTitle] = useState(title);
+  const [inputGroup, setInputGroup] = useState(group || '');
   const [faviconUrl, setFaviconUrl] = useState(favicon || (url ? getSmartFaviconUrl(url) : ''));
   const [fetchingTitle, setFetchingTitle] = useState(false);
   // 2-stage favicon fallback: Google S2 → favicon.ico → GlobeIcon
@@ -23,6 +25,11 @@ export default function AddShortcutDialog({ open, url, title, favicon, onClose }
   const [saved, setSaved] = useState(false);
   const [pasteHint, setPasteHint] = useState('');
   const { addShortcut, shortcuts } = useShortcuts();
+
+  // Derive existing group names from current shortcuts for the dropdown
+  const existingGroups = Array.from(
+    new Set(shortcuts.map((s) => s.group).filter((g): g is string => !!g))
+  ).sort();
 
   // Derived domain from the current input URL
   const domain = inputUrl && isUrl(inputUrl.trim()) ? getDomainFromUrl(inputUrl.trim()) : '';
@@ -44,6 +51,7 @@ export default function AddShortcutDialog({ open, url, title, favicon, onClose }
     if (open) {
       setInputUrl(url);
       setInputTitle(title);
+      setInputGroup(group || '');
       setSaved(false);
       setSaving(false);
       setPasteHint('');
@@ -58,7 +66,7 @@ export default function AddShortcutDialog({ open, url, title, favicon, onClose }
         setFaviconUrl('');
       }
     }
-  }, [open, url, title, favicon]);
+  }, [open, url, title, favicon, group]);
 
   // Reset favicon state when input URL changes so the new Google S2 URL is used
   useEffect(() => {
@@ -125,7 +133,8 @@ export default function AddShortcutDialog({ open, url, title, favicon, onClose }
 
     setSaving(true);
     try {
-      await addShortcut(trimmedTitle || trimmedUrl, trimmedUrl, faviconUrl);
+      const groupValue = inputGroup.trim() || undefined;
+      await addShortcut(trimmedTitle || trimmedUrl, trimmedUrl, faviconUrl, groupValue);
       setSaved(true);
       setTimeout(() => {
         onClose();
@@ -228,6 +237,27 @@ export default function AddShortcutDialog({ open, url, title, favicon, onClose }
               placeholder="My Shortcut"
             />
             {(pasteHint || fetchingTitle) && <span className={styles.pasteHint}>{fetchingTitle ? 'Fetching title…' : pasteHint}</span>}
+          </div>
+
+          {/* Group field */}
+          <div className={styles.field}>
+            <label className={styles.label}>GROUP</label>
+            <input
+              className={styles.input}
+              type="text"
+              value={inputGroup}
+              onChange={(e) => setInputGroup(e.target.value)}
+              placeholder="e.g. Work, Social, Dev Tools"
+              list="add-shortcut-group-suggestions"
+            />
+            <datalist id="add-shortcut-group-suggestions">
+              {existingGroups.map((g) => (
+                <option key={g} value={g} />
+              ))}
+            </datalist>
+            <span className={styles.pasteHint} style={{ fontSize: 10, opacity: 0.55 }}>
+              {existingGroups.length > 0 ? `${existingGroups.length} group${existingGroups.length > 1 ? 's' : ''} available` : 'No groups yet'}
+            </span>
           </div>
 
           {/* Footer */}

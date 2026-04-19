@@ -148,3 +148,51 @@
   border: 1.5px dashed var(--glass-border-bright);
   box-shadow: var(--shadow-float);
 }
+
+/* ── Group section ─────────────────────────────────────────── */
+.groupSection {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* ── Group header ───────────────────────────────────────────── */
+.groupHeader {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 6px;
+  margin-bottom: 2px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(
+    90deg,
+    rgba(255, 149, 0, 0.06) 0%,
+    rgba(255, 149, 0, 0.02) 60%,
+    transparent 100%
+  );
+  border: 1px solid rgba(255, 149, 0, 0.15);
+}
+
+.groupName {
+  font-family: var(--font-led);
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--led-amber);
+  text-shadow: 0 0 8px rgba(255, 149, 0, 0.7), 0 0 16px rgba(255, 149, 0, 0.3);
+}
+
+.groupCount {
+  font-family: var(--font-led);
+  font-size: 9px;
+  letter-spacing: 0.5px;
+  color: rgba(255, 149, 0, 0.45);
+}
+
+/* ── Group tiles ────────────────────────────────────────────── */
+.groupTiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(78px, 1fr));
+  gap: 8px;
+}

@@ -275,8 +275,9 @@ export default function ShortcutTile({
             <GlobeIcon />
           )}
         </div>
+        {shortcut.group && <div className={styles.groupLabel}>{shortcut.group.toUpperCase()}</div>}
         <div className={styles.title}>{shortcut.title}</div>
-        <div className={styles.domain}>{getDomainFromUrl(shortcut.url)}</div>
+        {!shortcut.group && <div className={styles.domain}>{getDomainFromUrl(shortcut.url)}</div>}
         <button
           className={styles.deleteBtn}
           onClick={handleDelete}

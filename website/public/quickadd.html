@@ -109,7 +109,11 @@
     }
 
     #url-input { margin-bottom: 8px; }
-    #title-input { margin-bottom: 12px; }
+    #title-input { margin-bottom: 8px; }
+
+    /* ── Group field ── */
+    #group-input { margin-bottom: 12px; }
+    datalist { display: none; } /* hide native datalist dropdowns in this minimal UI */
 
     /* ── Error / warning message ── */
     .msg-bar {
@@ -190,6 +194,12 @@
     <div class="field">
       <label class="field-label" for="title-input">TITLE</label>
       <input class="field-input" id="title-input" type="text" placeholder="Page title" autocomplete="off" spellcheck="false" />
+    </div>
+
+    <div class="field">
+      <label class="field-label" for="group-input">GROUP <span style="opacity:0.4;font-size:9px">(optional)</span></label>
+      <input class="field-input" id="group-input" type="text" placeholder="e.g. Work, Social" autocomplete="off" spellcheck="false" list="group-suggestions" />
+      <datalist id="group-suggestions"></datalist>
     </div>
 
     <div class="btn-row">

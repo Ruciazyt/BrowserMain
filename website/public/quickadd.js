@@ -5,11 +5,13 @@
 
   const urlInput = document.getElementById('url-input');
   const titleInput = document.getElementById('title-input');
+  const groupInput = document.getElementById('group-input');
   const faviconPreview = document.getElementById('favicon-preview');
   const faviconDomain = document.getElementById('favicon-domain');
   const msgBar = document.getElementById('msg-bar');
   const form = document.getElementById('form');
   const btnCancel = document.getElementById('btn-cancel');
+  const groupDatalist = document.getElementById('group-suggestions');
 
   // ── URL param helpers ────────────────────────────────────────────────────
 
@@ -31,10 +33,12 @@
 
   const initUrl = decodeURIComponent(getUrlParam('url'));
   const initTitle = decodeURIComponent(getUrlParam('title'));
+  const initGroup = decodeURIComponent(getUrlParam('group'));
   let initFavicon = decodeURIComponent(getUrlParam('favicon'));
 
   urlInput.value = initUrl;
   titleInput.value = initTitle;
+  if (initGroup) groupInput.value = initGroup;
 
   if (initFavicon) {
     faviconPreview.src = initFavicon;
@@ -123,8 +127,10 @@
       ? faviconPreview.src
       : getSmartFavicon(url);
 
+    const group = groupInput.value.trim() || undefined;
+
     chrome.runtime.sendMessage(
-      { type: 'ADD_SHORTCUT', url, title, favicon },
+      { type: 'ADD_SHORTCUT', url, title, favicon, group },
       (response) => {
         if (chrome.runtime.lastError) {
           showError('Extension error: ' + chrome.runtime.lastError.message);
@@ -140,6 +146,20 @@
         }
       }
     );
+  });
+
+  // ── Load existing groups for suggestions ─────────────────────────────────
+
+  chrome.storage.local.get('browsermain_shortcuts', function (result) {
+    const shortcuts = result['browsermain_shortcuts'] || [];
+    const groups = Array.from(
+      new Set(shortcuts.map(function (s) { return s.group; }).filter(function (g) { return !!g; }))
+    ).sort();
+    groups.forEach(function (g) {
+      var option = document.createElement('option');
+      option.value = g;
+      groupDatalist.appendChild(option);
+    });
   });
 
   // ── Cancel ────────────────────────────────────────────────────────────────

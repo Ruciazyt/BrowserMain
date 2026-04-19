@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { Shortcut } from '../utils/storage';
 import ShortcutTile from './ShortcutTile';
 import styles from '../styles/components/ShortcutGrid.module.css';
@@ -13,14 +13,48 @@ interface ShortcutGridProps {
   onAdd?: () => void;
 }
 
+interface Group {
+  name: string; // 'Default' for undefined/null group
+  shortcuts: Shortcut[];
+}
+
 export default function ShortcutGrid({ shortcuts, onDelete, onUpdate, onReorder, onAdd }: ShortcutGridProps) {
   const [dragIndex, setDragIndex] = useState<number | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
   const [dropPosition, setDropPosition] = useState<'before' | 'after' | null>(null);
   const [isDraggingAny, setIsDraggingAny] = useState(false);
 
-  const handleDragStart = (index: number) => {
-    setDragIndex(index);
+  // Group shortcuts: undefined/null group → 'Default'
+  const groups = useMemo<Group[]>(() => {
+    const groupMap = new Map<string, Shortcut[]>();
+    for (const s of shortcuts) {
+      const key = s.group || 'Default';
+      if (!groupMap.has(key)) groupMap.set(key, []);
+      groupMap.get(key)!.push(s);
+    }
+    // Sort groups by first shortcut's order
+    const sorted = Array.from(groupMap.entries())
+      .sort(([aName, aShortcuts], [bName, bShortcuts]) => {
+        const aFirst = aShortcuts[0]?.order ?? Infinity;
+        const bFirst = bShortcuts[0]?.order ?? Infinity;
+        return aFirst - bFirst;
+      });
+    // Within each group sort by order
+    return sorted.map(([name, groupShortcuts]) => ({
+      name,
+      shortcuts: [...groupShortcuts].sort((a, b) => a.order - b.order),
+    }));
+  }, [shortcuts]);
+
+  // Global shortcut index for drag (across all groups)
+  const globalIndex = (groupIdx: number, shortcutIdx: number) => {
+    let idx = 0;
+    for (let g = 0; g < groupIdx; g++) idx += groups[g].shortcuts.length;
+    return idx + shortcutIdx;
+  };
+
+  const handleDragStart = (groupIdx: number, shortcutIdx: number) => {
+    setDragIndex(globalIndex(groupIdx, shortcutIdx));
     setIsDraggingAny(true);
   };
 
@@ -31,8 +65,8 @@ export default function ShortcutGrid({ shortcuts, onDelete, onUpdate, onReorder,
     setIsDraggingAny(false);
   };
 
-  const handleDragOver = (index: number, offsetX: number, tileWidth: number) => {
-    setDragOverIndex(index);
+  const handleDragOver = (groupIdx: number, shortcutIdx: number, offsetX: number, tileWidth: number) => {
+    setDragOverIndex(globalIndex(groupIdx, shortcutIdx));
     setDropPosition(offsetX < tileWidth / 2 ? 'before' : 'after');
   };
 
@@ -45,27 +79,23 @@ export default function ShortcutGrid({ shortcuts, onDelete, onUpdate, onReorder,
 
   const handleDrop = () => {
     if (dragIndex === null || dragOverIndex === null || dragIndex === dragOverIndex) {
-      setDragIndex(null);
-      setDragOverIndex(null);
-      setDropPosition(null);
+      handleDragEnd();
       return;
     }
     const insertIndex = (() => {
       if (dropPosition === 'after') {
         return dragIndex < dragOverIndex ? dragOverIndex : dragOverIndex + 1;
       }
-      // before
       return dragIndex < dragOverIndex ? dragOverIndex - 1 : dragOverIndex;
     })();
     const newOrder = [...shortcuts];
     const [removed] = newOrder.splice(dragIndex, 1);
     newOrder.splice(insertIndex, 0, removed);
     onReorder(newOrder);
-    setDragIndex(null);
-    setDragOverIndex(null);
-    setDropPosition(null);
+    handleDragEnd();
   };
 
+  // ShortcutTile calls onMoveLeft/onMoveRight with global index (the tile's global index prop)
   const handleMoveLeft = (fromIndex: number) => {
     if (fromIndex <= 0) return;
     const newOrder = [...shortcuts];
@@ -90,7 +120,7 @@ export default function ShortcutGrid({ shortcuts, onDelete, onUpdate, onReorder,
       {shortcuts.length > 0 && (
         <div className={styles.header}>
           <span />
-          <span className={styles.count}>({shortcuts.length} shortcuts)</span>
+          <span className={styles.count}>({shortcuts.length} shortcuts{groups.length > 1 ? ` · ${groups.length} groups` : ''})</span>
           <span className={styles.hint}>right-click to edit</span>
         </div>
       )}
@@ -114,30 +144,48 @@ export default function ShortcutGrid({ shortcuts, onDelete, onUpdate, onReorder,
           </>
         ) : (
           <>
-            {shortcuts.map((shortcut, i) => (
-              <ShortcutTile
-                key={shortcut.id}
-                shortcut={shortcut}
-                onDelete={onDelete}
-                onUpdate={onUpdate}
-                index={i}
-                isDragging={dragIndex === i}
-                isDragOver={dragOverIndex === i}
-                dropPosition={dragIndex !== null && dragOverIndex === i ? dropPosition : null}
-                onDragStart={handleDragStart}
-                onDragEnd={handleDragEnd}
-                onDragOver={handleDragOver}
-                onDragLeave={handleDragLeave}
-                onDrop={handleDrop}
-                onMoveLeft={handleMoveLeft}
-                onMoveRight={handleMoveRight}
-              />
+            {groups.map((group, gi) => (
+              <div key={group.name} className={styles.groupSection}>
+                {/* Group header */}
+                {groups.length > 1 && (
+                  <div className={styles.groupHeader}>
+                    <span className={styles.groupName}>{group.name}</span>
+                    <span className={styles.groupCount}>({group.shortcuts.length})</span>
+                  </div>
+                )}
+                {/* Shortcuts in this group */}
+                <div className={styles.groupTiles}>
+                  {group.shortcuts.map((shortcut, si) => {
+                    const globalIdx = globalIndex(gi, si);
+                    return (
+                      <ShortcutTile
+                        key={shortcut.id}
+                        shortcut={shortcut}
+                        onDelete={onDelete}
+                        onUpdate={onUpdate}
+                        index={globalIdx}
+                        isDragging={dragIndex === globalIdx}
+                        isDragOver={dragOverIndex === globalIdx}
+                        dropPosition={dragIndex !== null && dragOverIndex === globalIdx ? dropPosition : null}
+                        onDragStart={() => handleDragStart(gi, si)}
+                        onDragEnd={handleDragEnd}
+                        onDragOver={(idx, ox, tw) => handleDragOver(gi, si, ox, tw)}
+                        onDragLeave={handleDragLeave}
+                        onDrop={handleDrop}
+                        onMoveLeft={() => handleMoveLeft(globalIdx)}
+                        onMoveRight={() => handleMoveRight(globalIdx)}
+                      />
+                    );
+                  })}
+                  {/* Add button at bottom of last group */}
+                  {onAdd && gi === groups.length - 1 && (
+                    <button className={styles.addTile} onClick={onAdd} aria-label="Add shortcut" title="Add shortcut">
+                      <span className={styles.addTileIcon}>+</span>
+                    </button>
+                  )}
+                </div>
+              </div>
             ))}
-            {onAdd && (
-              <button className={styles.addTile} onClick={onAdd} aria-label="Add shortcut" title="Add shortcut">
-                <span className={styles.addTileIcon}>+</span>
-              </button>
-            )}
           </>
         )}
       </div>

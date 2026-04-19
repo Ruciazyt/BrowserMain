@@ -6,6 +6,7 @@ export interface Shortcut {
   url: string;
   favicon?: string;
   order: number;
+  group?: string; // NEW: group name, e.g. "Work", "Social", "Dev Tools"
 }
 
 export interface Settings {
