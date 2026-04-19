@@ -20,6 +20,7 @@
 
   /* Accent colors */
   --accent-aqua: #5ee7df;
+  --accent-aqua-rgb: 94, 231, 223;
   --accent-violet: #7c6aef;
   --accent-rose: #f875aa;
 
@@ -135,11 +136,11 @@ body {
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb {
-  background: rgba(94, 231, 223, 0.35);
+  background: rgba(var(--accent-aqua-rgb, 94, 231, 223), 0.35);
   border-radius: 2px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(94, 231, 223, 0.55);
+  background: rgba(var(--accent-aqua-rgb, 94, 231, 223), 0.55);
 }
 
 /* --- Typography --- */
@@ -176,7 +177,7 @@ input, textarea {
 
 /* --- Selection --- */
 ::selection {
-  background: rgba(94, 231, 223, 0.22);
+  background: rgba(var(--accent-aqua-rgb), 0.22);
   color: var(--text-bright);
 }
 
