@@ -19,7 +19,7 @@
 .container::before {
   content: '';
   position: absolute;
-  top: 0; left: var(--space-sm, 8px); right: var(--space-sm, 8px);
+  top: 0; left: var(--space-sm); right: var(--space-sm);
   height: 1px;
   background: linear-gradient(
     90deg,
