@@ -84,3 +84,21 @@
   0%, 100% { opacity: 1; }
   50% { opacity: 0.75; }
 }
+
+.formatBadge {
+  cursor: pointer;
+  font-family: var(--font-led);
+  font-size: 8px;
+  font-weight: 600;
+  color: var(--led-amber);
+  letter-spacing: 1px;
+  text-shadow: 0 0 6px rgba(255, 149, 0, 0.8), 0 0 14px rgba(255, 149, 0, 0.4);
+  background: rgba(255, 149, 0, 0.1);
+  border: 1px solid rgba(255, 149, 0, 0.35);
+  border-radius: 10px;
+  padding: 1px 6px 0;
+  margin-top: 2px;
+  transition: opacity var(--dur-fast);
+  animation: ledCharPulse 3s ease-in-out infinite;
+}
+.formatBadge:hover { opacity: 0.75; }

@@ -56,15 +56,17 @@
 
 /* ── Favicon row ──────────────────────────────────────────────── */
 .faviconRow {
-  display: flex; align-items: center; gap: 10px;
-  padding: 8px 12px;
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 8px 12px; min-height: 42px;
   background: var(--glass-white);
   border: 1px solid rgba(255,255,255,0.08);
   border-radius: var(--radius-md);
 }
 .faviconImg { width: 18px; height: 18px; object-fit: contain; border-radius: 3px; }
 .faviconGlobe { width: 18px; height: 18px; color: var(--led-amber); opacity: 0.70; flex-shrink: 0; border-radius: 3px; }
-.faviconHint { font-size: 11px; color: rgba(255,255,255,0.32); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.faviconHint { font-size: 10px; color: rgba(255,255,255,0.24); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.faviconDomain { font-size: 11px; color: rgba(255,255,255,0.56); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500; display: block; }
+.faviconTextCol { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 
 /* ── Form fields ──────────────────────────────────────────────── */
 .field { display: flex; flex-direction: column; gap: 5px; }

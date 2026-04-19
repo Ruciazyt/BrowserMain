@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useShortcuts } from '../hooks/useShortcuts';
-import { getSmartFaviconUrl, getFaviconIcoUrl } from '../utils/storage';
+import { getSmartFaviconUrl, getFaviconIcoUrl, getDomainFromUrl } from '../utils/storage';
 import { isUrl } from '../utils/engines';
 import styles from '../styles/components/AddShortcutDialog.module.css';
 
@@ -23,6 +23,9 @@ export default function AddShortcutDialog({ open, url, title, favicon, onClose }
   const [saved, setSaved] = useState(false);
   const [pasteHint, setPasteHint] = useState('');
   const { addShortcut, shortcuts } = useShortcuts();
+
+  // Derived domain from the current input URL
+  const domain = inputUrl && isUrl(inputUrl.trim()) ? getDomainFromUrl(inputUrl.trim()) : '';
 
   // Check if entered URL is a duplicate or invalid
   const trimmedUrl = inputUrl.trim();
@@ -159,7 +162,10 @@ export default function AddShortcutDialog({ open, url, title, favicon, onClose }
                   <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
                 </svg>
               )}
-              <span className={styles.faviconHint}>Current page</span>
+              <div className={styles.faviconTextCol}>
+                <span className={styles.faviconDomain}>{domain || '—'}</span>
+                <span className={styles.faviconHint}>Current page</span>
+              </div>
             </div>
           )}
 

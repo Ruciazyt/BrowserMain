@@ -85,6 +85,16 @@ export default function Clock() {
               : <span key={i} className={styles.dayChar}>{char}</span>
           ))}
         </div>
+        <div
+          className={styles.formatBadge}
+          onClick={toggleFormat}
+          role="button"
+          tabIndex={0}
+          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') toggleFormat(); }}
+          aria-label={`Clock format: ${settings.clockIs24h !== false ? '24-hour' : '12-hour'}. Click to toggle.`}
+        >
+          {settings.clockIs24h !== false ? '24H' : '12H'}
+        </div>
       </div>
     </div>
   );
