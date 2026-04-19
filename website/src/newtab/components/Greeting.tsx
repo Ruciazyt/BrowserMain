@@ -1,15 +1,18 @@
 import { useState, useEffect, useRef } from 'react';
 import styles from '../styles/components/Greeting.module.css';
 
+// Cache the language check once at module load — never re-check navigator.language
+const IS_ZH = typeof navigator !== 'undefined' && navigator.language.startsWith('zh');
+
 function getGreeting(hour: number): string {
-  const isZh = typeof navigator !== 'undefined' && navigator.language.startsWith('zh');
-  if (hour >= 0 && hour < 5) return isZh ? '凌晨' : 'GOOD NIGHT';
-  if (hour >= 5 && hour < 9) return isZh ? '早上好' : 'GOOD MORNING';
-  if (hour >= 9 && hour < 12) return isZh ? '上午好' : 'GOOD MORNING';
-  if (hour >= 12 && hour < 14) return isZh ? '中午好' : 'GOOD AFTERNOON';
-  if (hour >= 14 && hour < 18) return isZh ? '下午好' : 'GOOD AFTERNOON';
-  if (hour >= 18 && hour < 23) return isZh ? '晚上好' : 'GOOD EVENING';
-  return isZh ? '夜深了' : 'GOOD NIGHT';
+  if (hour >= 0 && hour < 5) return IS_ZH ? '凌晨' : 'GOOD NIGHT';
+  if (hour >= 5 && hour < 9) return IS_ZH ? '早上好' : 'GOOD MORNING';
+  if (hour >= 9 && hour < 12) return IS_ZH ? '上午好' : 'GOOD MORNING';
+  if (hour >= 12 && hour < 14) return IS_ZH ? '中午好' : 'GOOD AFTERNOON';
+  if (hour >= 14 && hour < 18) return IS_ZH ? '下午好' : 'GOOD AFTERNOON';
+  if (hour >= 18 && hour < 23) return IS_ZH ? '晚上好' : 'GOOD EVENING';
+  // hour 23 — midnight hour: 'GOOD NIGHT' in English, '午夜好' (late night) in Chinese
+  return IS_ZH ? '午夜好' : 'GOOD NIGHT';
 }
 
 export default function Greeting({ userName }: { userName?: string }) {
