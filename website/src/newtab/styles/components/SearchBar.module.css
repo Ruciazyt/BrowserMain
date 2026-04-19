@@ -41,7 +41,7 @@
   width: 44px;
   height: 48px;
   flex-shrink: 0;
-  color: rgba(255, 255, 255, 0.88);
+  color: var(--text-bright);
   padding-left: 6px;
 }
 

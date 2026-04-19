@@ -24,18 +24,18 @@
 }
 .dot {
   width: 5px; height: 5px; border-radius: 50%;
-  background: rgb(255, 187, 128); /* 85% amber, 15% white */
-  box-shadow: 0 0 4px rgba(255, 149, 0, 0.55);
+  background: var(--led-amber-warm);
+  box-shadow: 0 0 4px var(--led-amber-soft);
   animation: ledWave 2.4s ease-in-out infinite;
   animation-delay: var(--delay, 0s);
 }
 .dot.off {
-  background: rgba(255, 149, 0, 0.12); /* 12% amber */
+  background: rgba(var(--led-amber-rgb), 0.12);
   box-shadow: none; animation: none;
 }
 @keyframes ledWave {
-  0%, 100% { opacity: 1; box-shadow: 0 0 4px rgba(255, 149, 0, 0.55); }
-  50% { opacity: 0.55; box-shadow: 0 0 2px rgba(255, 149, 0, 0.30); }
+  0%, 100% { opacity: 1; box-shadow: 0 0 4px var(--led-amber-soft); }
+  50% { opacity: 0.55; box-shadow: 0 0 2px rgba(var(--led-amber-rgb), 0.30); }
 }
 .label {
   font-family: var(--font-led);
@@ -89,13 +89,13 @@
   width: 3px;
   height: 3px;
   border-radius: 50%;
-  background: rgb(255, 187, 128);
-  box-shadow: 0 0 3px rgba(255, 149, 0, 0.55);
+  background: var(--led-amber-warm);
+  box-shadow: 0 0 3px var(--led-amber-soft);
   flex-shrink: 0;
 }
 
 .tickerDot.off {
-  background: rgba(255, 149, 0, 0.10);
+  background: rgba(var(--led-amber-rgb), 0.10);
   box-shadow: none;
 }
 
