@@ -1,13 +1,31 @@
-/* ── Panel — 云端神庙玻璃卡片 ───────────────────────────────── */
+/* ── Panel — glass card + 标题 ───────────────────────────────── */
 .panel {
-<<<<<<< HEAD
-  background: rgba(255, 255, 255, 0.12);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.28);
-  border-radius: 24px;
+  background: var(--glass-white);
+  backdrop-filter: var(--blur-md);
+  -webkit-backdrop-filter: var(--blur-md);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
   padding: 22px 20px 20px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.18);
+  box-shadow: var(--shadow-glass);
+  position: relative;
+}
+
+.panel::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.4) 40%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  pointer-events: none;
+  z-index: 2;
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
 }
 
 .cardTitle {
@@ -19,64 +37,23 @@
   padding-bottom: 10px;
   margin-bottom: 12px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.18);
-=======
-  background: var(--glass-white);
-  backdrop-filter: var(--blur-md);
-  -webkit-backdrop-filter: var(--blur-md);
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius-xl);
-  padding: 16px;
-  box-shadow: var(--shadow-glass);
-  position: relative;
 }
 
-/* Top-edge refraction highlight — matches global .card */
-.panel::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 1px;
-  background: linear-gradient(
-    90deg,
-    rgba(255,255,255,0) 0%,
-    rgba(255,255,255,0.40) 40%,
-    rgba(255,255,255,0) 100%
-  );
-  pointer-events: none;
-  z-index: 2;
-  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
-}
-
-/* ── Decorative dot row ──────────────────────────────────────── */
-.dotRow {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 8px;
->>>>>>> 719059899cef841cb006f7c36bfcc1629f6750ad
-}
-
-/* ── @dnd-kit 可排序项 ───────────────────────────────────────── */
+/* ── @dnd-kit 可排序项（限制宽度，避免 1fr 撑满整列导致焦点框巨大）── */
 .sortableItem {
   border-radius: var(--radius-md);
   touch-action: none;
+  justify-self: center;
+  align-self: start;
+  width: 100%;
+  max-width: 92px;
 }
-<<<<<<< HEAD
+
 .sortableItem:active {
   cursor: grabbing;
-=======
-
-.dotOff {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: rgba(255, 149, 0, 0.15);
-  box-shadow: none;
->>>>>>> 719059899cef841cb006f7c36bfcc1629f6750ad
 }
 
-/* ── Header row ─────────────────────────────────────────────── */
+/* ── Header row（预留） ─────────────────────────────────────── */
 .header {
   display: flex;
   justify-content: space-between;
@@ -96,18 +73,20 @@
 
 .hint {
   font-size: 10px;
-  color: rgba(255,255,255,0.22);
+  color: rgba(255, 255, 255, 0.22);
   font-family: var(--font-led);
   letter-spacing: 0.5px;
   opacity: 0.75;
 }
 
-/* ── Shortcut Grid ──────────────────────────────────────────── */
-.wrapper { width: 100%; padding: 14px; }
+.wrapper {
+  width: 100%;
+  padding: 14px;
+}
 
 .container {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(78px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(78px, 92px));
   gap: 8px;
   width: 100%;
 }
@@ -116,15 +95,26 @@
   grid-column: 1 / -1;
   text-align: center;
   padding: 36px 20px;
-  color: rgba(255,255,255,0.30);
+  color: rgba(255, 255, 255, 0.3);
 }
-.emptyTitle { font-size: 14px; color: rgba(255,255,255,0.48); margin-bottom: 6px; }
-.emptyHint { font-size: 12px; color: rgba(255,255,255,0.25); }
 
-/* Add tile — glass style */
+.emptyTitle {
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.48);
+  margin-bottom: 6px;
+}
+
+.emptyHint {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.25);
+}
+
 .addTile {
   position: relative;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   padding: 10px 6px;
   border-radius: var(--radius-lg);
   cursor: pointer;
@@ -135,20 +125,21 @@
   box-shadow: var(--shadow-glass);
   overflow: hidden;
   transition: all var(--dur-fast) var(--ease-liquid);
-  color: rgba(255,255,255,0.45);
+  color: rgba(255, 255, 255, 0.45);
 }
 
-/* Top edge refraction */
 .addTile::before {
   content: '';
   position: absolute;
-  top: 0; left: var(--space-sm); right: var(--space-sm);
+  top: 0;
+  left: var(--space-sm);
+  right: var(--space-sm);
   height: 1px;
   background: linear-gradient(
     90deg,
-    rgba(255,255,255,0) 0%,
-    rgba(255,255,255,0.40) 40%,
-    rgba(255,255,255,0) 100%
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.4) 40%,
+    rgba(255, 255, 255, 0) 100%
   );
   pointer-events: none;
   border-radius: var(--radius-xl) var(--radius-xl) 0 0;
@@ -156,31 +147,46 @@
 
 .addTile:hover {
   background: var(--glass-white-md);
-  border-color: rgba(255,255,255,0.28);
-  color: rgba(255,255,255,0.80);
+  border-color: rgba(255, 255, 255, 0.28);
+  color: rgba(255, 255, 255, 0.8);
   transform: translateY(-2px) scale(1.04);
   box-shadow: var(--shadow-float);
 }
-.addTileIcon { font-size: 22px; line-height: 1; opacity: 0.7; margin-bottom: 4px; }
-.addTileLabel { font-size: 10px; letter-spacing: 0.3px; }
 
-.draggingOver { outline: 2px dashed rgba(94,231,223,0.4); outline-offset: 2px; border-radius: var(--radius-lg); }
-.dragging { opacity: 0.35; }
+.addTileIcon {
+  font-size: 22px;
+  line-height: 1;
+  opacity: 0.7;
+  margin-bottom: 4px;
+}
 
-/* Drop zone active state for the entire grid */
+.addTileLabel {
+  font-size: 10px;
+  letter-spacing: 0.3px;
+}
+
+.draggingOver {
+  outline: 2px dashed rgba(94, 231, 223, 0.4);
+  outline-offset: 2px;
+  border-radius: var(--radius-lg);
+}
+
+.dragging {
+  opacity: 0.35;
+}
+
 .panel.dragActive {
   border: 1.5px dashed var(--glass-border-bright);
   box-shadow: var(--shadow-float);
 }
 
-/* ── Group section ─────────────────────────────────────────── */
+/* ── Group section（预留分组布局） ──────────────────────────── */
 .groupSection {
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
-/* ── Group header ───────────────────────────────────────────── */
 .groupHeader {
   display: flex;
   align-items: center;
@@ -214,10 +220,10 @@
   color: rgba(255, 149, 0, 0.45);
 }
 
-/* ── Group tiles ────────────────────────────────────────────── */
 .groupTiles {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(78px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(78px, 92px));
   gap: 8px;
   padding-bottom: 28px;
+  justify-items: stretch;
 }

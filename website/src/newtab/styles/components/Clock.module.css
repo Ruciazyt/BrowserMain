@@ -1,30 +1,23 @@
-<<<<<<< HEAD
-/* ── Clock — 云端神庙：大号时间 + 细日期 ─────────────────────── */
-.heroClock {
-=======
-/* ── Clock — compact rounded square ──────────────────────────── */
+/* ── Clock — 大号时间 + 一行日期星期，点击切换 12/24h ───────── */
 .panel {
   width: 100%;
   display: flex;
-  justify-content: center;
-  padding: 12px 12px 6px;
-}
-
-.dotRow {
-  display: flex;
-  gap: 4px;
+  flex-direction: column;
   align-items: center;
-  padding: 2px 0;
+  justify-content: center;
+  padding: 8px 12px 4px;
 }
 
 .container {
->>>>>>> 719059899cef841cb006f7c36bfcc1629f6750ad
   cursor: pointer;
   user-select: none;
   transition: opacity var(--dur-fast);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-.heroClock:hover {
+.container:hover {
   opacity: 0.92;
 }
 
@@ -43,74 +36,7 @@
   font-family: var(--font-body);
   font-size: clamp(0.85rem, 2vw, 1rem);
   font-weight: 400;
-<<<<<<< HEAD
   letter-spacing: 0.12em;
   color: rgba(255, 255, 255, 0.72);
   text-shadow: 0 2px 12px rgba(0, 0, 0, 0.25);
-=======
-  color: var(--led-amber);
-  opacity: 0.55;
-  letter-spacing: 1px;
 }
-
-.day {
-  display: flex;
-  align-items: center;
-  gap: 1px;
-  justify-content: center;
-  flex-wrap: wrap;
-  max-width: 100%;
->>>>>>> 719059899cef841cb006f7c36bfcc1629f6750ad
-}
-
-.dayChar {
-  font-family: var(--font-led);
-  font-size: 8px;
-  font-weight: 600;
-  color: var(--led-amber);
-  letter-spacing: 0;
-  line-height: 1;
-  /* LED glow per character */
-  text-shadow: 0 0 5px rgba(255, 149, 0, 0.7), 0 0 10px rgba(255, 149, 0, 0.35);
-  /* Tiny chip background */
-  background: rgba(255, 149, 0, 0.08);
-  border: 1px solid rgba(255, 149, 0, 0.25);
-  border-radius: 2px;
-  padding: 1px 1px 0;
-  /* Subtle pulse animation — staggered via nth-child */
-  animation: ledCharPulse 3s ease-in-out infinite;
-  animation-delay: calc(var(--char-index, 0) * 0.07s);
-}
-
-/* First 3 letters get slightly brighter to hint at abbreviation */
-.dayChar:nth-child(-n+3) {
-  color: var(--led-amber-warm);
-  text-shadow: 0 0 6px rgba(255, 179, 71, 0.8), 0 0 12px rgba(255, 179, 71, 0.4);
-}
-
-.daySpace {
-  width: 4px;
-}
-
-@keyframes ledCharPulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.75; }
-}
-
-.formatBadge {
-  cursor: pointer;
-  font-family: var(--font-led);
-  font-size: 8px;
-  font-weight: 600;
-  color: var(--led-amber);
-  letter-spacing: 1px;
-  text-shadow: 0 0 6px rgba(255, 149, 0, 0.8), 0 0 14px rgba(255, 149, 0, 0.4);
-  background: rgba(255, 149, 0, 0.1);
-  border: 1px solid rgba(255, 149, 0, 0.35);
-  border-radius: 10px;
-  padding: 1px 6px 0;
-  margin-top: 2px;
-  transition: opacity var(--dur-fast);
-  animation: ledCharPulse 3s ease-in-out infinite;
-}
-.formatBadge:hover { opacity: 0.75; }

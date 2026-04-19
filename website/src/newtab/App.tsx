@@ -40,8 +40,6 @@ export default function App() {
     }
   }, []);
 
-
-
   // Listen for SHORTCUT_ADDED messages (e.g. from quickadd popup)
   const isMountedRef = useRef(true);
   useEffect(() => {
@@ -131,18 +129,13 @@ export default function App() {
 
       {/* ── Header: time + greeting + glass search ── */}
       <div className={styles.header}>
-<<<<<<< HEAD
         <div className={styles.hero}>
           <Clock />
-          <Greeting />
+          <Greeting userName={settings.userName} />
         </div>
         <div className={styles.searchRow}>
           <SearchBar defaultEngine={settings.defaultEngine} onEngineChange={updateEngine} />
         </div>
-=======
-        <SearchBar defaultEngine={settings.defaultEngine} />
-        <Greeting userName={settings.userName} />
->>>>>>> 719059899cef841cb006f7c36bfcc1629f6750ad
       </div>
 
       {/* 快捷入口：左右各留约 20% 视口边距，中间区域更宽 */}

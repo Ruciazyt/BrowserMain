@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useLayoutEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { getSmartFaviconUrl, getFaviconIcoUrl, getDomainFromUrl } from '../utils/storage';
 import { isMac } from '../utils/platform';
 import { isUrl } from '../utils/engines';
@@ -18,17 +19,6 @@ interface ShortcutTileProps {
   onDelete: (id: string) => void;
   onUpdate: (id: string, updates: Partial<Shortcut>) => void;
   index: number;
-<<<<<<< HEAD
-=======
-  isDragging: boolean;
-  isDragOver: boolean;
-  dropPosition?: 'before' | 'after' | null;
-  onDragStart: (index: number) => void;
-  onDragEnd: () => void;
-  onDragOver: (index: number, offsetX: number, tileWidth: number) => void;
-  onDragLeave: (e: React.DragEvent) => void;
-  onDrop: () => void;
->>>>>>> 719059899cef841cb006f7c36bfcc1629f6750ad
   onMoveLeft?: (index: number) => void;
   onMoveRight?: (index: number) => void;
   existingGroups?: string[];
@@ -264,22 +254,7 @@ export default function ShortcutTile({
         className={`${styles.container} ${keyboardFocus ? styles.keyboardFocus : ''} ${isNavigating ? styles.navigating : ''}`}
         ref={containerRef}
         onContextMenu={handleContextMenu}
-<<<<<<< HEAD
         title="拖动可排序，点击进入"
-=======
-        draggable
-        title={shortcut.url}
-        onDragStart={() => onDragStart(index)}
-        onDragEnd={onDragEnd}
-        onDragOver={(e) => { e.preventDefault(); const tileWidth = e.currentTarget.getBoundingClientRect().width; onDragOver(index, e.nativeEvent.offsetX, tileWidth); }}
-        onDragLeave={(e) => {
-          // Only fire if we've truly left the tile (not just moved onto a child element)
-          if (!e.currentTarget.contains(e.relatedTarget as Node)) {
-            onDragLeave(e);
-          }
-        }}
-        onDrop={onDrop}
->>>>>>> 719059899cef841cb006f7c36bfcc1629f6750ad
         onClick={navigateToShortcut}
         onKeyDown={handleKeyDown}
         tabIndex={0}
@@ -291,11 +266,14 @@ export default function ShortcutTile({
       >
         <div className={styles.iconWrapper}>
           {faviconSrc ? (
-<<<<<<< HEAD
-            <img src={faviconSrc} alt="" draggable={false} onDragStart={(e) => e.preventDefault()} onError={handleFaviconError} />
-=======
-            <img src={faviconSrc} alt="" onError={handleFaviconError} title={shortcut.url} />
->>>>>>> 719059899cef841cb006f7c36bfcc1629f6750ad
+            <img
+              src={faviconSrc}
+              alt=""
+              draggable={false}
+              onDragStart={(e) => e.preventDefault()}
+              onError={handleFaviconError}
+              title={shortcut.url}
+            />
           ) : (
             <GlobeIcon />
           )}
@@ -319,20 +297,35 @@ export default function ShortcutTile({
         )}
       </div>
 
-      {showContextMenu && (
-        <div
-          ref={contextMenuRef}
-          className={styles.contextMenu}
-          style={{ left: contextMenuPos.x, top: contextMenuPos.y }}
-        >
-          <button className={styles.contextMenuItem} onClick={(e) => handleEdit(e)}>
-            ✏️ Edit
-          </button>
-          <button className={styles.contextMenuItem} onClick={(e) => { e.stopPropagation(); onDelete(shortcut.id); setShowContextMenu(false); }}>
-            🗑️ Delete
-          </button>
-        </div>
-      )}
+      {showContextMenu &&
+        createPortal(
+          <div
+            ref={contextMenuRef}
+            className={styles.contextMenu}
+            style={{
+              position: 'fixed',
+              left: contextMenuPos.x,
+              top: contextMenuPos.y,
+              zIndex: 2147483645,
+            }}
+          >
+            <button type="button" className={styles.contextMenuItem} onClick={(e) => handleEdit(e)}>
+              ✏️ Edit
+            </button>
+            <button
+              type="button"
+              className={styles.contextMenuItem}
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete(shortcut.id);
+                setShowContextMenu(false);
+              }}
+            >
+              🗑️ Delete
+            </button>
+          </div>,
+          document.body
+        )}
     </>
   );
 }

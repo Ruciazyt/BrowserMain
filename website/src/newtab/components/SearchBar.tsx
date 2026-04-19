@@ -1,15 +1,8 @@
-<<<<<<< HEAD
 import { useState, useRef, useEffect, useLayoutEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { SEARCH_ENGINES, SearchEngine, buildSearchUrl, isUrl } from '../utils/engines';
 import EngineIcon from './EngineIcon';
-=======
-
-import { useState, useRef, useEffect } from 'react';
-import { SEARCH_ENGINES, SearchEngine, buildSearchUrl, isUrl } from '../utils/engines';
-import { isMac, modKey } from '../utils/platform';
-import { saveSettings, getSettings } from '../utils/storage';
->>>>>>> 719059899cef841cb006f7c36bfcc1629f6750ad
+import { isMac } from '../utils/platform';
 import styles from '../styles/components/SearchBar.module.css';
 
 interface SearchBarProps {
@@ -39,6 +32,7 @@ const CheckIcon = () => (
 
 export default function SearchBar({ defaultEngine = 'bing', onEngineChange }: SearchBarProps) {
   const [query, setQuery] = useState('');
+  const [focused, setFocused] = useState(false);
   const [engine, setEngine] = useState<SearchEngine>(
     SEARCH_ENGINES.find((e) => e.id === defaultEngine) || SEARCH_ENGINES[0]
   );
@@ -75,7 +69,6 @@ export default function SearchBar({ defaultEngine = 'bing', onEngineChange }: Se
       window.removeEventListener('resize', update);
     };
   }, [dropdownOpen]);
-
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
@@ -115,7 +108,6 @@ export default function SearchBar({ defaultEngine = 'bing', onEngineChange }: Se
     navigateTo(url);
   };
 
-<<<<<<< HEAD
   const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
     const pastedText = e.clipboardData.getData('text');
     if (isUrl(pastedText.trim())) {
@@ -178,102 +170,55 @@ export default function SearchBar({ defaultEngine = 'bing', onEngineChange }: Se
           </button>
         </div>
         <div className={styles.divider} />
-=======
-  return (
-    <form className={styles.container} onSubmit={handleSubmit}>
-      <div className={styles.engineSwitcher} ref={dropdownRef}>
-        <button
-          type="button"
-          className={styles.engineButton}
-          onClick={() => setDropdownOpen(!dropdownOpen)}
-          aria-label="Select search engine"
-        >
-          <span dangerouslySetInnerHTML={{ __html: engine.icon }} />
-        </button>
-        {dropdownOpen && (
-          <div className={styles.dropdown}>
-            {SEARCH_ENGINES.map((eng) => (
-              <button
-                key={eng.id}
-                type="button"
-                className={`${styles.dropdownItem} ${eng.id === engine.id ? styles.selected : ''}`}
-                onClick={() => {
-                  setEngine(eng);
-                  setDropdownOpen(false);
-                  getSettings().then((s) => {
-                    saveSettings({ ...s, defaultEngine: eng.id });
-                  });
-                }}
-              >
-                <span dangerouslySetInnerHTML={{ __html: eng.icon }} />
-                {eng.name}
-                {eng.id === engine.id && <CheckIcon />}
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
-      <div className={styles.divider} />
-      <div className={styles.inputWrapper}>
->>>>>>> 719059899cef841cb006f7c36bfcc1629f6750ad
-        <input
-          ref={inputRef}
-          type="text"
-          className={styles.input}
-          placeholder="在新世界搜索…"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-<<<<<<< HEAD
-          onPaste={handlePaste}
-          autoComplete="off"
-          autoCorrect="off"
-          autoCapitalize="off"
-          spellCheck={false}
-=======
-          onFocus={() => setFocused(true)}
-          onBlur={() => setFocused(false)}
->>>>>>> 719059899cef841cb006f7c36bfcc1629f6750ad
-        />
-        {focused && (
-          <div className={styles.shortcutHintInline} aria-hidden="true">
-            <kbd className={styles.kbdBadge}>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 11, height: 11 }}>
-                <rect x="2" y="4" width="20" height="16" rx="2"/>
-                <path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M8 12h.01M12 12h.01M16 12h.01M7 16h10"/>
+        <div className={styles.inputWrapper}>
+          <input
+            ref={inputRef}
+            type="text"
+            className={styles.input}
+            placeholder="在新世界搜索…"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            onPaste={handlePaste}
+            onFocus={() => setFocused(true)}
+            onBlur={() => setFocused(false)}
+            autoComplete="off"
+            autoCorrect="off"
+            autoCapitalize="off"
+            spellCheck={false}
+          />
+          {focused && (
+            <div className={styles.shortcutHintInline} aria-hidden="true">
+              <kbd className={styles.kbdBadge}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{ width: 11, height: 11 }}>
+                  <rect x="2" y="4" width="20" height="16" rx="2"/>
+                  <path d="M6 8h.01M10 8h.01M14 8h.01M18 8h.01M8 12h.01M12 12h.01M16 12h.01M7 16h10"/>
+                </svg>
+                {isMac() ? '⌘K' : 'Ctrl+K'}
+              </kbd>
+            </div>
+          )}
+          {query.length > 0 && (
+            <button
+              type="button"
+              className={styles.clearBtn}
+              aria-label="Clear search"
+              onClick={() => {
+                setQuery('');
+                inputRef.current?.focus();
+              }}
+            >
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"/>
+                <line x1="6" y1="6" x2="18" y2="18"/>
               </svg>
-              {isMac() ? '⌘K' : 'Ctrl+K'}
-            </kbd>
-          </div>
-        )}
-<<<<<<< HEAD
+            </button>
+          )}
+        </div>
         <button type="submit" className={styles.searchBtn} aria-label="Search">
           搜索
         </button>
       </form>
       {dropdownContent}
     </div>
-=======
-      </div>
-      {query.length > 0 && (
-        <button
-          type="button"
-          className={styles.clearBtn}
-          aria-label="Clear search"
-          onClick={() => {
-            setQuery('');
-            inputRef.current?.focus();
-          }}
-        >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <line x1="18" y1="6" x2="6" y2="18"/>
-            <line x1="6" y1="6" x2="18" y2="18"/>
-          </svg>
-        </button>
-      )}
-      <button type="submit" className={styles.searchBtn} aria-label="Search">
-        <SearchIcon />
-      </button>
-    </form>
->>>>>>> 719059899cef841cb006f7c36bfcc1629f6750ad
   );
 }
