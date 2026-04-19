@@ -131,7 +131,7 @@
 
 .saveBtn {
   padding: 8px 20px; border-radius: var(--radius-md);
-  font-size: 13px; font-weight: 600;
+  font-size: 13px; font-weight: 500;
   color: rgba(0,0,0,0.85);
   background: linear-gradient(135deg, var(--accent-aqua) 0%, var(--accent-violet) 100%);
   border: none; cursor: pointer;

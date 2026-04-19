@@ -44,3 +44,12 @@
   letter-spacing: 2px;
   text-transform: uppercase;
 }
+
+/* ── Keyboard shortcut inline (inside dot matrix) ─── */
+.kbdHint {
+  font-family: var(--font-led);
+  font-size: 9px;
+  color: rgba(255,255,255,0.32);
+  letter-spacing: 1px;
+  text-align: center;
+}
