@@ -332,9 +332,9 @@
   margin-top: 10px; padding: 9px 14px;
   border-radius: var(--radius-md);
   font-size: 12px; font-weight: 500;
-  color: #7dd3e8;
-  background: rgba(125, 211, 232, 0.08);
-  border: 1px solid rgba(125, 211, 232, 0.20);
+  color: var(--success);
+  background: rgba(74, 222, 128, 0.08);
+  border: 1px solid rgba(74, 222, 128, 0.20);
   text-align: center;
   animation: fadeIn var(--dur-fast) ease;
 }
