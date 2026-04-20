@@ -408,6 +408,57 @@ export default function SettingsPanel({ open, onClose, onBookmarkImportComplete,
               </div>
 
               <div className={styles.section}>
+                <div className={styles.sectionTitle}>Keyboard Shortcuts</div>
+                <div className={styles.shortcutsList}>
+                  <div className={styles.shortcutRow}>
+                    <div className={styles.shortcutKeys}>
+                      <kbd className={styles.kbd}>Ctrl</kbd><span className={styles.kbdSep}>+</span><kbd className={styles.kbd}>K</kbd>
+                      <span className={styles.kbdOr}>/</span>
+                      <kbd className={styles.kbd}>⌘K</kbd>
+                    </div>
+                    <span className={styles.shortcutDesc}>Focus search bar</span>
+                  </div>
+                  <div className={styles.shortcutRow}>
+                    <div className={styles.shortcutKeys}>
+                      <kbd className={styles.kbd}>←</kbd>
+                      <kbd className={styles.kbd}>→</kbd>
+                      <kbd className={styles.kbd}>↑</kbd>
+                      <kbd className={styles.kbd}>↓</kbd>
+                    </div>
+                    <span className={styles.shortcutDesc}>Navigate shortcuts</span>
+                  </div>
+                  <div className={styles.shortcutRow}>
+                    <div className={styles.shortcutKeys}>
+                      <kbd className={styles.kbd}>Enter</kbd>
+                      <span className={styles.kbdSep}>/</span>
+                      <kbd className={styles.kbd}>Space</kbd>
+                    </div>
+                    <span className={styles.shortcutDesc}>Open shortcut</span>
+                  </div>
+                  <div className={styles.shortcutRow}>
+                    <div className={styles.shortcutKeys}>
+                      <kbd className={styles.kbd}>Ctrl</kbd><span className={styles.kbdSep}>+</span><kbd className={styles.kbd}>⇧</kbd><span className={styles.kbdSep}>+</span><kbd className={styles.kbd}>U</kbd>
+                      <span className={styles.kbdOr}>/</span>
+                      <kbd className={styles.kbd}>⌘⇧U</kbd>
+                    </div>
+                    <span className={styles.shortcutDesc}>Open Add Shortcut dialog</span>
+                  </div>
+                  <div className={styles.shortcutRow}>
+                    <div className={styles.shortcutKeys}>
+                      <kbd className={styles.kbd}>Esc</kbd>
+                    </div>
+                    <span className={styles.shortcutDesc}>Close settings panel</span>
+                  </div>
+                  <div className={styles.shortcutRow}>
+                    <div className={styles.shortcutKeys}>
+                      <kbd className={styles.kbd}>Right-click</kbd>
+                    </div>
+                    <span className={styles.shortcutDesc}>Edit or delete shortcut</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className={styles.section}>
                 <div className={styles.sectionTitle}>About</div>
                 <div className={styles.displayNameRow}>
                   <span className={styles.displayNameLabel}>Display Name</span>

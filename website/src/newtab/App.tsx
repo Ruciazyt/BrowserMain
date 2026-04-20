@@ -113,6 +113,18 @@ export default function App() {
     );
   }
 
+  // Check for first run and show onboarding automatically
+  useEffect(() => {
+    if (settingsLoading) return;
+    chrome.storage.local.get('browsermain_first_run', (result) => {
+      if (result['browsermain_first_run'] === true) {
+        setRestartOnboardingSignal(Date.now());
+        // Clear the flag so onboarding only shows on first install
+        chrome.storage.local.set({ 'browsermain_first_run': false });
+      }
+    });
+  }, [settingsLoading]);
+
   return (
     <div className={styles.page}>
       {/* Animated blob background — only shown for image background type */}

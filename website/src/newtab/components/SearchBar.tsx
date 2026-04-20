@@ -30,8 +30,18 @@ const CheckIcon = () => (
   </svg>
 );
 
+function detectIsZh(lang: string): boolean {
+  return lang.startsWith('zh');
+}
+
 export default function SearchBar({ defaultEngine = 'bing', onEngineChange }: SearchBarProps) {
   const [query, setQuery] = useState('');
+  const [isZh, setIsZh] = useState<boolean>(() => detectIsZh(navigator.language));
+  useEffect(() => {
+    const handler = () => setIsZh(detectIsZh(navigator.language));
+    window.addEventListener('languagechange', handler);
+    return () => window.removeEventListener('languagechange', handler);
+  }, []);
   const [focused, setFocused] = useState(false);
   const [engine, setEngine] = useState<SearchEngine>(
     SEARCH_ENGINES.find((e) => e.id === defaultEngine) || SEARCH_ENGINES[0]
@@ -215,7 +225,7 @@ export default function SearchBar({ defaultEngine = 'bing', onEngineChange }: Se
           )}
         </div>
         <button type="submit" className={styles.searchBtn} aria-label="Search">
-          搜索
+          {isZh ? '搜索' : 'Search'}
         </button>
       </form>
       {dropdownContent}

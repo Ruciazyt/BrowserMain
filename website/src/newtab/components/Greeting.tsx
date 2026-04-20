@@ -24,7 +24,6 @@ export default function Greeting({ userName }: { userName?: string }) {
   const [isZh, setIsZh] = useState<boolean>(() => detectIsZh(navigator.language));
   const [greeting, setGreeting] = useState('');
   const lastHourRef = useRef<number>(-1);
-  const [, onHourChange] = useState(0);
 
   // Keep IS_ZH in sync when navigator.language changes
   useEffect(() => {
@@ -40,7 +39,6 @@ export default function Greeting({ userName }: { userName?: string }) {
       setGreeting(getGreeting(currentHour, isZh));
       if (currentHour !== lastHourRef.current) {
         lastHourRef.current = currentHour;
-        onHourChange((n) => n + 1);
       }
     };
     update();

@@ -134,6 +134,8 @@ async function buildExtensionUrl(addData, targetPage) {
 
 chrome.runtime.onInstalled.addListener(() => {
   console.log('[BrowserMain] Extension installed');
+  // Mark first run so the newtab page can show onboarding
+  chrome.storage.local.set({ 'browsermain_first_run': true });
 });
 
 chrome.action.onClicked.addListener(async (tab) => {
