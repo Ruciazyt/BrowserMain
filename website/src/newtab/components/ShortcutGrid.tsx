@@ -257,7 +257,7 @@ export default function ShortcutGrid({ shortcuts, onDelete, onUpdate, onReorder,
     <>
       <div className={styles.cardTitle}>快捷入口</div>
       {shortcuts.length > 0 && (
-        <div className={styles.header}>
+        <div className={styles.headerRow}>
           <span />
           <span className={styles.count}>
             ({shortcuts.length} shortcuts{groups.length > 1 ? ` · ${groups.length} groups` : ''})

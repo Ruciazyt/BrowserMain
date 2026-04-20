@@ -65,7 +65,7 @@
 
   /* Spacing tokens */
   --space-sm: 8px;
-  --space-lg: 16px;
+  /* NOTE: --space-lg removed — was defined but unused across the codebase */
 
   /* Transitions */
   --dur-fast: 150ms ease-out;

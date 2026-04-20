@@ -55,8 +55,8 @@
   cursor: grabbing;
 }
 
-/* ── Header row（预留） ─────────────────────────────────────── */
-.header {
+/* ── Header row (count + hint bar) ─────────────────────────── */
+.headerRow {
   display: flex;
   justify-content: space-between;
   align-items: center;
