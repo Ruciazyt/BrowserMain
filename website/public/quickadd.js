@@ -20,6 +20,10 @@
     return params.get(name) || '';
   }
 
+  function getDraftParam(primaryName, legacyName) {
+    return decodeURIComponent(getUrlParam(primaryName) || getUrlParam(legacyName) || '');
+  }
+
   function getSmartFavicon(url) {
     try {
       const { hostname } = new URL(url);
@@ -31,10 +35,10 @@
 
   // ── Init ─────────────────────────────────────────────────────────────────
 
-  const initUrl = decodeURIComponent(getUrlParam('url'));
-  const initTitle = decodeURIComponent(getUrlParam('title'));
-  const initGroup = decodeURIComponent(getUrlParam('group'));
-  let initFavicon = decodeURIComponent(getUrlParam('favicon'));
+  const initUrl = getDraftParam('add_url', 'url');
+  const initTitle = getDraftParam('add_title', 'title');
+  const initGroup = getDraftParam('group', 'group');
+  let initFavicon = getDraftParam('add_favicon', 'favicon');
 
   urlInput.value = initUrl;
   titleInput.value = initTitle;

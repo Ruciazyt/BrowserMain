@@ -117,6 +117,16 @@
 }
 
 .imageSection { margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
+.imageHelpText {
+  font-size: 12px;
+  color: rgba(255,255,255,0.48);
+  line-height: 1.5;
+}
+.imageActionRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
 .imageRow { display: flex; align-items: center; gap: 6px; position: relative; }
 .imageInputWrapper { flex: 1; position: relative; display: flex; align-items: center; min-width: 0; }
 .imageInput {
@@ -158,6 +168,15 @@
   border-color: rgba(255, 149, 0, 0.65);
   box-shadow: 0 0 18px rgba(255, 149, 0, 0.30);
 }
+.emptyBackgroundState {
+  padding: 14px;
+  border-radius: var(--radius-md);
+  border: 1px dashed rgba(255,255,255,0.16);
+  color: rgba(255,255,255,0.42);
+  font-size: 12px;
+  text-align: center;
+  background: rgba(255,255,255,0.03);
+}
 .imagePreviewArea { border-radius: var(--radius-md); overflow: hidden; border: 1px solid rgba(255,255,255,0.08); height: 54px; position: relative; }
 .imagePreviewArea img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .removeImageBtn {
@@ -172,6 +191,18 @@
   -webkit-backdrop-filter: var(--blur-sm);
 }
 .removeImageBtn:hover { background: rgba(200,50,50,0.60); border-color: rgba(255,100,100,0.40); color: rgba(255,255,255,0.95); }
+.removeImageBtnInline {
+  padding: 7px 12px; border-radius: var(--radius-md);
+  font-size: 12px; font-weight: 500;
+  color: rgba(255, 107, 107, 0.9);
+  border: 1px solid rgba(255, 107, 107, 0.28);
+  background: rgba(255, 107, 107, 0.08);
+  cursor: pointer; transition: all var(--dur-fast); white-space: nowrap;
+}
+.removeImageBtnInline:hover {
+  background: rgba(255, 107, 107, 0.16);
+  border-color: rgba(255, 107, 107, 0.42);
+}
 .colorInput {
   width: 36px; height: 28px; border: none; border-radius: var(--radius-sm);
   cursor: pointer; padding: 2px; background: var(--glass-white);
@@ -204,6 +235,17 @@
 
 /* ── About ─────────────────────────────────────────────────── */
 .aboutSection { text-align: center; padding: 14px 0 6px; color: rgba(255,255,255,0.28); font-size: 11px; }
+.aboutVersion {
+  padding: 10px 12px;
+  border-radius: var(--radius-md);
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.08);
+  color: rgba(255,255,255,0.82);
+  font-family: var(--font-led);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-align: center;
+}
 .importBtn {
   width: 100%; padding: 9px 16px; border-radius: var(--radius-md);
   font-size: 13px; font-weight: 500;
@@ -343,8 +385,10 @@
 
 .clockFormatRow {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: space-between;
+  gap: 10px;
   margin-top: 10px;
   padding: 8px 12px;
   background: rgba(255, 255, 255, 0.05);
@@ -360,25 +404,48 @@
   text-transform: uppercase;
 }
 
-.clockFormatToggle {
+.languageRow {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.languageLabel {
+  font-size: 12px;
+  color: rgba(255,255,255,0.50);
+}
+
+.languageToggle,
+.clockFormatToggle {
+  display: grid;
+  width: 100%;
+  grid-template-columns: repeat(3, 1fr);
   gap: 6px;
 }
 
+.clockFormatToggle {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.languageBtn,
 .clockFormatBtn {
-  padding: 4px 10px;
+  padding: 8px 10px;
   border-radius: var(--radius-sm);
-  font-family: var(--font-led);
-  font-size: 10px;
-  letter-spacing: 0.5px;
+  font-size: 11px;
   border: 1px solid rgba(255, 255, 255, 0.12);
-  background: transparent;
+  background: rgba(255,255,255,0.05);
   color: var(--text-primary);
   cursor: pointer;
   transition: all var(--dur-fast);
 }
 
+.clockFormatBtn {
+  font-family: var(--font-led);
+  letter-spacing: 0.5px;
+}
+
+.languageBtn.active,
 .clockFormatBtn.active {
   background: var(--led-amber);
   border-color: var(--led-amber);
@@ -387,6 +454,7 @@
   box-shadow: 0 0 8px rgba(255, 149, 0, 0.4);
 }
 
+.languageBtn:hover:not(.active),
 .clockFormatBtn:hover:not(.active) {
   border-color: rgba(255, 149, 0, 0.4);
   color: var(--led-amber);

@@ -10,12 +10,12 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      width: 300px;
+      width: 100%;
       background: #0a0a0f;
       color: #c8c8d0;
       font-family: 'JetBrains Mono', 'Courier New', monospace;
-      font-size: 11px;
-      padding: 14px 16px 16px;
+      font-size: 10px;
+      padding: 12px 14px 14px;
       user-select: none;
       overflow: hidden;
     }
@@ -25,7 +25,7 @@
       display: flex;
       align-items: center;
       gap: 8px;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
     }
 
     .header-dot {
@@ -36,9 +36,9 @@
     }
 
     .header-title {
-      font-size: 11px;
+      font-size: 10px;
       font-weight: 600;
-      letter-spacing: 0.18em;
+      letter-spacing: 0.16em;
       color: #ff9500;
       text-shadow: 0 0 8px #ff950088;
     }
@@ -48,22 +48,22 @@
       display: flex;
       align-items: center;
       gap: 8px;
-      margin-bottom: 10px;
+      margin-bottom: 9px;
       padding: 6px 8px;
       background: #12121a;
       border: 1px solid #1e1e2e;
       border-radius: 4px;
-      min-height: 36px;
+      min-height: 34px;
     }
 
     .favicon-img {
-      width: 16px; height: 16px;
+      width: 15px; height: 15px;
       border-radius: 2px;
       flex-shrink: 0;
     }
 
     .favicon-domain {
-      font-size: 9px;
+      font-size: 8px;
       color: #5a5a70;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -72,13 +72,13 @@
 
     /* ── Form fields ── */
     .field {
-      margin-bottom: 8px;
+      margin-bottom: 7px;
     }
 
     .field-label {
       display: block;
-      font-size: 9px;
-      letter-spacing: 0.12em;
+      font-size: 8px;
+      letter-spacing: 0.1em;
       color: #5a5a70;
       margin-bottom: 4px;
       text-transform: uppercase;
@@ -91,10 +91,11 @@
       border-radius: 4px;
       color: #c8c8d0;
       font-family: 'JetBrains Mono', 'Courier New', monospace;
-      font-size: 11px;
-      padding: 6px 8px;
+      font-size: 10px;
+      padding: 7px 8px;
       outline: none;
       transition: border-color 0.15s, box-shadow 0.15s;
+      min-height: 34px;
     }
 
     .field-input:focus {
@@ -108,11 +109,11 @@
       box-shadow: 0 0 0 2px #ff4a4a22;
     }
 
-    #url-input { margin-bottom: 8px; }
-    #title-input { margin-bottom: 8px; }
+    #url-input { margin-bottom: 7px; }
+    #title-input { margin-bottom: 7px; }
 
     /* ── Group field ── */
-    #group-input { margin-bottom: 12px; }
+    #group-input { margin-bottom: 10px; }
     datalist { display: none; } /* hide native datalist dropdowns in this minimal UI */
 
     /* ── Error / warning message ── */
@@ -131,19 +132,21 @@
     .btn-row {
       display: flex;
       gap: 8px;
+      margin-top: 2px;
     }
 
     .btn {
       flex: 1;
-      padding: 7px 0;
+      padding: 8px 0;
       border: none;
       border-radius: 4px;
       font-family: 'JetBrains Mono', 'Courier New', monospace;
-      font-size: 10px;
+      font-size: 9px;
       font-weight: 600;
-      letter-spacing: 0.14em;
+      letter-spacing: 0.16em;
       cursor: pointer;
       transition: opacity 0.15s, box-shadow 0.15s;
+      min-height: 36px;
     }
 
     .btn-save {

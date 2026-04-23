@@ -1,19 +1,23 @@
 import { useState, useEffect } from 'react';
-import { useShortcuts } from '../hooks/useShortcuts';
+import type { Shortcut } from '../utils/storage';
 import { getSmartFaviconUrl, getFaviconIcoUrl, getDomainFromUrl, getChromeFaviconUrl } from '../utils/storage';
 import { isUrl } from '../utils/engines';
+import { useI18n } from '../i18n';
 import styles from '../styles/components/AddShortcutDialog.module.css';
 
 interface AddShortcutDialogProps {
   open: boolean;
+  shortcuts: Shortcut[];
   url: string;
   title: string;
   favicon?: string;
   group?: string;
+  onAddShortcut: (title: string, url: string, favicon?: string, group?: string) => Promise<void>;
   onClose: () => void;
 }
 
-export default function AddShortcutDialog({ open, url, title, favicon, group, onClose }: AddShortcutDialogProps) {
+export default function AddShortcutDialog({ open, shortcuts, url, title, favicon, group, onAddShortcut, onClose }: AddShortcutDialogProps) {
+  const { t } = useI18n();
   const [inputUrl, setInputUrl] = useState(url);
   const [inputTitle, setInputTitle] = useState(title);
   const [inputGroup, setInputGroup] = useState(group || '');
@@ -24,7 +28,6 @@ export default function AddShortcutDialog({ open, url, title, favicon, group, on
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [pasteHint, setPasteHint] = useState('');
-  const { addShortcut, shortcuts } = useShortcuts();
 
   // Derive existing group names from current shortcuts for the dropdown
   const existingGroups = Array.from(
@@ -104,7 +107,7 @@ export default function AddShortcutDialog({ open, url, title, favicon, group, on
         const match = html.match(/<title[^>]*>([^<]+)<\/title>/i);
         if (match && match[1]) {
           setInputTitle(match[1].trim());
-          setPasteHint('Title auto-filled from page.');
+          setPasteHint(t('titleAutofilled'));
         }
       })
       .catch(() => {
@@ -113,7 +116,7 @@ export default function AddShortcutDialog({ open, url, title, favicon, group, on
       .finally(() => {
         setFetchingTitle(false);
       });
-  }, [inputUrl]);
+  }, [inputUrl, t]);
 
   const handleFaviconError = () => {
     if (!faviconTriedIco) {
@@ -146,7 +149,7 @@ export default function AddShortcutDialog({ open, url, title, favicon, group, on
     setSaving(true);
     try {
       const groupValue = inputGroup.trim() || undefined;
-      await addShortcut(trimmedTitle || trimmedUrl, trimmedUrl, faviconUrl, groupValue);
+      await onAddShortcut(trimmedTitle || trimmedUrl, trimmedUrl, faviconUrl, groupValue);
       setSaved(true);
       setTimeout(() => {
         onClose();
@@ -158,11 +161,11 @@ export default function AddShortcutDialog({ open, url, title, favicon, group, on
 
   return (
     <div className={styles.overlay} onClick={onClose}>
-      <div className={styles.modal} onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" aria-label="Add Shortcut">
+      <div className={styles.modal} onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" aria-label={t('addShortcutDialog')}>
         {/* Header */}
         <div className={styles.header}>
-          <span className={styles.headerTitle}>ADD SHORTCUT</span>
-          <button className={styles.closeBtn} onClick={onClose} aria-label="Close">
+          <span className={styles.headerTitle}>{t('addShortcutDialog').toUpperCase()}</span>
+          <button className={styles.closeBtn} onClick={onClose} aria-label={t('close')}>
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
               <path d="M1 1l12 12M13 1L1 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
             </svg>
@@ -185,14 +188,14 @@ export default function AddShortcutDialog({ open, url, title, favicon, group, on
               )}
               <div className={styles.faviconTextCol}>
                 <span className={styles.faviconDomain}>{domain || '—'}</span>
-                <span className={styles.faviconHint}>Current page</span>
+                <span className={styles.faviconHint}>{t('currentPage')}</span>
               </div>
             </div>
           )}
 
           {/* URL field */}
           <div className={styles.field}>
-            <label className={styles.label}>URL</label>
+            <label className={styles.label}>{t('url')}</label>
             <div className={styles.inputWrapper}>
               <input
                 className={styles.input}
@@ -221,16 +224,16 @@ export default function AddShortcutDialog({ open, url, title, favicon, group, on
               )}
             </div>
             {isInvalidUrl && (
-              <span className={styles.duplicateWarning}>⚠ Please enter a valid URL (https://...)</span>
+              <span className={styles.duplicateWarning}>⚠ {t('validUrlWarning')}</span>
             )}
             {!isInvalidUrl && isDuplicate && (
-              <span className={styles.duplicateWarning}>⚠ URL already exists in your shortcuts</span>
+              <span className={styles.duplicateWarning}>⚠ {t('duplicateUrlWarning')}</span>
             )}
           </div>
 
           {/* Title field */}
           <div className={styles.field}>
-            <label className={styles.label}>TITLE</label>
+            <label className={styles.label}>{t('title')}</label>
             <input
               className={styles.input}
               type="text"
@@ -242,24 +245,24 @@ export default function AddShortcutDialog({ open, url, title, favicon, group, on
                   e.preventDefault();
                   setInputUrl(text);
                   setInputTitle('');
-                  setPasteHint('URL detected — moved to URL field.');
+                  setPasteHint(t('urlMovedToField'));
                   // Favicon update is handled by the inputUrl effect above
                 }
               }}
-              placeholder="My Shortcut"
+              placeholder={t('addShortcut')}
             />
-            {(pasteHint || fetchingTitle) && <span className={styles.pasteHint}>{fetchingTitle ? 'Fetching title…' : pasteHint}</span>}
+            {(pasteHint || fetchingTitle) && <span className={styles.pasteHint}>{fetchingTitle ? t('fetchingTitle') : pasteHint}</span>}
           </div>
 
           {/* Group field */}
           <div className={styles.field}>
-            <label className={styles.label}>GROUP</label>
+            <label className={styles.label}>{t('group')}</label>
             <input
               className={styles.input}
               type="text"
               value={inputGroup}
               onChange={(e) => setInputGroup(e.target.value)}
-              placeholder="e.g. Work, Social, Dev Tools"
+              placeholder={t('groupPlaceholder')}
               list="add-shortcut-group-suggestions"
             />
             <datalist id="add-shortcut-group-suggestions">
@@ -268,21 +271,25 @@ export default function AddShortcutDialog({ open, url, title, favicon, group, on
               ))}
             </datalist>
             <span className={styles.pasteHint} style={{ fontSize: 10, opacity: 0.55 }}>
-              {existingGroups.length > 0 ? `${existingGroups.length} group${existingGroups.length > 1 ? 's' : ''} available` : 'No groups yet'}
+              {existingGroups.length > 0
+                ? existingGroups.length > 1
+                  ? t('groupsAvailablePlural', { count: existingGroups.length })
+                  : t('groupsAvailable', { count: existingGroups.length })
+                : t('noGroupsYetShort')}
             </span>
           </div>
 
           {/* Footer */}
           <div className={styles.footer}>
             {saved ? (
-              <div className={styles.successMsg}>✓ Saved!</div>
+              <div className={styles.successMsg}>✓ {t('saved')}</div>
             ) : (
               <>
                 <button type="button" className={styles.cancelBtn} onClick={onClose} disabled={saving}>
-                  Cancel
+                  {t('cancel')}
                 </button>
                 <button type="submit" className={styles.saveBtn} disabled={saving || !inputUrl.trim() || isInvalidUrl}>
-                  {saving ? 'Saving…' : 'Save'}
+                  {saving ? t('saving') : t('save')}
                 </button>
               </>
             )}

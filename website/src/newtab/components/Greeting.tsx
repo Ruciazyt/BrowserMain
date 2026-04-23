@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useI18n } from '../i18n';
 import styles from '../styles/components/Greeting.module.css';
 
 function getGreeting(hour: number, isZh: boolean): string {
@@ -11,26 +12,10 @@ function getGreeting(hour: number, isZh: boolean): string {
   return isZh ? '午夜好' : 'GOOD NIGHT';
 }
 
-function getSubtitle(isZh: boolean): string {
-  return isZh ? '愿今日如云端般宁静。' : 'May your day be calm as clouds.';
-}
-
-function detectIsZh(lang: string): boolean {
-  return lang.startsWith('zh');
-}
-
 export default function Greeting({ userName }: { userName?: string }) {
-  // Reactive IS_ZH — updates when browser UI language changes
-  const [isZh, setIsZh] = useState<boolean>(() => detectIsZh(navigator.language));
+  const { isZh, t } = useI18n();
   const [greeting, setGreeting] = useState('');
   const lastHourRef = useRef<number>(-1);
-
-  // Keep IS_ZH in sync when navigator.language changes
-  useEffect(() => {
-    const handler = () => setIsZh(detectIsZh(navigator.language));
-    window.addEventListener('languagechange', handler);
-    return () => window.removeEventListener('languagechange', handler);
-  }, []);
 
   useEffect(() => {
     const update = () => {
@@ -50,7 +35,7 @@ export default function Greeting({ userName }: { userName?: string }) {
     <div className={styles.wrapper}>
       <div className={styles.block}>
         <div className={styles.greeting}>{userName ? `${greeting}, ${userName}` : greeting}</div>
-        <div className={styles.subtitle}>{getSubtitle(isZh)}</div>
+        <div className={styles.subtitle}>{t('greetingSubtitle')}</div>
       </div>
     </div>
   );

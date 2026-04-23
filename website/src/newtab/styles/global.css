@@ -3,8 +3,6 @@
    Liquid Glass + LED-Matrix Hybrid Theme
    ============================================ */
 
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Italiana&family=DM+Sans:wght@300;400;500;600&family=Inter:wght@300;400;500;600&display=swap');
-
 /* --- CSS Variables --- */
 :root {
   /* Background */
@@ -58,10 +56,16 @@
   --shadow-led-glow: 0 0 8px var(--led-amber-glow), 0 0 20px rgba(255, 149, 0, 0.4);
 
   /* Typography */
-  --font-led: 'JetBrains Mono', monospace;
-  --font-ui: 'Inter', sans-serif;
-  --font-display: 'Italiana', serif;
-  --font-body: 'DM Sans', sans-serif;
+  --font-led: 'SF Mono', 'SFMono-Regular', 'ui-monospace', 'Menlo', 'Monaco', 'Cascadia Mono', 'Segoe UI Mono', monospace;
+  --font-ui: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', 'Helvetica Neue', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei UI', sans-serif;
+  --font-display: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei UI', sans-serif;
+  --font-body: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei UI', sans-serif;
+
+  /* Type scale */
+  --text-xl: 18px;
+  --text-md: 14px;
+  --text-sm: 12px;
+  --text-xs: 10px;
 
   /* Spacing tokens */
   --space-sm: 8px;
@@ -123,6 +127,7 @@ html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
 
 body {
   font-family: var(--font-body);
+  font-size: var(--text-md);
   color: var(--text-primary);
   background: var(--bg-primary);
   overflow-x: hidden;

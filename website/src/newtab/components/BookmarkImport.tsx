@@ -1,6 +1,38 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useBookmarkImport, BMTreeNode, countBookmarks } from '../hooks/useBookmarkImport';
+import { useI18n } from '../i18n';
 import styles from '../styles/components/BookmarkImport.module.css';
+
+function collectFolderIds(node: BMTreeNode): string[] {
+  const ids = [node.id];
+  if (!node.children) return ids;
+  node.children.forEach((child) => {
+    if (child.children && child.children.length > 0) {
+      ids.push(...collectFolderIds(child));
+    }
+  });
+  return ids;
+}
+
+function findFolderNode(nodes: BMTreeNode[], id: string): BMTreeNode | null {
+  for (const node of nodes) {
+    if (node.id === id) return node;
+    if (node.children) {
+      const found = findFolderNode(node.children.filter((child) => child.children && child.children.length > 0), id);
+      if (found) return found;
+    }
+  }
+  return null;
+}
+
+function countFolders(nodes: BMTreeNode[]): number {
+  return nodes.reduce((sum, node) => {
+    const childFolders = node.children
+      ? countFolders(node.children.filter((child) => child.children && child.children.length > 0))
+      : 0;
+    return sum + 1 + childFolders;
+  }, 0);
+}
 
 interface FolderItemProps {
   node: BMTreeNode;
@@ -100,6 +132,7 @@ interface BookmarkImportProps {
 }
 
 export default function BookmarkImport({ onBack, onImported }: BookmarkImportProps) {
+  const { t } = useI18n();
   const { fetchBookmarkTree, importBookmarks, loading, importing } = useBookmarkImport();
   const [tree, setTree] = useState<BMTreeNode[]>([]);
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
@@ -114,17 +147,20 @@ export default function BookmarkImport({ onBack, onImported }: BookmarkImportPro
       // Auto-expand top-level folders
       setExpandedIds(new Set(nodes.map((n) => n.id)));
     }).catch(() => {
-      setError('Failed to load bookmarks. Please check permissions.');
+      setError(t('bookmarkLoadFailed'));
     });
-  }, [fetchBookmarkTree]);
+  }, [fetchBookmarkTree, t]);
 
   const toggleFolder = (id: string) => {
+    const target = findFolderNode(tree, id);
+    const relatedIds = target ? collectFolderIds(target) : [id];
     setSelectedIds((prev) => {
       const next = new Set(prev);
-      if (next.has(id)) {
-        next.delete(id);
+      const shouldRemove = relatedIds.every((relatedId) => next.has(relatedId));
+      if (shouldRemove) {
+        relatedIds.forEach((relatedId) => next.delete(relatedId));
       } else {
-        next.add(id);
+        relatedIds.forEach((relatedId) => next.add(relatedId));
       }
       return next;
     });
@@ -178,23 +214,39 @@ export default function BookmarkImport({ onBack, onImported }: BookmarkImportPro
   };
 
   const filteredTree = searchQuery === '' ? tree : filterTree(tree, searchQuery);
+  const totalFolderCount = useMemo(() => countFolders(tree), [tree]);
+  const visibleFolderCount = useMemo(() => countFolders(filteredTree), [filteredTree]);
+  const totalBookmarkCount = useMemo(() => tree.reduce((sum, node) => sum + countBookmarks(node), 0), [tree]);
+  const visibleFolderIds = useMemo(() => filteredTree.flatMap((node) => collectFolderIds(node)), [filteredTree]);
+
+  const handleSelectVisible = () => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      visibleFolderIds.forEach((id) => next.add(id));
+      return next;
+    });
+  };
+
+  const handleClearSelection = () => {
+    setSelectedIds(new Set());
+  };
 
   if (loading) {
     return (
       <div className={styles.container}>
         <div className={styles.header}>
-          <button className={styles.backBtn} onClick={onBack} aria-label="Back to settings">
+          <button className={styles.backBtn} onClick={onBack} aria-label={t('back')}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: 16, height: 16 }}>
               <polyline points="15 18 9 12 15 6" />
             </svg>
-            Back
+            {t('back')}
           </button>
         </div>
         <div className={styles.loadingState}>
           <div className={styles.ledLoading}>
             <span /><span /><span />
           </div>
-          <span className={styles.loadingText}>Loading bookmarks...</span>
+          <span className={styles.loadingText}>{t('bookmarksLoading')}</span>
         </div>
       </div>
     );
@@ -204,11 +256,11 @@ export default function BookmarkImport({ onBack, onImported }: BookmarkImportPro
     return (
       <div className={styles.container}>
         <div className={styles.header}>
-          <button className={styles.backBtn} onClick={onBack} aria-label="Back to settings">
+          <button className={styles.backBtn} onClick={onBack} aria-label={t('back')}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: 16, height: 16 }}>
               <polyline points="15 18 9 12 15 6" />
             </svg>
-            Back
+            {t('back')}
           </button>
         </div>
         <div className={styles.errorState}>
@@ -223,23 +275,23 @@ export default function BookmarkImport({ onBack, onImported }: BookmarkImportPro
     return (
       <div className={styles.container}>
         <div className={styles.header}>
-          <button className={styles.backBtn} onClick={onBack} aria-label="Back to settings">
+          <button className={styles.backBtn} onClick={onBack} aria-label={t('back')}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: 16, height: 16 }}>
               <polyline points="15 18 9 12 15 6" />
             </svg>
-            Back
+            {t('back')}
           </button>
         </div>
         <div className={styles.resultState}>
           <span className={styles.resultIcon}>✅</span>
           <div className={styles.resultText}>
-            <span className={styles.resultTitle}>Import Complete</span>
+            <span className={styles.resultTitle}>{t('importComplete')}</span>
             <span className={styles.resultDetail}>
-              {result.imported > 0 ? `+${result.imported} imported` : 'No new bookmarks'}
-              {result.skipped > 0 && ` (${result.skipped} skipped as duplicates)`}
+              {result.imported > 0 ? t('importedCount', { count: result.imported }) : t('noNewBookmarks')}
+              {result.skipped > 0 && ` ${t('skippedDuplicates', { count: result.skipped })}`}
             </span>
           </div>
-          <button className={styles.doneBtn} onClick={handleBack}>Done</button>
+          <button className={styles.doneBtn} onClick={handleBack}>{t('done')}</button>
         </div>
       </div>
     );
@@ -248,48 +300,100 @@ export default function BookmarkImport({ onBack, onImported }: BookmarkImportPro
   return (
     <div className={styles.container}>
       <div className={styles.header}>
-        <button className={styles.backBtn} onClick={onBack} aria-label="Back to settings">
+        <button className={styles.backBtn} onClick={onBack} aria-label={t('back')}>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ width: 16, height: 16 }}>
             <polyline points="15 18 9 12 15 6" />
           </svg>
-          Back
+          {t('back')}
         </button>
-        <span className={styles.headerTitle}>Import Bookmarks</span>
+        <span className={styles.headerTitle}>{t('importBookmarks')}</span>
       </div>
 
       {tree.length === 0 ? (
         <div className={styles.emptyState}>
           <span className={styles.emptyIcon}>📂</span>
-          <span className={styles.emptyText}>No bookmark folders found.</span>
+          <span className={styles.emptyText}>{t('noBookmarkFolders')}</span>
         </div>
       ) : (
         <>
-          <div className={styles.treeContainer}>
-            <input
-              type="text"
-              className={styles.searchInput}
-              placeholder="Filter folders..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-            {filteredTree.map((node) => (
-              <FolderItem
-                key={node.id}
-                node={node}
-                depth={0}
-                selectedIds={selectedIds}
-                toggleFolder={toggleFolder}
-                expandedIds={expandedIds}
-                toggleExpand={toggleExpand}
-              />
-            ))}
+          <div className={styles.contentArea}>
+            <div className={styles.summaryCard}>
+              <div className={styles.summaryEyebrow}>{t('browserBookmarks')}</div>
+              <div className={styles.summaryTitle}>{t('bookmarkSummaryTitle')}</div>
+              <div className={styles.summaryText}>{t('bookmarkSummaryText')}</div>
+              <div className={styles.summaryStats}>
+                <span className={styles.statChip}>{t('folders', { count: totalFolderCount })}</span>
+                <span className={styles.statChip}>{t('bookmarksCount', { count: totalBookmarkCount })}</span>
+                <span className={styles.statChip}>{t('selectedCountChip', { count: selectedIds.size })}</span>
+              </div>
+            </div>
+
+            <div className={styles.toolbarCard}>
+              <div className={styles.searchRow}>
+                <input
+                  type="text"
+                  className={styles.searchInput}
+                  placeholder={t('searchBookmarkFolders')}
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                />
+                {searchQuery && (
+                  <button className={styles.clearSearchBtn} onClick={() => setSearchQuery('')} aria-label={t('clearSearch')}>
+                    {t('clear')}
+                  </button>
+                )}
+              </div>
+              <div className={styles.toolbarMetaRow}>
+                <span className={styles.toolbarMeta}>{t('visibleFolders', { count: visibleFolderCount })}</span>
+                <div className={styles.toolbarActions}>
+                  <button className={styles.secondaryBtn} onClick={handleSelectVisible} disabled={visibleFolderIds.length === 0}>
+                    {t('selectVisible')}
+                  </button>
+                  <button className={styles.secondaryBtn} onClick={handleClearSelection} disabled={selectedIds.size === 0}>
+                    {t('clear')}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div className={styles.treeSurface}>
+              <div className={styles.treeHeaderRow}>
+                <span className={styles.treeHeaderTitle}>{t('folderTree')}</span>
+                <span className={styles.treeHeaderHint}>{t('folderTreeHint')}</span>
+              </div>
+              <div className={styles.treeContainer}>
+                {filteredTree.length > 0 ? (
+                  filteredTree.map((node) => (
+                    <FolderItem
+                      key={node.id}
+                      node={node}
+                      depth={0}
+                      selectedIds={selectedIds}
+                      toggleFolder={toggleFolder}
+                      expandedIds={expandedIds}
+                      toggleExpand={toggleExpand}
+                    />
+                  ))
+                ) : (
+                  <div className={styles.emptyResults}>
+                    <span className={styles.emptyResultsTitle}>{t('noMatchingFolders')}</span>
+                    <span className={styles.emptyResultsText}>{t('tryShorterKeyword')}</span>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
           <div className={styles.footer}>
-            <span className={styles.selectedCount}>
+            <div className={styles.footerSummary}>
+              <span className={styles.selectedCount}>
               {selectedIds.size === 0
-                ? 'Select folders to import'
-                : `${selectedIds.size} folder${selectedIds.size > 1 ? 's' : ''} selected`}
-            </span>
+                ? t('selectFoldersToImport')
+                : selectedIds.size > 1
+                  ? t('foldersSelectedPlural', { count: selectedIds.size })
+                  : t('foldersSelected', { count: selectedIds.size })}
+              </span>
+              <span className={styles.footerHint}>{t('existingShortcutsPreserved')}</span>
+            </div>
             <button
               className={styles.importBtn}
               onClick={handleImport}
@@ -298,10 +402,10 @@ export default function BookmarkImport({ onBack, onImported }: BookmarkImportPro
               {importing ? (
                 <>
                   <span className={styles.miniLoading}><span /><span /><span /></span>
-                  Importing...
+                  {t('importing')}
                 </>
               ) : (
-                'Import Selected'
+                t('importSelected')
               )}
             </button>
           </div>

@@ -4,7 +4,6 @@ import { useSettings } from './hooks/useSettings';
 import SearchBar from './components/SearchBar';
 import Greeting from './components/Greeting';
 import Clock from './components/Clock';
-import LEDDisplay from './components/LEDDisplay';
 import ShortcutGrid from './components/ShortcutGrid';
 import SettingsPanel from './components/SettingsPanel';
 import AddShortcutDialog from './components/AddShortcutDialog';
@@ -20,9 +19,10 @@ const SettingsIcon = () => (
 );
 
 export default function App() {
-  const { shortcuts, loading: shortcutsLoading, removeShortcut, updateShortcut, reorderShortcuts, refreshShortcuts } = useShortcuts();
+  const { shortcuts, loading: shortcutsLoading, addShortcut, removeShortcut, updateShortcut, reorderShortcuts, refreshShortcuts } = useShortcuts();
   const { settings, loading: settingsLoading, updateEngine } = useSettings();
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [settingsInitialView, setSettingsInitialView] = useState<'main' | 'bookmarkImport' | 'shortcutImport'>('main');
   const [restartOnboardingSignal, setRestartOnboardingSignal] = useState(0);
 
   const [addDialogOpen, setAddDialogOpen] = useState(false);
@@ -94,6 +94,18 @@ export default function App() {
     }
   }, [settings.background, settingsLoading]);
 
+  // Check for first run and show onboarding automatically
+  useEffect(() => {
+    if (settingsLoading) return;
+    chrome.storage.local.get('browsermain_first_run', (result) => {
+      if (result['browsermain_first_run'] === true) {
+        setRestartOnboardingSignal(Date.now());
+        // Clear the flag so onboarding only shows on first install
+        chrome.storage.local.set({ 'browsermain_first_run': false });
+      }
+    });
+  }, [settingsLoading]);
+
   if (shortcutsLoading || settingsLoading) {
     return (
       <div className={styles.page}>
@@ -112,18 +124,6 @@ export default function App() {
       </div>
     );
   }
-
-  // Check for first run and show onboarding automatically
-  useEffect(() => {
-    if (settingsLoading) return;
-    chrome.storage.local.get('browsermain_first_run', (result) => {
-      if (result['browsermain_first_run'] === true) {
-        setRestartOnboardingSignal(Date.now());
-        // Clear the flag so onboarding only shows on first install
-        chrome.storage.local.set({ 'browsermain_first_run': false });
-      }
-    });
-  }, [settingsLoading]);
 
   return (
     <div className={styles.page}>
@@ -151,8 +151,6 @@ export default function App() {
         </div>
       </div>
 
-      <LEDDisplay />
-
       {/* 快捷入口：左右各留约 20% 视口边距，中间区域更宽 */}
       <div className={styles.shortcutsWrap}>
         <ShortcutGrid
@@ -164,13 +162,24 @@ export default function App() {
             setAddDialogData({ url: '', title: '', favicon: '' });
             setAddDialogOpen(true);
           }}
+          onImportBookmarks={() => {
+            setSettingsInitialView('bookmarkImport');
+            setSettingsOpen(true);
+          }}
+          onImportShortcuts={() => {
+            setSettingsInitialView('shortcutImport');
+            setSettingsOpen(true);
+          }}
         />
       </div>
 
       {/* ── Settings button ── */}
       <button
         className={styles.settingsBtn}
-        onClick={() => setSettingsOpen(true)}
+        onClick={() => {
+          setSettingsInitialView('main');
+          setSettingsOpen(true);
+        }}
         aria-label="Open settings"
       >
         <SettingsIcon />
@@ -180,6 +189,7 @@ export default function App() {
       <SettingsPanel
         open={settingsOpen}
         onClose={() => setSettingsOpen(false)}
+        initialView={settingsInitialView}
         onBookmarkImportComplete={refreshShortcuts}
         onShowTour={() => setRestartOnboardingSignal(Date.now())}
       />
@@ -187,9 +197,11 @@ export default function App() {
       {/* ── Add shortcut dialog ── */}
       <AddShortcutDialog
         open={addDialogOpen}
+        shortcuts={shortcuts}
         url={addDialogData.url}
         title={addDialogData.title}
         favicon={addDialogData.favicon}
+        onAddShortcut={addShortcut}
         onClose={() => setAddDialogOpen(false)}
       />
 

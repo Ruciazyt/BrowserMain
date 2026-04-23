@@ -353,27 +353,71 @@
         }
       }
 
+      function applyShortcutDraft(data) {
+        const nextUrl = data.url || '';
+        const nextTitle = data.title || '';
+        const nextFavicon = data.favicon || '';
+
+        urlInput.value = nextUrl;
+        titleInput.value = nextTitle;
+
+        if (nextFavicon) {
+          faviconPreview.src = nextFavicon;
+        } else if (nextUrl) {
+          faviconPreview.src = getSmartFavicon(nextUrl);
+        } else {
+          faviconPreview.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+        }
+
+        if (nextUrl) {
+          try {
+            faviconDomain.textContent = new URL(nextUrl).hostname;
+          } catch {
+            faviconDomain.textContent = nextUrl;
+          }
+        } else {
+          faviconDomain.textContent = '—';
+        }
+      }
+
+      function requestActiveTabDraft() {
+        return new Promise(function (resolve) {
+          chrome.runtime.sendMessage({ type: 'GET_ACTIVE_TAB_DRAFT' }, function (response) {
+            if (chrome.runtime.lastError) {
+              resolve({ success: false, error: chrome.runtime.lastError.message });
+              return;
+            }
+
+            resolve(response || { success: false, error: 'NO_RESPONSE' });
+          });
+        });
+      }
+
+      async function populateFromActiveTab() {
+        const response = await requestActiveTabDraft();
+        if (!response || !response.success || !response.draft) {
+          showWarning('Open a normal web page, then click the extension button');
+          return;
+        }
+
+        applyShortcutDraft(response.draft);
+        clearMsg();
+      }
+
       // ── Init from URL params ────────────────────────────────────────────────
 
       const initUrl = decodeURIComponent(getUrlParam('add_url'));
       const initTitle = decodeURIComponent(getUrlParam('add_title'));
       let initFavicon = decodeURIComponent(getUrlParam('add_favicon'));
 
-      urlInput.value = initUrl;
-      titleInput.value = initTitle;
-
-      if (initFavicon) {
-        faviconPreview.src = initFavicon;
-      } else if (initUrl) {
-        faviconPreview.src = getSmartFavicon(initUrl);
-      }
-
       if (initUrl) {
-        try {
-          faviconDomain.textContent = new URL(initUrl).hostname;
-        } catch {
-          faviconDomain.textContent = initUrl;
-        }
+        applyShortcutDraft({
+          url: initUrl,
+          title: initTitle,
+          favicon: initFavicon,
+        });
+      } else {
+        populateFromActiveTab();
       }
 
       // ── Dynamic favicon on URL change ───────────────────────────────────────

@@ -14,6 +14,7 @@ export interface Settings {
   background: BackgroundConfig;
   userName?: string;
   clockIs24h?: boolean;
+  locale?: 'system' | 'zh-CN' | 'en';
 }
 
 export interface BackgroundConfig {
@@ -115,6 +116,7 @@ export async function getSettings(): Promise<Settings> {
   const defaults: Settings = {
     defaultEngine: 'google',
     background: { type: 'solid', color: '#0a0a0f' },
+    locale: 'system',
   };
   return new Promise((resolve) => {
     (chrome.storage as any).sync.get(SETTINGS_KEY, (result: any) => {

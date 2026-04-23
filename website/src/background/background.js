@@ -68,6 +68,70 @@ async function getActiveTabFavicon() {
   }
 }
 
+async function getBestActiveWebTab() {
+  const queryAttempts = [
+    { active: true, lastFocusedWindow: true },
+    { active: true, currentWindow: true },
+  ];
+
+  for (const queryInfo of queryAttempts) {
+    try {
+      const tabs = await chrome.tabs.query(queryInfo);
+      const candidate = tabs.find((tab) => tab && typeof tab.url === 'string' && /^https?:/i.test(tab.url));
+      if (candidate) return candidate;
+    } catch {
+      // Try the next strategy
+    }
+  }
+
+  try {
+    const lastFocusedWindow = await chrome.windows.getLastFocused({ populate: true });
+    const tabs = Array.isArray(lastFocusedWindow.tabs) ? lastFocusedWindow.tabs : [];
+    const candidate = tabs.find((tab) => tab && tab.active && typeof tab.url === 'string' && /^https?:/i.test(tab.url));
+    if (candidate) return candidate;
+  } catch {
+    // Ignore and report null below
+  }
+
+  return null;
+}
+
+async function buildActiveTabDraft() {
+  const activeTab = await getBestActiveWebTab();
+  if (!activeTab || !activeTab.url || !/^https?:/i.test(activeTab.url)) {
+    return null;
+  }
+
+  const chromeFavicon = await getActiveTabFavicon();
+  return {
+    url: activeTab.url,
+    title: activeTab.title || '',
+    favicon: chromeFavicon || activeTab.favIconUrl || getSmartFaviconUrl(activeTab.url),
+  };
+}
+
+async function addShortcutFromDraft(draft, extras) {
+  const shortcuts = await getShortcuts();
+  const url = draft.url || '';
+
+  if (!url || shortcuts.some((shortcut) => shortcut.url.toLowerCase() === url.toLowerCase())) {
+    return { success: false, duplicate: !!url };
+  }
+
+  const entry = {
+    id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+    url,
+    title: draft.title || url,
+    favicon: draft.favicon || getSmartFaviconUrl(url),
+    group: extras?.group || undefined,
+    order: shortcuts.length,
+  };
+
+  shortcuts.unshift(entry);
+  await saveShortcuts(shortcuts);
+  return { success: true, entry };
+}
+
 /**
  * Get favicon URL for a given URL by finding a matching tab and using Chrome's favicons API.
  * Returns '' if no tab is found for the URL or the API fails.
@@ -128,6 +192,17 @@ async function buildExtensionUrl(addData, targetPage) {
   return url.toString();
 }
 
+async function openQuickAddWindow(addData) {
+  const targetUrl = await buildExtensionUrl(addData || null, 'popup');
+  return chrome.windows.create({
+    url: targetUrl,
+    type: 'popup',
+    width: 340,
+    height: 420,
+    focused: true,
+  });
+}
+
 // ---------------------------------------------------------------------------
 // Chrome event listeners
 // ---------------------------------------------------------------------------
@@ -138,28 +213,29 @@ chrome.runtime.onInstalled.addListener(() => {
   chrome.storage.local.set({ 'browsermain_first_run': true });
 });
 
-chrome.action.onClicked.addListener(async (tab) => {
+chrome.action.onClicked.addListener(async () => {
   try {
-    const targetUrl = await buildExtensionUrl(null, 'popup');
-    await chrome.tabs.create({ url: targetUrl });
+    const draft = await buildActiveTabDraft();
+    await openQuickAddWindow(draft);
   } catch (err) {
     console.error('[BrowserMain] Tab create error:', err);
   }
 });
 
 chrome.commands.onCommand.addListener(async (command) => {
-  if (command !== 'add-shortcut') return;
   try {
-    const [activeTab] = await chrome.tabs.query({ active: true, currentWindow: true });
-    if (!activeTab || !activeTab.url || !activeTab.url.startsWith('http')) return;
-    // Use Chrome's native favicons API for best quality favicon
-    const chromeFavicon = await getActiveTabFavicon();
-    const targetUrl = await buildExtensionUrl({
-      url: activeTab.url,
-      title: activeTab.title || '',
-      favicon: chromeFavicon || activeTab.favIconUrl || '',
-    }, 'popup');
-    await chrome.tabs.create({ url: targetUrl });
+    if (command === 'add-shortcut') {
+      const draft = await buildActiveTabDraft();
+      await openQuickAddWindow(draft);
+      return;
+    }
+
+    if (command === 'quick-add-shortcut') {
+      const draft = await buildActiveTabDraft();
+      if (!draft) return;
+      await addShortcutFromDraft(draft);
+      return;
+    }
   } catch (err) {
     console.error('[BrowserMain] commands.onCommand error:', err);
   }
@@ -168,31 +244,33 @@ chrome.commands.onCommand.addListener(async (command) => {
 // ── Quick-add popup message handler ───────────────────────────────────────
 
 chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
+  if (msg.type === 'GET_ACTIVE_TAB_DRAFT') {
+    buildActiveTabDraft()
+      .then((draft) => {
+        if (!draft) {
+          sendResponse({ success: false, error: 'NO_ACTIVE_WEBPAGE' });
+          return;
+        }
+        sendResponse({ success: true, draft });
+      })
+      .catch(() => sendResponse({ success: false, error: 'FAILED_TO_READ_ACTIVE_TAB' }));
+
+    return true;
+  }
+
   if (msg.type === 'ADD_SHORTCUT') {
     const { url, title, favicon, group } = msg;
 
-    getShortcuts().then((shortcuts) => {
-      // Duplicate check (case-insensitive)
-      if (shortcuts.some((s) => s.url.toLowerCase() === url.toLowerCase())) {
-        sendResponse({ success: false, duplicate: true });
-        return;
-      }
-
-      const entry = {
-        id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
-        url: url || '',
-        title: title || '',
-        favicon: favicon || '',
-        group: group || undefined,
-        order: shortcuts.length,
-      };
-
-      shortcuts.unshift(entry);
-      saveShortcuts(shortcuts).then(() => {
-        console.log('[BrowserMain] Shortcut added:', entry.title);
-        sendResponse({ success: true });
-      });
-    });
+    addShortcutFromDraft({ url, title, favicon }, { group })
+      .then((result) => {
+        if (result.success) {
+          console.log('[BrowserMain] Shortcut added:', result.entry.title);
+          sendResponse({ success: true });
+          return;
+        }
+        sendResponse({ success: false, duplicate: result.duplicate });
+      })
+      .catch(() => sendResponse({ success: false }));
 
     return true; // async response
   }

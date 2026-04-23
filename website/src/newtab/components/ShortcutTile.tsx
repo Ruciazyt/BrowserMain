@@ -3,6 +3,7 @@ import { getSmartFaviconUrl, getFaviconIcoUrl, getDomainFromUrl, getChromeFavico
 import { isMac } from '../utils/platform';
 import { isUrl } from '../utils/engines';
 import { Shortcut } from '../utils/storage';
+import { useI18n } from '../i18n';
 import styles from '../styles/components/ShortcutTile.module.css';
 
 const GlobeIcon = () => (
@@ -24,6 +25,7 @@ interface ShortcutTileProps {
   onMoveDown?: (index: number) => void;
   onAdd?: () => void;
   existingGroups?: string[];
+  isGroupPreviewTarget?: boolean;
 }
 
 export default function ShortcutTile({
@@ -37,7 +39,9 @@ export default function ShortcutTile({
   onMoveDown,
   onAdd,
   existingGroups,
+  isGroupPreviewTarget,
 }: ShortcutTileProps) {
+  const { t } = useI18n();
   const [showContextMenu, setShowContextMenu] = useState(false);
   const [contextMenuPos, setContextMenuPos] = useState({ x: 0, y: 0 });
   const [showMoveSubmenu, setShowMoveSubmenu] = useState(false);
@@ -50,10 +54,12 @@ export default function ShortcutTile({
   const [editError, setEditError] = useState(false);
   const [keyboardFocus, setKeyboardFocus] = useState(false);
   const [isNavigating, setIsNavigating] = useState(false);
+  const [focusGroupFieldOnEdit, setFocusGroupFieldOnEdit] = useState(false);
   const [faviconSrc, setFaviconSrc] = useState(shortcut.favicon || getSmartFaviconUrl(shortcut.url));
   const [faviconTriedIco, setFaviconTriedIco] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const contextMenuRef = useRef<HTMLDivElement>(null);
+  const groupInputRef = useRef<HTMLInputElement>(null);
 
   // Try Chrome's native favicons API when no stored favicon exists — async, non-blocking.
   // Falls back to Google S2 for the initial render to avoid empty icons.
@@ -209,16 +215,29 @@ export default function ShortcutTile({
     }
   };
 
-  const handleEdit = (e: React.MouseEvent) => {
-    e.stopPropagation();
+  useEffect(() => {
+    if (!editMode || !focusGroupFieldOnEdit) return;
+    groupInputRef.current?.focus();
+    groupInputRef.current?.select();
+    setFocusGroupFieldOnEdit(false);
+  }, [editMode, focusGroupFieldOnEdit]);
+
+  const openEditMode = (focusGroup = false) => {
     setShowContextMenu(false);
+    setShowMoveSubmenu(false);
     setEditTitle(shortcut.title);
     setEditUrl(shortcut.url);
     setEditGroup(shortcut.group || '');
     setEditFaviconSrc(shortcut.favicon || getSmartFaviconUrl(shortcut.url));
     setEditFaviconTriedIco(false);
     setEditError(false);
+    setFocusGroupFieldOnEdit(focusGroup);
     setEditMode(true);
+  };
+
+  const handleEdit = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    openEditMode(false);
   };
 
   const handleSaveEdit = () => {
@@ -264,20 +283,21 @@ export default function ShortcutTile({
           className={`${styles.editInput} ${editError && !editTitle.trim() ? styles.editInputError : ''}`}
           value={editTitle}
           onChange={(e) => { setEditTitle(e.target.value); setEditError(false); }}
-          placeholder="Title"
+          placeholder={t('shortcutTitlePlaceholder')}
           autoFocus
         />
         <input
           className={`${styles.editInput} ${editError && !editUrl.trim() ? styles.editInputError : ''}`}
           value={editUrl}
           onChange={(e) => { setEditUrl(e.target.value); setEditError(false); }}
-          placeholder="URL"
+          placeholder={t('shortcutUrlPlaceholder')}
         />
         <input
           className={`${styles.editInput} ${styles.editGroupInput}`}
+          ref={groupInputRef}
           value={editGroup}
           onChange={(e) => setEditGroup(e.target.value)}
-          placeholder="Group (optional)"
+          placeholder={t('groupOptionalPlaceholder')}
           list={existingGroups && existingGroups.length > 0 ? "edit-shortcut-group-suggestions" : undefined}
         />
         {existingGroups && existingGroups.length > 0 && (
@@ -288,8 +308,8 @@ export default function ShortcutTile({
           </datalist>
         )}
         <div className={styles.editActions}>
-          <button className={styles.saveBtn} onClick={handleSaveEdit}>Save</button>
-          <button className={styles.cancelBtn} onClick={handleCancelEdit}>Cancel</button>
+          <button className={styles.saveBtn} onClick={handleSaveEdit}>{t('save')}</button>
+          <button className={styles.cancelBtn} onClick={handleCancelEdit}>{t('cancel')}</button>
         </div>
       </div>
     );
@@ -298,10 +318,10 @@ export default function ShortcutTile({
   return (
     <>
       <div
-        className={`${styles.container} ${keyboardFocus ? styles.keyboardFocus : ''} ${isNavigating ? styles.navigating : ''}`}
+        className={`${styles.container} ${keyboardFocus ? styles.keyboardFocus : ''} ${isNavigating ? styles.navigating : ''} ${isGroupPreviewTarget ? styles.groupPreviewTarget : ''}`}
         ref={containerRef}
         onContextMenu={handleContextMenu}
-        title="拖动可排序，点击进入"
+        title={t('dragClickEnter')}
         onClick={navigateToShortcut}
         onKeyDown={handleKeyDown}
         tabIndex={0}
@@ -310,8 +330,9 @@ export default function ShortcutTile({
           setIsNavigating(false);
           setKeyboardFocus(false);
         }}
+        data-no-drag="true"
       >
-        <div className={styles.iconWrapper}>
+        <div className={styles.iconWrapper} data-drag-handle="true" title={t('dragClickEnter')}>
           {faviconSrc ? (
             <img
               src={faviconSrc}
@@ -325,15 +346,17 @@ export default function ShortcutTile({
             <GlobeIcon />
           )}
         </div>
+        {isGroupPreviewTarget && <div className={styles.groupPreviewBadge}>{t('dropToGroup')}</div>}
         {shortcut.group && <div className={styles.groupLabel}>{shortcut.group.toUpperCase()}</div>}
         <div className={styles.title}>{shortcut.title}</div>
         {!shortcut.group && <div className={styles.domain}>{getDomainFromUrl(shortcut.url)}</div>}
         <button
           type="button"
           className={styles.deleteBtn}
+          data-no-drag="true"
           onMouseDown={(e) => e.stopPropagation()}
           onClick={handleDelete}
-          aria-label="Delete shortcut"
+          aria-label={t('deleteShortcut')}
         >
           ×
         </button>
@@ -354,69 +377,80 @@ export default function ShortcutTile({
             const availableGroups = (existingGroups || []).filter(g => g !== shortcut.group);
             const hasOtherGroups = availableGroups.length > 0;
             return (
-              <div
-                className={styles.contextMenuItemWrapper}
-                onMouseEnter={() => setShowMoveSubmenu(true)}
-                onMouseLeave={() => setShowMoveSubmenu(false)}
-              >
+              <>
                 <button
                   className={styles.contextMenuItem}
-                  onClick={(e) => { e.stopPropagation(); setShowMoveSubmenu(!showMoveSubmenu); }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    openEditMode(true);
+                  }}
                 >
-                  <span>📁 Move to</span>
-                  <span className={styles.submenuArrow}>▾</span>
+                  🗂️ {shortcut.group ? t('editGroup') : t('addToGroup')}
                 </button>
-                {showMoveSubmenu && (
-                  <div className={styles.submenu}>
-                    {shortcut.group && (
-                      <button
-                        className={styles.contextMenuItem}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onUpdate(shortcut.id, { group: undefined });
-                          setShowContextMenu(false);
-                          setShowMoveSubmenu(false);
-                        }}
-                      >
-                        ✂️ Ungroup
-                      </button>
-                    )}
-                    {hasOtherGroups ? (
-                      availableGroups.map((g) => (
+                <div
+                  className={styles.contextMenuItemWrapper}
+                  onMouseEnter={() => setShowMoveSubmenu(true)}
+                  onMouseLeave={() => setShowMoveSubmenu(false)}
+                >
+                  <button
+                    className={styles.contextMenuItem}
+                    onClick={(e) => { e.stopPropagation(); setShowMoveSubmenu(!showMoveSubmenu); }}
+                  >
+                    <span>📁 {t('moveTo')}</span>
+                    <span className={styles.submenuArrow}>▾</span>
+                  </button>
+                  {showMoveSubmenu && (
+                    <div className={styles.submenu}>
+                      {shortcut.group && (
                         <button
-                          key={g}
                           className={styles.contextMenuItem}
                           onClick={(e) => {
                             e.stopPropagation();
-                            onUpdate(shortcut.id, { group: g });
+                            onUpdate(shortcut.id, { group: undefined });
                             setShowContextMenu(false);
                             setShowMoveSubmenu(false);
                           }}
                         >
-                          {g}
+                          ✂️ {t('ungroup')}
                         </button>
-                      ))
-                    ) : (
-                      <button className={`${styles.contextMenuItem} ${styles.contextMenuItemDisabled}`} disabled>
-                        No other groups
-                      </button>
-                    )}
-                  </div>
-                )}
-              </div>
+                      )}
+                      {hasOtherGroups ? (
+                        availableGroups.map((g) => (
+                          <button
+                            key={g}
+                            className={styles.contextMenuItem}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onUpdate(shortcut.id, { group: g });
+                              setShowContextMenu(false);
+                              setShowMoveSubmenu(false);
+                            }}
+                          >
+                            {g}
+                          </button>
+                        ))
+                      ) : (
+                        <button className={`${styles.contextMenuItem} ${styles.contextMenuItemDisabled}`} disabled>
+                          {t('noOtherGroups')}
+                        </button>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </>
             );
           })()}
           <button className={styles.contextMenuItem} onClick={(e) => handleEdit(e)}>
-            ✏️ Edit
+            ✏️ {t('edit')}
           </button>
           <button className={styles.contextMenuItem} onClick={(e) => { e.stopPropagation(); onDelete(shortcut.id); setShowContextMenu(false); }}>
-            🗑️ Delete
+            🗑️ {t('delete')}
           </button>
           <button className={styles.contextMenuItem} onClick={handleCopyUrl}>
-            🔗 Copy URL
+            🔗 {t('copyUrl')}
           </button>
           <button className={styles.contextMenuItem} onClick={handleCopyTitle}>
-            📋 Copy Title
+            📋 {t('copyTitle')}
           </button>
         </div>
       )}

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import styles from '../styles/components/Clock.module.css';
 import { useSettings } from '../hooks/useSettings';
+import { useI18n } from '../i18n';
 
 function formatClock(is24h: boolean, locale: string) {
   const now = new Date();
@@ -35,10 +36,8 @@ export default function Clock() {
   const [time, setTime] = useState('');
   const [dateLine, setDateLine] = useState('');
   const { settings, updateClockFormat } = useSettings();
+  const { locale, t } = useI18n();
   const is24hRef = useRef(settings.clockIs24h !== false);
-
-  // Computed once at mount — stable locale for the session
-  const localeRef = useRef<string>(Intl.DateTimeFormat().resolvedOptions().locale);
 
   useEffect(() => {
     is24hRef.current = settings.clockIs24h !== false;
@@ -48,21 +47,21 @@ export default function Clock() {
     const newIs24h = !is24hRef.current;
     await updateClockFormat(newIs24h);
     is24hRef.current = newIs24h;
-    const { time: newTime, dateLine: newDateLine } = formatClock(newIs24h, localeRef.current);
+    const { time: newTime, dateLine: newDateLine } = formatClock(newIs24h, locale);
     setTime(newTime);
     setDateLine(newDateLine);
   };
 
   useEffect(() => {
     const update = () => {
-      const { time: newTime, dateLine: newDateLine } = formatClock(is24hRef.current, localeRef.current);
+      const { time: newTime, dateLine: newDateLine } = formatClock(is24hRef.current, locale);
       setTime(newTime);
       setDateLine(newDateLine);
     };
     update();
     const interval = setInterval(update, 1000);
     return () => clearInterval(interval);
-  }, []);
+  }, [locale]);
 
   return (
     <div className={styles.panel}>
@@ -74,7 +73,7 @@ export default function Clock() {
         onKeyDown={(e) => {
           if (e.key === 'Enter' || e.key === ' ') toggleFormat();
         }}
-        aria-label={`时钟，${settings.clockIs24h !== false ? '24' : '12'} 小时制，点击切换`}
+        aria-label={t('clockAria', { format: settings.clockIs24h !== false ? '24' : '12' })}
       >
         <div className={styles.time}>{time}</div>
         <div className={styles.dateLine}>{dateLine}</div>

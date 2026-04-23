@@ -1,21 +1,278 @@
-/* Search (bookmark-specific, commented-out in markup) */
+.container { composes: container from './ImportShared.module.css'; }
+.header { composes: header from './ImportShared.module.css'; }
+.backBtn { composes: backBtn from './ImportShared.module.css'; }
+.headerTitle { composes: headerTitle from './ImportShared.module.css'; }
+.loadingState { composes: loadingState from './ImportShared.module.css'; }
+.emptyState { composes: emptyState from './ImportShared.module.css'; }
+.errorState { composes: errorState from './ImportShared.module.css'; }
+.resultState { composes: resultState from './ImportShared.module.css'; }
+.ledLoading { composes: ledLoading from './ImportShared.module.css'; }
+.loadingText { composes: loadingText from './ImportShared.module.css'; }
+.emptyIcon { composes: emptyIcon from './ImportShared.module.css'; }
+.errorIcon { composes: errorIcon from './ImportShared.module.css'; }
+.emptyText { composes: emptyText from './ImportShared.module.css'; }
+.errorText { composes: errorText from './ImportShared.module.css'; }
+.resultIcon { composes: resultIcon from './ImportShared.module.css'; }
+.resultText { composes: resultText from './ImportShared.module.css'; }
+.resultTitle { composes: resultTitle from './ImportShared.module.css'; }
+.resultDetail { composes: resultDetail from './ImportShared.module.css'; }
+.doneBtn { composes: doneBtn from './ImportShared.module.css'; }
+.footer { composes: footer from './ImportShared.module.css'; }
+.selectedCount { composes: selectedCount from './ImportShared.module.css'; }
+.importBtn { composes: importBtn from './ImportShared.module.css'; }
+.treeContainer { composes: treeContainer from './ImportShared.module.css'; }
+.folderItem { composes: folderItem from './ImportShared.module.css'; }
+.folderRow { composes: folderRow from './ImportShared.module.css'; }
+.expandBtn { composes: expandBtn from './ImportShared.module.css'; }
+.expandPlaceholder { composes: expandPlaceholder from './ImportShared.module.css'; }
+.checkboxLabel { composes: checkboxLabel from './ImportShared.module.css'; }
+.checkbox { composes: checkbox from './ImportShared.module.css'; }
+.folderTitle { composes: folderTitle from './ImportShared.module.css'; }
+.bookmarkCount { composes: bookmarkCount from './ImportShared.module.css'; }
+.children { composes: children from './ImportShared.module.css'; }
+
+.contentArea {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 14px;
+  padding: 18px;
+  min-height: 0;
+}
+
+.summaryCard,
+.toolbarCard,
+.treeSurface {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.09) 0%, rgba(255, 255, 255, 0.04) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-glass);
+}
+
+.summaryCard {
+  padding: 16px;
+}
+
+.summaryEyebrow {
+  font-family: var(--font-led);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(255, 179, 71, 0.9);
+}
+
+.summaryTitle {
+  margin-top: 8px;
+  font-size: 16px;
+  line-height: 1.35;
+  color: var(--text-bright);
+  font-weight: 600;
+}
+
+.summaryText {
+  margin-top: 6px;
+  font-size: 12px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.52);
+}
+
+.summaryStats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.statChip {
+  padding: 5px 10px;
+  border-radius: var(--radius-pill);
+  border: 1px solid rgba(255, 149, 0, 0.22);
+  background: rgba(255, 149, 0, 0.08);
+  color: rgba(255, 198, 129, 0.95);
+  font-family: var(--font-led);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+}
+
+.toolbarCard {
+  padding: 14px;
+}
+
+.searchRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
 .searchInput {
   width: 100%;
-  padding: 8px 12px;
+  min-width: 0;
+  padding: 11px 14px;
   border-radius: var(--radius-md);
   font-size: 12px;
-  background: var(--glass-white);
-  border: 1px solid rgba(255,255,255,0.10);
-  color: rgba(255,255,255,0.80);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255,255,255,0.12);
+  color: rgba(255,255,255,0.88);
   outline: none;
-  transition: border-color var(--dur-fast);
-  margin-bottom: var(--space-sm);
+  transition: border-color var(--dur-fast), background var(--dur-fast), box-shadow var(--dur-fast);
 }
 
 .searchInput::placeholder {
-  color: rgba(255,255,255,0.28);
+  color: rgba(255,255,255,0.34);
 }
 
 .searchInput:focus {
   border-color: rgba(94,231,223,0.50);
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 0 0 4px rgba(94, 231, 223, 0.10);
 }
+
+.clearSearchBtn,
+.secondaryBtn {
+  height: 38px;
+  padding: 0 12px;
+  border-radius: var(--radius-md);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 12px;
+  transition: all var(--dur-fast);
+}
+
+.clearSearchBtn:hover,
+.secondaryBtn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.22);
+}
+
+.clearSearchBtn:disabled,
+.secondaryBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.toolbarMetaRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.toolbarMeta {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.46);
+}
+
+.toolbarActions {
+  display: flex;
+  gap: 8px;
+}
+
+.treeSurface {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.treeHeaderRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px 16px 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.treeHeaderTitle {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-bright);
+}
+
+.treeHeaderHint {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.38);
+}
+
+.treeContainer {
+  padding: 8px;
+}
+
+.folderRow {
+  min-height: 40px;
+  padding: 8px 10px;
+  border: 1px solid transparent;
+}
+
+.folderRow:hover {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.08);
+}
+
+.checkbox {
+  border-color: rgba(255, 255, 255, 0.32);
+}
+
+.folderTitle {
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.bookmarkCount {
+  min-width: 38px;
+  text-align: center;
+}
+
+.emptyResults {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 36px 16px;
+  text-align: center;
+}
+
+.emptyResultsTitle {
+  font-size: 14px;
+  color: var(--text-bright);
+}
+
+.emptyResultsText {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.footerSummary {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.footerHint {
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.34);
+}
+
+.miniLoading {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.miniLoading span {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+  opacity: 0.35;
+  animation: ledDotPulse 1.1s ease-in-out infinite;
+}
+
+.miniLoading span:nth-child(2) { animation-delay: .14s; }
+.miniLoading span:nth-child(3) { animation-delay: .28s; }

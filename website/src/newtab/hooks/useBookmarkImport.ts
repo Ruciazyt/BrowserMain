@@ -61,11 +61,18 @@ export function useBookmarkImport() {
         }
       }
 
-      bookmarkTree.forEach((folder) => {
-        if (selectedIds.has(folder.id)) {
-          addFromFolder(folder);
-        }
-      });
+      function visitSelectedNodes(nodes: BMTreeNode[]): void {
+        nodes.forEach((node) => {
+          if (selectedIds.has(node.id)) {
+            addFromFolder(node);
+          }
+          if (node.children) {
+            visitSelectedNodes(node.children);
+          }
+        });
+      }
+
+      visitSelectedNodes(bookmarkTree);
 
       let imported = 0;
       let skipped = 0;

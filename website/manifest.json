@@ -21,7 +21,6 @@
   },
   "action": {
     "default_title": "Add to BrowserMain",
-    "default_popup": "popup.html",
     "default_icon": {
       "16": "icons/icon16.png",
       "32": "icons/icon32.png"
@@ -42,6 +41,14 @@
         "linux": "Ctrl+Shift+U"
       },
       "description": "Open Add Shortcut dialog"
+    },
+    "quick-add-shortcut": {
+      "suggested_key": {
+        "default": "Alt+Shift+A",
+        "mac": "Command+Shift+A",
+        "linux": "Alt+Shift+A"
+      },
+      "description": "Quick add current page to BrowserMain"
     }
   },
   "chrome_url_overrides": {

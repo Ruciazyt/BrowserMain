@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { SEARCH_ENGINES, SearchEngine, buildSearchUrl, isUrl } from '../utils/engines';
 import EngineIcon from './EngineIcon';
 import { isMac } from '../utils/platform';
+import { useI18n } from '../i18n';
 import styles from '../styles/components/SearchBar.module.css';
 
 interface SearchBarProps {
@@ -30,18 +31,9 @@ const CheckIcon = () => (
   </svg>
 );
 
-function detectIsZh(lang: string): boolean {
-  return lang.startsWith('zh');
-}
-
 export default function SearchBar({ defaultEngine = 'bing', onEngineChange }: SearchBarProps) {
+  const { t } = useI18n();
   const [query, setQuery] = useState('');
-  const [isZh, setIsZh] = useState<boolean>(() => detectIsZh(navigator.language));
-  useEffect(() => {
-    const handler = () => setIsZh(detectIsZh(navigator.language));
-    window.addEventListener('languagechange', handler);
-    return () => window.removeEventListener('languagechange', handler);
-  }, []);
   const [focused, setFocused] = useState(false);
   const [engine, setEngine] = useState<SearchEngine>(
     SEARCH_ENGINES.find((e) => e.id === defaultEngine) || SEARCH_ENGINES[0]
@@ -172,7 +164,7 @@ export default function SearchBar({ defaultEngine = 'bing', onEngineChange }: Se
             type="button"
             className={styles.engineButton}
             onClick={() => setDropdownOpen(!dropdownOpen)}
-            aria-label="Select search engine"
+            aria-label={t('selectSearchEngine')}
             aria-expanded={dropdownOpen}
           >
             <EngineIcon engineId={engine.id} />
@@ -185,7 +177,7 @@ export default function SearchBar({ defaultEngine = 'bing', onEngineChange }: Se
             ref={inputRef}
             type="text"
             className={styles.input}
-            placeholder="Search or enter URL..."
+            placeholder={t('searchOrEnterUrl')}
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onPaste={handlePaste}
@@ -211,7 +203,7 @@ export default function SearchBar({ defaultEngine = 'bing', onEngineChange }: Se
             <button
               type="button"
               className={styles.clearBtn}
-              aria-label="Clear search"
+              aria-label={t('clearSearch')}
               onClick={() => {
                 setQuery('');
                 inputRef.current?.focus();
@@ -224,8 +216,8 @@ export default function SearchBar({ defaultEngine = 'bing', onEngineChange }: Se
             </button>
           )}
         </div>
-        <button type="submit" className={styles.searchBtn} aria-label="Search">
-          {isZh ? '搜索' : 'Search'}
+        <button type="submit" className={styles.searchBtn} aria-label={t('search')}>
+          {t('search')}
         </button>
       </form>
       {dropdownContent}

@@ -1,10 +1,25 @@
-import { useState, useEffect, useCallback } from 'react';
+import { createContext, createElement, useContext, useState, useEffect, useCallback, type ReactNode } from 'react';
 import { Settings, BackgroundConfig, getSettings, saveSettings } from '../utils/storage';
 
-export function useSettings() {
+export type AppLocale = 'system' | 'zh-CN' | 'en';
+
+interface SettingsContextValue {
+  settings: Settings;
+  loading: boolean;
+  updateEngine: (engineId: string) => Promise<void>;
+  updateBackground: (background: BackgroundConfig) => Promise<void>;
+  updateUserName: (name: string) => Promise<void>;
+  updateClockFormat: (clockIs24h: boolean) => Promise<void>;
+  updateLocale: (locale: AppLocale) => Promise<void>;
+}
+
+const SettingsContext = createContext<SettingsContextValue | null>(null);
+
+function useSettingsState(): SettingsContextValue {
   const [settings, setSettings] = useState<Settings>({
     defaultEngine: 'google',
     background: { type: 'solid', color: '#0a0a0f' },
+    locale: 'system',
   });
   const [loading, setLoading] = useState(true);
 
@@ -49,6 +64,14 @@ export function useSettings() {
     });
   }, []);
 
+  const updateLocale = useCallback(async (locale: AppLocale) => {
+    setSettings((prev) => {
+      const newSettings = { ...prev, locale };
+      saveSettings(newSettings);
+      return newSettings;
+    });
+  }, []);
+
   return {
     settings,
     loading,
@@ -56,5 +79,19 @@ export function useSettings() {
     updateBackground,
     updateUserName,
     updateClockFormat,
+    updateLocale,
   };
+}
+
+export function SettingsProvider({ children }: { children: ReactNode }) {
+  const value = useSettingsState();
+  return createElement(SettingsContext.Provider, { value }, children);
+}
+
+export function useSettings() {
+  const context = useContext(SettingsContext);
+  if (!context) {
+    throw new Error('useSettings must be used within SettingsProvider');
+  }
+  return context;
 }

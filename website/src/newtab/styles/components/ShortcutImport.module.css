@@ -1,3 +1,11 @@
-/* ShortcutImport — shares no additional CSS beyond BookmarkImport.module.css.
-   All shared layout styles (container, header, footer, states) are defined
-   directly in BookmarkImport.module.css and referenced via styles.* in TSX. */
+.container { composes: container from './ImportShared.module.css'; }
+.header { composes: header from './ImportShared.module.css'; }
+.backBtn { composes: backBtn from './ImportShared.module.css'; }
+.headerTitle { composes: headerTitle from './ImportShared.module.css'; }
+.resultState { composes: resultState from './ImportShared.module.css'; }
+.resultIcon { composes: resultIcon from './ImportShared.module.css'; }
+.resultText { composes: resultText from './ImportShared.module.css'; }
+.resultTitle { composes: resultTitle from './ImportShared.module.css'; }
+.resultDetail { composes: resultDetail from './ImportShared.module.css'; }
+.doneBtn { composes: doneBtn from './ImportShared.module.css'; }
+.importBtn { composes: importBtn from './ImportShared.module.css'; }

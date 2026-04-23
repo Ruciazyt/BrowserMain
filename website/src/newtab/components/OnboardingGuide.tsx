@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useI18n } from '../i18n';
 import styles from '../styles/components/OnboardingGuide.module.css';
 
 const STORAGE_KEY = 'onboardingComplete';
@@ -109,23 +110,12 @@ const stepsZh: Step[] = [
   },
 ];
 
-function detectIsZh(lang: string): boolean {
-  return lang.startsWith('zh');
-}
-
 export default function OnboardingGuide({ restartSignal }: OnboardingGuideProps) {
   const [visible, setVisible] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
-  const [isZh, setIsZh] = useState<boolean>(() => detectIsZh(navigator.language));
+  const { isZh, t } = useI18n();
 
   const steps = isZh ? stepsZh : stepsEn;
-
-  // Keep isZh in sync when navigator.language changes
-  useEffect(() => {
-    const handler = () => setIsZh(detectIsZh(navigator.language));
-    window.addEventListener('languagechange', handler);
-    return () => window.removeEventListener('languagechange', handler);
-  }, []);
 
   useEffect(() => {
     chrome.storage.local.get(STORAGE_KEY, (result) => {
@@ -163,9 +153,7 @@ export default function OnboardingGuide({ restartSignal }: OnboardingGuideProps)
   const isLastStep = currentStep === steps.length - 1;
   const progress = ((currentStep + 1) / steps.length) * 100;
 
-  const stepLabel = isZh
-    ? `${currentStep + 1} 之 ${steps.length}`
-    : `${currentStep + 1} / ${steps.length}`;
+  const stepLabel = t('stepCount', { current: currentStep + 1, total: steps.length });
 
   return (
     <div className={styles.overlay}>
@@ -209,26 +197,26 @@ export default function OnboardingGuide({ restartSignal }: OnboardingGuideProps)
                 className={styles.prevBtn}
                 onClick={() => setCurrentStep((s) => s - 1)}
               >
-                {isZh ? '← 上一步' : '← Back'}
+                {t('prev')}
               </button>
             )}
           </div>
 
           <button className={styles.skipBtn} onClick={handleSkip}>
-            {isZh ? '跳过引导' : 'Skip tour'}
+            {t('skipTour')}
           </button>
 
           <div className={styles.right}>
             {isLastStep ? (
               <button className={styles.getStartedBtn} onClick={handleComplete}>
-                {isZh ? '开始使用 →' : 'Get Started →'}
+                {t('getStarted')}
               </button>
             ) : (
               <button
                 className={styles.nextBtn}
                 onClick={() => setCurrentStep((s) => s + 1)}
               >
-                {isZh ? '下一步 →' : 'Next →'}
+                {t('next')}
               </button>
             )}
           </div>

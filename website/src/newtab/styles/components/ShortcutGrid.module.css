@@ -30,9 +30,9 @@
 
 .cardTitle {
   display: block;
-  font-size: 0.95rem;
+  font-size: var(--text-xl);
   font-weight: 600;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.02em;
   color: rgba(255, 255, 255, 0.88);
   padding-bottom: 10px;
   margin-bottom: 12px;
@@ -49,6 +49,9 @@
   max-width: 92px;
   min-width: 0;
   overflow: hidden;
+  will-change: transform;
+  transform-origin: center center;
+  backface-visibility: hidden;
 }
 
 .sortableItem:active {
@@ -65,7 +68,7 @@
 
 .count {
   font-family: var(--font-led);
-  font-size: 10px;
+  font-size: var(--text-xs);
   letter-spacing: 1.5px;
   text-transform: uppercase;
   color: var(--led-amber);
@@ -74,7 +77,7 @@
 }
 
 .hint {
-  font-size: 10px;
+  font-size: var(--text-xs);
   color: rgba(255, 255, 255, 0.22);
   font-family: var(--font-led);
   letter-spacing: 0.5px;
@@ -101,14 +104,23 @@
 }
 
 .emptyTitle {
-  font-size: 14px;
+  font-size: var(--text-md);
   color: rgba(255, 255, 255, 0.48);
   margin-bottom: 6px;
 }
 
 .emptyHint {
-  font-size: 12px;
+  font-size: var(--text-sm);
   color: rgba(255, 255, 255, 0.25);
+}
+
+.emptyActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 16px;
 }
 
 .addTile {
@@ -200,6 +212,35 @@
   line-height: 1;
 }
 
+.emptySecondaryBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: 10px 18px;
+  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all var(--dur-fast) var(--ease-liquid);
+}
+
+.emptySecondaryBtn:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.3);
+  transform: translateY(-2px);
+}
+
+.emptySecondaryBtn:focus-visible {
+  outline: 2px solid rgba(255, 255, 255, 0.75);
+  outline-offset: 2px;
+}
+
 .addTileIcon {
   font-size: 22px;
   line-height: 1;
@@ -220,6 +261,22 @@
 
 .dragging {
   opacity: 0.35;
+}
+
+.sortableGhost {
+  opacity: 0.16 !important;
+  transform: scale(0.96);
+}
+
+.sortableChosen {
+  z-index: 30;
+}
+
+.sortableDrag {
+  opacity: 0.96 !important;
+  transform: rotate(1.5deg) scale(1.04) !important;
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.32), 0 10px 24px rgba(255, 149, 0, 0.12) !important;
+  filter: saturate(1.06);
 }
 
 .panel.dragActive {
@@ -252,7 +309,7 @@
 
 .groupName {
   font-family: var(--font-led);
-  font-size: 9px;
+  font-size: var(--text-xs);
   font-weight: 600;
   letter-spacing: 1.5px;
   text-transform: uppercase;
@@ -262,7 +319,7 @@
 
 .groupCount {
   font-family: var(--font-led);
-  font-size: 9px;
+  font-size: var(--text-xs);
   letter-spacing: 0.5px;
   color: rgba(255, 149, 0, 0.45);
 }
