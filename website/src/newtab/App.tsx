@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useShortcuts } from './hooks/useShortcuts';
 import { useSettings } from './hooks/useSettings';
 import SearchBar from './components/SearchBar';
@@ -8,6 +8,11 @@ import ShortcutGrid from './components/ShortcutGrid';
 import SettingsPanel from './components/SettingsPanel';
 import AddShortcutDialog from './components/AddShortcutDialog';
 import OnboardingGuide from './components/OnboardingGuide';
+import WeatherWidget from './components/WeatherWidget';
+import NewsSection from './components/NewsSection';
+import MarketIndices from './components/MarketIndices';
+import AIAssistant from './components/AIAssistant';
+import { useI18n, type MessageKey } from './i18n';
 import './styles/global.css';
 import styles from './styles/App.module.css';
 
@@ -18,17 +23,67 @@ const SettingsIcon = () => (
   </svg>
 );
 
+const SunIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+  </svg>
+);
+
+const HomeIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+);
+
+const CollapseIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+);
+
+const ExpandIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+);
+
+interface NavItem {
+  id: string;
+  icon: () => React.ReactElement;
+}
+
+const navItems: NavItem[] = [
+  { id: 'home', icon: HomeIcon },
+  { id: 'settings', icon: SettingsIcon },
+];
+
 export default function App() {
   const { shortcuts, loading: shortcutsLoading, addShortcut, removeShortcut, updateShortcut, reorderShortcuts, refreshShortcuts } = useShortcuts();
   const { settings, loading: settingsLoading, updateEngine } = useSettings();
+  const { t } = useI18n();
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [settingsInitialView, setSettingsInitialView] = useState<'main' | 'bookmarkImport' | 'shortcutImport'>('main');
   const [restartOnboardingSignal, setRestartOnboardingSignal] = useState(0);
+  const [activeNav, setActiveNav] = useState('home');
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [aiCollapsed, setAiCollapsed] = useState(false);
 
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [addDialogData, setAddDialogData] = useState({ url: '', title: '', favicon: '' });
 
-  // On mount, check URL query params for "add shortcut" intent
+  const bgStyle = useMemo(() => {
+    const bg = settings.background;
+    if (!bg || bg.type === 'solid') return {};
+    if (bg.type === 'image' && bg.imageUrl) {
+      return {
+        backgroundImage: `url(${bg.imageUrl})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+      };
+    }
+    if (bg.type === 'gradient') {
+      return {
+        background: `linear-gradient(${bg.gradientDirection || 'to bottom right'}, ${bg.gradientFrom || '#667eea'}, ${bg.gradientTo || '#764ba2'})`,
+      };
+    }
+    return {};
+  }, [settings.background]);
+
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const url = params.get('add_url');
@@ -41,7 +96,6 @@ export default function App() {
     }
   }, []);
 
-  // Listen for SHORTCUT_ADDED messages (e.g. from quickadd popup)
   const isMountedRef = useRef(true);
   useEffect(() => {
     const listener = (message: { type?: string }) => {
@@ -56,7 +110,6 @@ export default function App() {
     };
   }, [refreshShortcuts]);
 
-  // ESC key to close settings panel
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && settingsOpen) setSettingsOpen(false);
@@ -65,7 +118,6 @@ export default function App() {
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [settingsOpen]);
 
-  // Ctrl+Shift+U opens the Add Shortcut dialog directly from the new tab page
   useEffect(() => {
     const handleKeyboardShortcuts = (e: KeyboardEvent) => {
       const modKey = navigator.platform.startsWith('Mac') ? e.metaKey : e.ctrlKey;
@@ -79,28 +131,11 @@ export default function App() {
     return () => document.removeEventListener('keydown', handleKeyboardShortcuts);
   }, []);
 
-  // Apply background settings from user preferences
-  useEffect(() => {
-    if (settingsLoading) return;
-    const { background } = settings;
-    if (background.type === 'solid') {
-      document.body.style.background = background.color || '#0a0a0f';
-    } else if (background.type === 'gradient') {
-      const dir = background.gradientDirection || 'to top right';
-      document.body.style.background = `linear-gradient(${dir}, ${background.gradientFrom || '#0a0a0f'}, ${background.gradientTo || '#1a3a5c'})`;
-    } else {
-      // 'image' — blob-scene handles the background; reset body
-      document.body.style.background = '';
-    }
-  }, [settings.background, settingsLoading]);
-
-  // Check for first run and show onboarding automatically
   useEffect(() => {
     if (settingsLoading) return;
     chrome.storage.local.get('browsermain_first_run', (result) => {
       if (result['browsermain_first_run'] === true) {
         setRestartOnboardingSignal(Date.now());
-        // Clear the flag so onboarding only shows on first install
         chrome.storage.local.set({ 'browsermain_first_run': false });
       }
     });
@@ -109,83 +144,98 @@ export default function App() {
   if (shortcutsLoading || settingsLoading) {
     return (
       <div className={styles.page}>
-        {settings.background.type === 'image' && (
-          <div className="blob-scene">
-            <div
-              className="blob blob-img"
-              style={{
-                background: `url(${settings.background.imageUrl}) center / cover no-repeat`,
-                borderRadius: 0, width: '100vw', height: '100vh', opacity: 0.85,
-              }}
-            />
-          </div>
-        )}
         <div className="loading-dots"><span /><span /><span /></div>
       </div>
     );
   }
 
   return (
-    <div className={styles.page}>
-      {/* Animated blob background — only shown for image background type */}
-      {settings.background.type === 'image' && (
-        <div className="blob-scene">
-          <div
-            className="blob blob-img"
-            style={{
-              background: `url(${settings.background.imageUrl}) center / cover no-repeat`,
-              borderRadius: 0, width: '100vw', height: '100vh', opacity: 0.85,
-            }}
-          />
+    <div className={styles.page} style={bgStyle}>
+      {/* ── Sidebar ── */}
+      <aside className={`${styles.sidebar} ${sidebarCollapsed ? styles.sidebarCollapsed : ''}`}>
+        {!sidebarCollapsed && <div className={styles.sidebarLogo}>BrowserMain</div>}
+        <nav className={styles.sidebarNav}>
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const isSettings = item.id === 'settings';
+            return (
+              <button
+                key={item.id}
+                className={`${styles.sidebarItem} ${activeNav === item.id && !isSettings ? styles.active : ''}`}
+                title={isSettings ? t('settings') : t(`nav_${item.id}` as MessageKey)}
+                onClick={() => {
+                  if (isSettings) {
+                    setSettingsInitialView('main');
+                    setSettingsOpen(true);
+                  } else {
+                    setActiveNav(item.id);
+                  }
+                }}
+              >
+                <span className={styles.sidebarItemIcon}><Icon /></span>
+                {!sidebarCollapsed && (isSettings ? t('settings') : t(`nav_${item.id}` as MessageKey))}
+              </button>
+            );
+          })}
+        </nav>
+        <div className={styles.sidebarBottom}>
+          <button className={styles.sidebarIconBtn} onClick={() => setSidebarCollapsed(!sidebarCollapsed)} aria-label="Toggle sidebar" title="Toggle sidebar">
+            {sidebarCollapsed ? <ExpandIcon /> : <CollapseIcon />}
+          </button>
         </div>
-      )}
+      </aside>
 
-      {/* ── Header: time + greeting + glass search ── */}
-      <div className={styles.header}>
-        <div className={styles.hero}>
-          <Clock />
-          <Greeting userName={settings.userName} />
+      {/* ── Main Content ── */}
+      <main className={`${styles.main} ${sidebarCollapsed ? styles.mainFull : ''}`}>
+        {/* Header: Clock + Greeting (left) | Weather (right) */}
+        <div className={styles.header}>
+          <div className={styles.heroGroup}>
+            <Clock />
+            <Greeting userName={settings.userName} />
+          </div>
+          <div className={styles.headerRight}>
+            <WeatherWidget />
+          </div>
         </div>
+
+        {/* Search bar + Market indices row */}
         <div className={styles.searchRow}>
           <SearchBar defaultEngine={settings.defaultEngine} onEngineChange={updateEngine} />
+          <MarketIndices />
         </div>
-      </div>
 
-      {/* 快捷入口：左右各留约 20% 视口边距，中间区域更宽 */}
-      <div className={styles.shortcutsWrap}>
-        <ShortcutGrid
-          shortcuts={shortcuts}
-          onDelete={removeShortcut}
-          onUpdate={updateShortcut}
-          onReorder={reorderShortcuts}
-          onAdd={() => {
-            setAddDialogData({ url: '', title: '', favicon: '' });
-            setAddDialogOpen(true);
-          }}
-          onImportBookmarks={() => {
-            setSettingsInitialView('bookmarkImport');
-            setSettingsOpen(true);
-          }}
-          onImportShortcuts={() => {
-            setSettingsInitialView('shortcutImport');
-            setSettingsOpen(true);
-          }}
-        />
-      </div>
+        {/* Shortcuts (left) + News (center) + AI (right) */}
+        <div className={styles.contentRow}>
+          <div className={styles.shortcutsWrap}>
+            <ShortcutGrid
+              shortcuts={shortcuts}
+              onDelete={removeShortcut}
+              onUpdate={updateShortcut}
+              onReorder={reorderShortcuts}
+              onAdd={() => {
+                setAddDialogData({ url: '', title: '', favicon: '' });
+                setAddDialogOpen(true);
+              }}
+              onImportBookmarks={() => {
+                setSettingsInitialView('bookmarkImport');
+                setSettingsOpen(true);
+              }}
+              onImportShortcuts={() => {
+                setSettingsInitialView('shortcutImport');
+                setSettingsOpen(true);
+              }}
+            />
+          </div>
+          <div className={styles.newsWrap}>
+            <NewsSection columns={aiCollapsed ? 3 : 2} />
+          </div>
+          <div className={`${styles.aiWrap} ${aiCollapsed ? styles.aiWrapCollapsed : ''}`}>
+            <AIAssistant collapsed={aiCollapsed} onToggle={() => setAiCollapsed(!aiCollapsed)} />
+          </div>
+        </div>
+      </main>
 
-      {/* ── Settings button ── */}
-      <button
-        className={styles.settingsBtn}
-        onClick={() => {
-          setSettingsInitialView('main');
-          setSettingsOpen(true);
-        }}
-        aria-label="Open settings"
-      >
-        <SettingsIcon />
-      </button>
-
-      {/* ── Settings panel ── */}
+      {/* Settings panel */}
       <SettingsPanel
         open={settingsOpen}
         onClose={() => setSettingsOpen(false)}
@@ -194,7 +244,7 @@ export default function App() {
         onShowTour={() => setRestartOnboardingSignal(Date.now())}
       />
 
-      {/* ── Add shortcut dialog ── */}
+      {/* Add shortcut dialog */}
       <AddShortcutDialog
         open={addDialogOpen}
         shortcuts={shortcuts}
@@ -205,13 +255,8 @@ export default function App() {
         onClose={() => setAddDialogOpen(false)}
       />
 
-      {/* ── Onboarding ── */}
+      {/* Onboarding */}
       <OnboardingGuide restartSignal={restartOnboardingSignal} />
-
-      {/* ── Footer ── */}
-      <div className={styles.footer}>
-        <span>BrowserMain</span>
-      </div>
     </div>
   );
 }

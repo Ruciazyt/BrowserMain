@@ -43,10 +43,9 @@
 .summaryCard,
 .toolbarCard,
 .treeSurface {
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.09) 0%, rgba(255, 255, 255, 0.04) 100%);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-glass);
+  background: var(--surface-secondary);
+  border: 1px solid var(--border-secondary);
+  border-radius: var(--radius-md);
 }
 
 .summaryCard {
@@ -54,18 +53,18 @@
 }
 
 .summaryEyebrow {
-  font-family: var(--font-led);
+  font-family: var(--font-mono);
   font-size: 10px;
-  letter-spacing: 0.16em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: rgba(255, 179, 71, 0.9);
+  color: var(--accent-blue);
 }
 
 .summaryTitle {
   margin-top: 8px;
   font-size: 16px;
   line-height: 1.35;
-  color: var(--text-bright);
+  color: var(--text-primary);
   font-weight: 600;
 }
 
@@ -73,7 +72,7 @@
   margin-top: 6px;
   font-size: 12px;
   line-height: 1.6;
-  color: rgba(255, 255, 255, 0.52);
+  color: var(--text-secondary);
 }
 
 .summaryStats {
@@ -86,10 +85,10 @@
 .statChip {
   padding: 5px 10px;
   border-radius: var(--radius-pill);
-  border: 1px solid rgba(255, 149, 0, 0.22);
-  background: rgba(255, 149, 0, 0.08);
-  color: rgba(255, 198, 129, 0.95);
-  font-family: var(--font-led);
+  border: 1px solid rgba(0, 122, 255, 0.15);
+  background: var(--accent-blue-light);
+  color: var(--accent-blue);
+  font-family: var(--font-mono);
   font-size: 10px;
   letter-spacing: 0.08em;
 }
@@ -108,41 +107,40 @@
   width: 100%;
   min-width: 0;
   padding: 11px 14px;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-sm);
   font-size: 12px;
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255,255,255,0.12);
-  color: rgba(255,255,255,0.88);
+  background: var(--surface-primary);
+  border: 1px solid var(--border-primary);
+  color: var(--text-primary);
   outline: none;
-  transition: border-color var(--dur-fast), background var(--dur-fast), box-shadow var(--dur-fast);
+  transition: border-color var(--dur-fast), box-shadow var(--dur-fast);
 }
 
 .searchInput::placeholder {
-  color: rgba(255,255,255,0.34);
+  color: var(--text-tertiary);
 }
 
 .searchInput:focus {
-  border-color: rgba(94,231,223,0.50);
-  background: rgba(255, 255, 255, 0.12);
-  box-shadow: 0 0 0 4px rgba(94, 231, 223, 0.10);
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
 }
 
 .clearSearchBtn,
 .secondaryBtn {
   height: 38px;
   padding: 0 12px;
-  border-radius: var(--radius-md);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(255, 255, 255, 0.06);
-  color: rgba(255, 255, 255, 0.78);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-primary);
+  background: var(--surface-secondary);
+  color: var(--text-primary);
   font-size: 12px;
   transition: all var(--dur-fast);
 }
 
 .clearSearchBtn:hover,
 .secondaryBtn:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.12);
-  border-color: rgba(255, 255, 255, 0.22);
+  background: var(--surface-hover);
+  border-color: var(--accent-blue);
 }
 
 .clearSearchBtn:disabled,
@@ -161,7 +159,7 @@
 
 .toolbarMeta {
   font-size: 12px;
-  color: rgba(255, 255, 255, 0.46);
+  color: var(--text-tertiary);
 }
 
 .toolbarActions {
@@ -183,18 +181,18 @@
   justify-content: space-between;
   gap: 12px;
   padding: 14px 16px 12px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid var(--border-secondary);
 }
 
 .treeHeaderTitle {
   font-size: 13px;
   font-weight: 600;
-  color: var(--text-bright);
+  color: var(--text-primary);
 }
 
 .treeHeaderHint {
   font-size: 11px;
-  color: rgba(255, 255, 255, 0.38);
+  color: var(--text-tertiary);
 }
 
 .treeContainer {
@@ -208,12 +206,12 @@
 }
 
 .folderRow:hover {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.08);
+  background: var(--surface-hover);
+  border-color: var(--border-secondary);
 }
 
 .checkbox {
-  border-color: rgba(255, 255, 255, 0.32);
+  border-color: var(--border-primary);
 }
 
 .folderTitle {
@@ -238,12 +236,12 @@
 
 .emptyResultsTitle {
   font-size: 14px;
-  color: var(--text-bright);
+  color: var(--text-primary);
 }
 
 .emptyResultsText {
   font-size: 12px;
-  color: rgba(255, 255, 255, 0.4);
+  color: var(--text-tertiary);
 }
 
 .footerSummary {
@@ -256,7 +254,7 @@
 
 .footerHint {
   font-size: 11px;
-  color: rgba(255, 255, 255, 0.34);
+  color: var(--text-tertiary);
 }
 
 .miniLoading {

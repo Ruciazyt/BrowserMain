@@ -15,6 +15,10 @@ export interface Settings {
   userName?: string;
   clockIs24h?: boolean;
   locale?: 'system' | 'zh-CN' | 'en';
+  aiEndpoint?: string;
+  aiModel?: string;
+  aiTemperature?: number;
+  aiMaxTokens?: number;
 }
 
 export interface BackgroundConfig {

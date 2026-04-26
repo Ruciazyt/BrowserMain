@@ -1,40 +1,32 @@
-/* ── Greeting — hero title + subtitle + optional userName ───── */
 .wrapper {
-  width: 100%;
-  padding: 0 var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 0;
 }
 
 .block {
-  margin-top: 1rem;
-  text-align: center;
+  margin-top: 0;
+  text-align: left;
 }
 
 .greeting {
   font-family: var(--font-display);
-  font-size: clamp(1rem, 2.5vw, 1.25rem);
-  font-weight: 500;
-  letter-spacing: 0.15em;
-  color: rgba(255, 255, 255, 0.88);
-  text-shadow: 0 2px 16px rgba(0, 0, 0, 0.25);
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--text-primary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 100%;
 }
 
-@media (max-width: 480px) {
-  .greeting {
-    font-size: clamp(0.85rem, 3.5vw, 1rem);
-    letter-spacing: 0.1em;
-  }
-}
-
 .subtitle {
-  margin-top: 0.5rem;
+  margin-top: 4px;
   font-family: var(--font-body);
-  font-size: clamp(0.8rem, 2vw, 0.95rem);
+  font-size: 13px;
   font-weight: 400;
-  letter-spacing: 0.08em;
-  color: rgba(255, 255, 255, 0.62);
-  text-shadow: 0 1px 8px rgba(0, 0, 0, 0.2);
+  letter-spacing: 0.02em;
+  color: var(--text-tertiary);
 }

@@ -7,6 +7,7 @@ import EngineIcon from './EngineIcon';
 import BookmarkImport from './BookmarkImport';
 import ShortcutImport from './ShortcutImport';
 import { useShortcuts } from '../hooks/useShortcuts';
+import { getAIKey, saveAIKey, clearAIKey } from '../utils/aiStorage';
 import styles from '../styles/components/SettingsPanel.module.css';
 
 interface SettingsPanelProps {
@@ -31,7 +32,7 @@ const CheckIcon = () => (
 );
 
 export default function SettingsPanel({ open, onClose, initialView = 'main', onBookmarkImportComplete }: SettingsPanelProps) {
-  const { settings, updateEngine, updateBackground, updateClockFormat, updateLocale } = useSettings();
+  const { settings, updateEngine, updateBackground, updateClockFormat, updateLocale, updateAIConfig } = useSettings();
   const { t } = useI18n();
   const { shortcuts, updateShortcut } = useShortcuts();
   const [imagePreview, setImagePreview] = useState(settings.background.imageUrl || '');
@@ -43,12 +44,22 @@ export default function SettingsPanel({ open, onClose, initialView = 'main', onB
   const [groupToDelete, setGroupToDelete] = useState<string | null>(null);
   const [groupDeleteSuccess, setGroupDeleteSuccess] = useState('');
 
+  // AI settings state
+  const [aiKey, setAiKey] = useState('');
+  const [aiKeyVisible, setAiKeyVisible] = useState(false);
+  const [aiTesting, setAiTesting] = useState(false);
+  const [aiTestResult, setAiTestResult] = useState<'success' | 'error' | null>(null);
+  const [aiTestError, setAiTestError] = useState('');
+
   const existingGroups = Array.from(
     new Set(shortcuts.map((s) => s.group).filter((g): g is string => !!g))
   ).sort();
 
   useEffect(() => {
     if (!open) return;
+    getAIKey().then(setAiKey);
+    setAiTestResult(null);
+    setAiTestError('');
     setShowBookmarkImport(initialView === 'bookmarkImport');
     setShowShortcutImport(initialView === 'shortcutImport');
   }, [open, initialView]);
@@ -310,6 +321,108 @@ export default function SettingsPanel({ open, onClose, initialView = 'main', onB
                     </button>
                   </div>
                 </div>
+              </div>
+
+              <div className={styles.section}>
+                <div className={styles.sectionTitle}>{t('aiSettings')}</div>
+
+                <div className={styles.fieldRow}>
+                  <label className={styles.fieldLabel}>{t('aiEndpoint')}</label>
+                  <input
+                    className={styles.fieldInput}
+                    value={settings.aiEndpoint || ''}
+                    onChange={(e) => updateAIConfig({ aiEndpoint: e.target.value })}
+                    placeholder={t('aiEndpointPlaceholder')}
+                  />
+                </div>
+
+                <div className={styles.fieldRow}>
+                  <label className={styles.fieldLabel}>{t('aiApiKey')}</label>
+                  <div style={{ display: 'flex', gap: 6, flex: 1 }}>
+                    <input
+                      className={styles.fieldInput}
+                      type={aiKeyVisible ? 'text' : 'password'}
+                      value={aiKey}
+                      onChange={(e) => { setAiKey(e.target.value); saveAIKey(e.target.value); }}
+                      placeholder={t('aiApiKeyPlaceholder')}
+                      style={{ flex: 1 }}
+                    />
+                    <button
+                      className={styles.eyeBtn}
+                      onClick={() => setAiKeyVisible(!aiKeyVisible)}
+                      aria-label="Toggle visibility"
+                    >
+                      {aiKeyVisible ? '⊙' : '◉'}
+                    </button>
+                  </div>
+                </div>
+
+                <div className={styles.fieldRow}>
+                  <label className={styles.fieldLabel}>{t('aiModel')}</label>
+                  <input
+                    className={styles.fieldInput}
+                    value={settings.aiModel || ''}
+                    onChange={(e) => updateAIConfig({ aiModel: e.target.value })}
+                    placeholder={t('aiModelPlaceholder')}
+                  />
+                </div>
+
+                <div className={styles.fieldRow}>
+                  <label className={styles.fieldLabel}>{t('aiTemperature')}: {settings.aiTemperature ?? 0.7}</label>
+                  <input
+                    type="range" min="0" max="2" step="0.1"
+                    value={settings.aiTemperature ?? 0.7}
+                    onChange={(e) => updateAIConfig({ aiTemperature: parseFloat(e.target.value) })}
+                    style={{ width: '100%' }}
+                  />
+                </div>
+
+                <div className={styles.fieldRow}>
+                  <label className={styles.fieldLabel}>{t('aiMaxTokens')}</label>
+                  <input
+                    type="number"
+                    className={styles.fieldInput}
+                    value={settings.aiMaxTokens || ''}
+                    onChange={(e) => updateAIConfig({ aiMaxTokens: e.target.value ? parseInt(e.target.value) : undefined })}
+                    placeholder={t('aiMaxTokensPlaceholder')}
+                  />
+                </div>
+
+                <button
+                  className={styles.testBtn}
+                  onClick={async () => {
+                    const key = await getAIKey();
+                    if (!settings.aiEndpoint || !key) return;
+                    setAiTesting(true);
+                    setAiTestResult(null);
+                    setAiTestError('');
+                    chrome.runtime.sendMessage({
+                      type: 'AI_CHAT',
+                      endpoint: settings.aiEndpoint,
+                      apiKey: key,
+                      model: settings.aiModel || 'gpt-4o',
+                      messages: [{ role: 'user', content: 'Hi' }],
+                      maxTokens: 5,
+                    }, (res: { success?: boolean; content?: string; error?: string }) => {
+                      setAiTesting(false);
+                      if (res.success) {
+                        setAiTestResult('success');
+                      } else {
+                        setAiTestResult('error');
+                        setAiTestError(res.error || 'Unknown error');
+                      }
+                    });
+                  }}
+                  disabled={aiTesting || !settings.aiEndpoint || !aiKey}
+                >
+                  {aiTesting ? t('aiTesting') : t('aiTestConnection')}
+                </button>
+                {aiTestResult === 'success' && (
+                  <div className={styles.successMsg}>{t('aiTestSuccess')}</div>
+                )}
+                {aiTestResult === 'error' && (
+                  <div className={styles.errorMsg}>{t('aiTestFailed')}: {aiTestError}</div>
+                )}
               </div>
 
               <div className={styles.section}>

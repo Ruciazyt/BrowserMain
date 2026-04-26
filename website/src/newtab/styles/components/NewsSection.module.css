@@ -1,0 +1,187 @@
+/* ── News Section ──────────────────────────────────────────── */
+.section {
+  width: 100%;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.title {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.refreshBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-md);
+  background: none;
+  border: none;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  transition: background var(--dur-fast), color var(--dur-fast);
+}
+
+.refreshBtn:hover {
+  background: var(--surface-hover);
+  color: var(--text-secondary);
+}
+
+/* ── Platform card grid ───────────────────────────────────── */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+.card {
+  background: var(--surface-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition: box-shadow var(--dur-fast);
+}
+
+.card:hover {
+  box-shadow: var(--shadow-md);
+}
+
+.cardHeader {
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--accent-blue);
+  background: rgba(0, 122, 255, 0.04);
+  border-bottom: 1px solid var(--border-secondary);
+  letter-spacing: 0.02em;
+  cursor: grab;
+}
+
+.cardHeader:active {
+  cursor: grabbing;
+}
+
+.cardList {
+  display: flex;
+  flex-direction: column;
+}
+
+.cardItem {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 8px 14px;
+  cursor: pointer;
+  transition: background var(--dur-fast);
+}
+
+.cardItem:hover {
+  background: var(--surface-hover);
+}
+
+.cardItemTitle {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text-primary);
+  line-height: 1.5;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  min-width: 0;
+}
+
+.index {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-tertiary);
+  flex-shrink: 0;
+  min-width: 18px;
+  line-height: 1.5;
+}
+
+/* ── Loading skeleton ─────────────────────────────────────── */
+.skeleton {
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--surface-hover) 25%, rgba(0, 0, 0, 0.04) 50%, var(--surface-hover) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+.skeletonIndex {
+  width: 18px;
+  height: 14px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--surface-hover) 25%, rgba(0, 0, 0, 0.04) 50%, var(--surface-hover) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+.skeletonGroupTitle {
+  height: 16px;
+  width: 64px;
+  margin: 10px 14px;
+}
+
+.skeletonTitle {
+  height: 14px;
+  flex: 1;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ── Empty / Error ────────────────────────────────────────── */
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  padding: 32px 16px;
+  color: var(--text-tertiary);
+  font-size: 13px;
+}
+
+.retryBtn {
+  padding: 6px 16px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-primary);
+  background: var(--surface-primary);
+  color: var(--text-secondary);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all var(--dur-fast);
+}
+
+.retryBtn:hover {
+  border-color: var(--accent-blue);
+  color: var(--accent-blue);
+}
+
+/* ── Drag states ────────────────────────────────────────────── */
+.ghost {
+  opacity: 0.25 !important;
+}
+
+.chosen {
+  box-shadow: var(--shadow-lg);
+  z-index: 10;
+}
+
+.drag {
+  opacity: 0.95 !important;
+  transform: rotate(1deg) scale(1.03) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
+}

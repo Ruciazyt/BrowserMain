@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useLayoutEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { getSmartFaviconUrl, getFaviconIcoUrl, getDomainFromUrl, getChromeFaviconUrl } from '../utils/storage';
 import { isMac } from '../utils/platform';
 import { isUrl } from '../utils/engines';
@@ -26,6 +27,8 @@ interface ShortcutTileProps {
   onAdd?: () => void;
   existingGroups?: string[];
   isGroupPreviewTarget?: boolean;
+  isGlobalEditing?: boolean;
+  onEnterEditMode?: () => void;
 }
 
 export default function ShortcutTile({
@@ -40,6 +43,8 @@ export default function ShortcutTile({
   onAdd,
   existingGroups,
   isGroupPreviewTarget,
+  isGlobalEditing,
+  onEnterEditMode,
 }: ShortcutTileProps) {
   const { t } = useI18n();
   const [showContextMenu, setShowContextMenu] = useState(false);
@@ -60,6 +65,9 @@ export default function ShortcutTile({
   const containerRef = useRef<HTMLDivElement>(null);
   const contextMenuRef = useRef<HTMLDivElement>(null);
   const groupInputRef = useRef<HTMLInputElement>(null);
+  const longPressTimerRef = useRef<number | null>(null);
+  const longPressTriggeredRef = useRef(false);
+  const longPressMovedRef = useRef(false);
 
   // Try Chrome's native favicons API when no stored favicon exists — async, non-blocking.
   // Falls back to Google S2 for the initial render to avoid empty icons.
@@ -155,12 +163,61 @@ export default function ShortcutTile({
   }, [showContextMenu, editMode]);
 
   const navigateToShortcut = () => {
-    if (editMode || showContextMenu) return;
+    if (editMode || showContextMenu || isGlobalEditing) return;
+    if (longPressTriggeredRef.current) {
+      longPressTriggeredRef.current = false;
+      return;
+    }
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       if (tabs[0]?.id) {
         chrome.tabs.update(tabs[0].id, { url: shortcut.url });
       }
     });
+  };
+
+  const LONG_PRESS_MS = 500;
+
+  const clearLongPress = () => {
+    if (longPressTimerRef.current !== null) {
+      window.clearTimeout(longPressTimerRef.current);
+      longPressTimerRef.current = null;
+    }
+  };
+
+  useEffect(() => () => clearLongPress(), []);
+
+  // Reset long press flag when exiting global edit mode
+  useEffect(() => {
+    if (!isGlobalEditing) {
+      longPressTriggeredRef.current = false;
+    }
+  }, [isGlobalEditing]);
+
+  const handlePointerDown = (e: React.PointerEvent) => {
+    if (editMode || isGlobalEditing) return;
+    if (e.button !== 0) return;
+    longPressMovedRef.current = false;
+    longPressTriggeredRef.current = false;
+    clearLongPress();
+    longPressTimerRef.current = window.setTimeout(() => {
+      longPressTriggeredRef.current = true;
+      onEnterEditMode?.();
+    }, LONG_PRESS_MS);
+  };
+
+  const handlePointerMove = () => {
+    if (longPressTimerRef.current !== null) {
+      longPressMovedRef.current = true;
+      clearLongPress();
+    }
+  };
+
+  const handlePointerUp = () => {
+    clearLongPress();
+  };
+
+  const handlePointerCancel = () => {
+    clearLongPress();
   };
 
   const handleDelete = (e: React.MouseEvent) => {
@@ -318,19 +375,24 @@ export default function ShortcutTile({
   return (
     <>
       <div
-        className={`${styles.container} ${keyboardFocus ? styles.keyboardFocus : ''} ${isNavigating ? styles.navigating : ''} ${isGroupPreviewTarget ? styles.groupPreviewTarget : ''}`}
+        className={`${styles.container} ${keyboardFocus ? styles.keyboardFocus : ''} ${isNavigating ? styles.navigating : ''} ${isGroupPreviewTarget ? styles.groupPreviewTarget : ''} ${isGlobalEditing ? styles.globalEditing : ''}`}
         ref={containerRef}
         onContextMenu={handleContextMenu}
-        title={t('dragClickEnter')}
+        title={isGlobalEditing ? t('editModeHint') : t('dragClickEnter')}
         onClick={navigateToShortcut}
         onKeyDown={handleKeyDown}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        onPointerCancel={handlePointerCancel}
+        data-drag-handle={isGlobalEditing ? 'true' : undefined}
+        style={isGlobalEditing ? { '--wobble-delay': `${(index * 73) % 200}ms` } as React.CSSProperties : undefined}
         tabIndex={0}
         onFocus={() => setKeyboardFocus(true)}
         onBlur={() => {
           setIsNavigating(false);
           setKeyboardFocus(false);
         }}
-        data-no-drag="true"
       >
         <div className={styles.iconWrapper} data-drag-handle="true" title={t('dragClickEnter')}>
           {faviconSrc ? (
@@ -367,7 +429,7 @@ export default function ShortcutTile({
         )}
       </div>
 
-      {showContextMenu && (
+      {showContextMenu && createPortal(
         <div
           ref={contextMenuRef}
           className={styles.contextMenu}
@@ -452,7 +514,8 @@ export default function ShortcutTile({
           <button className={styles.contextMenuItem} onClick={handleCopyTitle}>
             📋 {t('copyTitle')}
           </button>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );

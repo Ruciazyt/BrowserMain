@@ -1,0 +1,56 @@
+.container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.emoji {
+  font-size: 22px;
+  line-height: 1;
+}
+
+.temperature {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1;
+}
+
+.description {
+  font-size: 13px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.divider {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  opacity: 0.5;
+}
+
+.location {
+  font-size: 12px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.aqi {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.aqiValue {
+  color: var(--success);
+  font-weight: 500;
+}
+
+.aqiArrow {
+  font-size: 10px;
+  opacity: 0.4;
+}

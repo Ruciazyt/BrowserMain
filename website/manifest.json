@@ -16,6 +16,10 @@
     "activeTab",
     "identity"
   ],
+  "host_permissions": [
+    "https://momoyu.cc/",
+    "https://push2.eastmoney.com/"
+  ],
   "background": {
     "service_worker": "background/background.js"
   },

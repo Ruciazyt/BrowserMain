@@ -1,12 +1,10 @@
-/* ── Shared import panel styles ── */
-/* Consumed by BookmarkImport, ShortcutImport, and LEDDisplay (import panel view) */
-/* These are isolated import-panel classes — LED-specific .container is kept in LEDDisplay.module.css */
+/* ── Shared import panel styles ─────────────────────────────── */
 
 .container {
   display: flex;
   flex-direction: column;
   height: 100%;
-  background: linear-gradient(180deg, rgba(17, 18, 24, 0.92) 0%, rgba(11, 11, 16, 0.88) 100%);
+  background: #ffffff;
   overflow-x: hidden;
 }
 
@@ -15,11 +13,8 @@
   align-items: center;
   gap: 12px;
   padding: 16px 18px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid var(--border-secondary);
   flex-shrink: 0;
-  background: rgba(255, 255, 255, 0.03);
-  backdrop-filter: var(--blur-sm);
-  -webkit-backdrop-filter: var(--blur-sm);
 }
 
 .backBtn {
@@ -27,25 +22,24 @@
   align-items: center;
   gap: 6px;
   padding: 8px 10px;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-sm);
   font-size: 12px;
-  color: rgba(255, 255, 255, 0.74);
-  border: 1px solid rgba(255, 255, 255, 0.10);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-primary);
   transition: all var(--dur-fast);
-  background: rgba(255, 255, 255, 0.05);
+  background: var(--surface-secondary);
 }
 
 .backBtn:hover {
-  border-color: rgba(255, 149, 0, 0.32);
-  color: var(--led-amber);
-  background: rgba(255, 149, 0, 0.08);
+  border-color: var(--accent-blue);
+  color: var(--accent-blue);
+  background: var(--accent-blue-light);
 }
 
 .headerTitle {
   font-size: 15px;
   font-weight: 600;
-  color: var(--text-bright);
-  letter-spacing: 0.02em;
+  color: var(--text-primary);
 }
 
 /* Loading / Empty / Error / Result states */
@@ -72,7 +66,7 @@
   width: var(--loading-dot-size);
   height: var(--loading-dot-size);
   border-radius: 50%;
-  background: var(--led-amber);
+  background: var(--accent-blue);
   animation: ledDotPulse 1.2s ease-in-out infinite;
 }
 .ledLoading span:nth-child(2) { animation-delay: .2s; }
@@ -80,7 +74,7 @@
 
 .loadingText {
   font-size: 13px;
-  color: var(--text-dim);
+  color: var(--text-tertiary);
 }
 
 .emptyIcon,
@@ -91,7 +85,7 @@
 .emptyText,
 .errorText {
   font-size: 13px;
-  color: var(--text-dim);
+  color: var(--text-tertiary);
   text-align: center;
 }
 
@@ -113,32 +107,29 @@
 .resultTitle {
   font-size: 16px;
   font-weight: 600;
-  color: var(--text-bright);
-  font-family: var(--font-led);
-  text-shadow: 0 0 8px var(--led-amber-glow);
+  color: var(--text-primary);
 }
 
 .resultDetail {
   font-size: 13px;
-  color: var(--text-dim);
+  color: var(--text-tertiary);
   text-align: center;
 }
 
 .doneBtn {
   margin-top: 8px;
   padding: 10px 28px;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-sm);
   font-size: 13px;
-  font-weight: 600;
-  color: var(--led-amber);
-  border: 1px solid var(--led-amber);
-  background: rgba(255, 149, 0, 0.1);
+  font-weight: 500;
+  color: #ffffff;
+  border: none;
+  background: var(--accent-blue);
   transition: all var(--dur-fast);
 }
 
 .doneBtn:hover {
-  background: rgba(255, 149, 0, 0.2);
-  box-shadow: 0 0 12px var(--led-amber-soft);
+  background: #0066d6;
 }
 
 /* Footer */
@@ -148,14 +139,13 @@
   justify-content: space-between;
   gap: 12px;
   padding: 14px 18px;
-  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-top: 1px solid var(--border-secondary);
   flex-shrink: 0;
-  background: rgba(255, 255, 255, 0.03);
 }
 
 .selectedCount {
   font-size: 12px;
-  color: var(--text-dim);
+  color: var(--text-tertiary);
   flex: 1;
   white-space: nowrap;
   overflow: hidden;
@@ -165,12 +155,12 @@
 .importBtn {
   min-height: 40px;
   padding: 8px 18px;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-sm);
   font-size: 13px;
-  font-weight: 600;
-  color: var(--led-amber);
-  border: 1px solid var(--led-amber);
-  background: rgba(255, 149, 0, 0.1);
+  font-weight: 500;
+  color: #ffffff;
+  border: none;
+  background: var(--accent-blue);
   transition: all var(--dur-fast);
   display: flex;
   align-items: center;
@@ -179,8 +169,7 @@
 }
 
 .importBtn:hover:not(:disabled) {
-  background: rgba(255, 149, 0, 0.2);
-  box-shadow: 0 0 12px var(--led-amber-soft);
+  background: #0066d6;
 }
 
 .importBtn:disabled {
@@ -211,7 +200,7 @@
 }
 
 .folderRow:hover {
-  background: rgba(255, 255, 255, 0.04);
+  background: var(--surface-hover);
 }
 
 .expandBtn {
@@ -221,15 +210,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--text-dim);
+  color: var(--text-tertiary);
   transition: all var(--dur-fast);
   background: transparent;
   flex-shrink: 0;
 }
 
 .expandBtn:hover {
-  background: rgba(255, 149, 0, 0.1);
-  color: var(--led-amber);
+  background: var(--surface-hover);
+  color: var(--accent-blue);
 }
 
 .expandPlaceholder {
@@ -250,7 +239,7 @@
   width: 16px;
   height: 16px;
   border-radius: 4px;
-  border: 1.5px solid var(--text-dim);
+  border: 1.5px solid var(--border-primary);
   background: transparent;
   cursor: pointer;
   flex-shrink: 0;
@@ -261,9 +250,8 @@
 }
 
 .checkbox:checked {
-  background: var(--led-amber);
-  border-color: var(--led-amber);
-  box-shadow: 0 0 8px var(--led-amber-soft);
+  background: var(--accent-blue);
+  border-color: var(--accent-blue);
 }
 
 .checkbox:checked::after {
@@ -273,15 +261,15 @@
   top: 1px;
   width: 5px;
   height: 9px;
-  border: 2px solid var(--bg-primary);
+  border: 2px solid #ffffff;
   border-top: none;
   border-left: none;
   transform: rotate(45deg);
 }
 
 .checkbox:indeterminate {
-  background: rgba(255, 149, 0, 0.3);
-  border-color: var(--led-amber);
+  background: var(--accent-blue-light);
+  border-color: var(--accent-blue);
 }
 
 .checkbox:indeterminate::after {
@@ -291,13 +279,13 @@
   top: 5px;
   width: 10px;
   height: 2px;
-  background: var(--led-amber);
+  background: var(--accent-blue);
   border-radius: 1px;
 }
 
 .folderTitle {
   font-size: 13px;
-  color: var(--text-bright);
+  color: var(--text-primary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -305,11 +293,11 @@
 }
 
 .bookmarkCount {
-  font-family: var(--font-led);
+  font-family: var(--font-mono);
   font-size: 11px;
-  color: var(--led-amber);
-  background: rgba(255, 149, 0, 0.1);
-  border: 1px solid rgba(255, 149, 0, 0.3);
+  color: var(--accent-blue);
+  background: var(--accent-blue-light);
+  border: 1px solid rgba(0, 122, 255, 0.15);
   border-radius: var(--radius-pill);
   padding: 2px 8px;
   flex-shrink: 0;

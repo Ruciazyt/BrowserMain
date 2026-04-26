@@ -295,4 +295,153 @@ chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
 
     return true; // async response
   }
+
+  // FETCH_RSS: fetch an RSS feed URL and return the raw text (bypasses CORS)
+  if (msg.type === 'FETCH_RSS') {
+    const { url } = msg;
+    if (!url) {
+      sendResponse({ success: false, error: 'NO_URL' });
+      return;
+    }
+
+    fetch(url, { mode: 'cors' })
+      .then((res) => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.text();
+      })
+      .then((xml) => sendResponse({ success: true, xml }))
+      .catch((err) => sendResponse({ success: false, error: err.message }));
+
+    return true; // async response
+  }
+
+  // FETCH_URL: generic fetch from background (bypasses CORS)
+  if (msg.type === 'FETCH_URL') {
+    const { url } = msg;
+    if (!url) {
+      sendResponse({ success: false, error: 'NO_URL' });
+      return;
+    }
+
+    fetch(url, { mode: 'cors' })
+      .then((res) => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.text();
+      })
+      .then((text) => sendResponse({ success: true, text }))
+      .catch((err) => sendResponse({ success: false, error: err.message }));
+
+    return true;
+  }
+
+  // AI_CHAT: non-streaming OpenAI-compatible request (for test connection)
+  if (msg.type === 'AI_CHAT') {
+    const { endpoint, apiKey, model, messages, temperature, maxTokens } = msg;
+    if (!endpoint || !apiKey) {
+      sendResponse({ success: false, error: 'Missing endpoint or API key' });
+      return;
+    }
+
+    const body = {
+      model: model || 'gpt-3.5-turbo',
+      messages,
+      stream: false,
+    };
+    if (temperature != null) body.temperature = temperature;
+    if (maxTokens != null) body.max_tokens = maxTokens;
+
+    fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bearer ' + apiKey,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(body),
+    })
+      .then((res) => {
+        if (!res.ok) return res.text().then((t) => { throw new Error('HTTP ' + res.status + ': ' + t); });
+        return res.json();
+      })
+      .then((json) => {
+        const content = json.choices?.[0]?.message?.content || '';
+        sendResponse({ success: true, content });
+      })
+      .catch((err) => sendResponse({ success: false, error: err.message }));
+
+    return true;
+  }
+});
+
+// ── AI Streaming via Port ─────────────────────────────────────────────
+chrome.runtime.onConnect.addListener((port) => {
+  if (port.name !== 'AI_CHAT_STREAM') return;
+
+  port.onMessage.addListener(async (msg) => {
+    const { endpoint, apiKey, model, messages, temperature, maxTokens } = msg;
+    if (!endpoint || !apiKey) {
+      port.postMessage({ type: 'error', error: 'Missing endpoint or API key' });
+      return;
+    }
+
+    const body = {
+      model: model || 'gpt-3.5-turbo',
+      messages,
+      stream: true,
+    };
+    if (temperature != null) body.temperature = temperature;
+    if (maxTokens != null) body.max_tokens = maxTokens;
+
+    try {
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + apiKey,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
+      });
+
+      if (!response.ok) {
+        const errText = await response.text();
+        port.postMessage({ type: 'error', error: 'HTTP ' + response.status + ': ' + errText });
+        return;
+      }
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop();
+
+        for (const line of lines) {
+          const trimmed = line.trim();
+          if (!trimmed || !trimmed.startsWith('data: ')) continue;
+          const data = trimmed.slice(6);
+          if (data === '[DONE]') {
+            port.postMessage({ type: 'done' });
+            return;
+          }
+          try {
+            const parsed = JSON.parse(data);
+            const content = parsed.choices && parsed.choices[0] && parsed.choices[0].delta && parsed.choices[0].delta.content;
+            if (content) {
+              port.postMessage({ type: 'chunk', content });
+            }
+          } catch {
+            // skip malformed lines
+          }
+        }
+      }
+
+      port.postMessage({ type: 'done' });
+    } catch (err) {
+      port.postMessage({ type: 'error', error: err.message });
+    }
+  });
 });

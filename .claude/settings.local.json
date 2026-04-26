@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Skill(update-config)",
+      "Skill(update-config:*)",
+      "Bash(npx tsc *)",
+      "Bash(npm run *)",
+      "Bash(python3 -c ' *)",
+      "Bash(findstr /S /I \"useEffect.*background\\\\|background.*useEffect\" *.tsx *.ts)"
+    ]
+  }
+}

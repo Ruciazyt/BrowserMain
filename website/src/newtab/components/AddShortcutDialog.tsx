@@ -164,7 +164,7 @@ export default function AddShortcutDialog({ open, shortcuts, url, title, favicon
       <div className={styles.modal} onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" aria-label={t('addShortcutDialog')}>
         {/* Header */}
         <div className={styles.header}>
-          <span className={styles.headerTitle}>{t('addShortcutDialog').toUpperCase()}</span>
+          <span className={styles.headerTitle}>{t('addShortcutDialog')}</span>
           <button className={styles.closeBtn} onClick={onClose} aria-label={t('close')}>
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
               <path d="M1 1l12 12M13 1L1 13" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>

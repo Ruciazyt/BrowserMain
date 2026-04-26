@@ -1,0 +1,99 @@
+/* ── Market Indices Strip ──────────────────────────────────── */
+.wrap {
+  flex-shrink: 0;
+}
+
+.strip {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+  scrollbar-width: none;
+}
+
+.strip::-webkit-scrollbar {
+  display: none;
+}
+
+/* ── Card ─────────────────────────────────────────────────── */
+.card {
+  flex-shrink: 0;
+  min-width: 140px;
+  padding: 10px 14px;
+  background: var(--surface-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-md);
+  transition: box-shadow var(--dur-fast);
+}
+
+.card:hover {
+  box-shadow: var(--shadow-sm);
+}
+
+.name {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  margin-bottom: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.price {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.02em;
+  margin-bottom: 2px;
+  font-variant-numeric: tabular-nums;
+}
+
+.change {
+  font-size: 12px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.up {
+  color: #16a34a;
+}
+
+.down {
+  color: #dc2626;
+}
+
+/* ── Skeleton ─────────────────────────────────────────────── */
+.skeletonName {
+  width: 56px;
+  height: 12px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, var(--surface-hover) 25%, rgba(0,0,0,0.04) 50%, var(--surface-hover) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  margin-bottom: 6px;
+}
+
+.skeletonPrice {
+  width: 80px;
+  height: 16px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, var(--surface-hover) 25%, rgba(0,0,0,0.04) 50%, var(--surface-hover) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  margin-bottom: 4px;
+}
+
+.skeletonChange {
+  width: 72px;
+  height: 12px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, var(--surface-hover) 25%, rgba(0,0,0,0.04) 50%, var(--surface-hover) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}

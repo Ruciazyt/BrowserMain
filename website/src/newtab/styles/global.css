@@ -1,65 +1,59 @@
 /* ============================================
    BrowserMain - Global Styles
-   Liquid Glass + LED-Matrix Hybrid Theme
+   Clean White Minimalist Theme
    ============================================ */
 
 /* --- CSS Variables --- */
 :root {
   /* Background */
-  --bg-primary: #0a0a0f;
-
-  /* LED Amber — with RGB split for alpha-robust usage */
-  --led-amber: #ff9500;
-  --led-amber-warm: #ffb347;
-  --led-amber-rgb: 255, 149, 0;
-  --led-amber-glow: rgba(255, 149, 0, 0.6);
-  --led-amber-soft: rgba(255, 149, 0, 0.35);
-  --led-amber-mid: rgba(255, 149, 0, 0.50);
+  --bg-primary: #ffffff;
+  --bg-secondary: #f5f5f7;
+  --bg-tertiary: #fafafa;
 
   /* Accent colors */
-  --accent-aqua: #5ee7df;
-  --accent-aqua-rgb: 94, 231, 223;
-  --accent-violet: #7c6aef;
-  --accent-rose: #f875aa;
+  --accent-blue: #007AFF;
+  --accent-blue-rgb: 0, 122, 255;
+  --accent-blue-light: rgba(0, 122, 255, 0.08);
+  --accent-blue-hover: rgba(0, 122, 255, 0.12);
 
   /* Text Colors */
-  --text-primary: #9ca3af;
-  --text-bright: #f5f5f5;
-  --text-dim: rgba(255, 255, 255, 0.38);
+  --text-primary: #1D1D1F;
+  --text-secondary: #86868B;
+  --text-tertiary: #AEAEB2;
+  --text-bright: #000000;
+  --text-dim: rgba(0, 0, 0, 0.35);
 
   /* Semantic Colors */
-  --success: #4ade80;
-  --danger: #ff6b6b;
+  --success: #34C759;
+  --danger: #FF3B30;
 
-  /* Status dot colors (used in AddShortcutDialog) */
-  --status-valid: #22c55e;
-  --status-invalid: #ef4444;
-  --status-duplicate: #f59e0b;
+  /* Status dot colors */
+  --status-valid: #34C759;
+  --status-invalid: #FF3B30;
+  --status-duplicate: #FF9500;
 
-  /* Glass surfaces */
-  --glass-white: rgba(255, 255, 255, 0.10);
-  --glass-white-md: rgba(255, 255, 255, 0.14);
+  /* Surfaces */
+  --surface-primary: #ffffff;
+  --surface-secondary: #f5f5f7;
+  --surface-hover: rgba(0, 0, 0, 0.04);
+  --surface-active: rgba(0, 0, 0, 0.06);
 
-  /* Glass borders */
-  --glass-border: rgba(255, 255, 255, 0.18);
-  --glass-border-subtle: rgba(255, 255, 255, 0.10);
-  --glass-border-bright: rgba(255, 255, 255, 0.28);
+  /* Borders */
+  --border-primary: #E5E5EA;
+  --border-secondary: #F2F2F7;
+  --border-focus: var(--accent-blue);
 
-  /* Blur intensities */
-  --blur-sm: blur(8px) saturate(160%);
-  --blur-md: blur(18px) saturate(180%);
-  --blur-lg: blur(24px) saturate(200%);
-
-  /* Liquid glass shadows */
-  --shadow-glass: 0 8px 32px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.08);
-  --shadow-float: 0 16px 48px rgba(0, 0, 0, 0.38), inset 0 1px 0 rgba(255, 255, 255, 0.12);
-  --shadow-led-glow: 0 0 8px var(--led-amber-glow), 0 0 20px rgba(255, 149, 0, 0.4);
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.10);
+  --shadow-xl: 0 8px 32px rgba(0, 0, 0, 0.12);
 
   /* Typography */
-  --font-led: 'SF Mono', 'SFMono-Regular', 'ui-monospace', 'Menlo', 'Monaco', 'Cascadia Mono', 'Segoe UI Mono', monospace;
   --font-ui: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'SF Pro Display', 'Helvetica Neue', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei UI', sans-serif;
   --font-display: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei UI', sans-serif;
   --font-body: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei UI', sans-serif;
+  --font-mono: 'SF Mono', 'SFMono-Regular', 'ui-monospace', 'Menlo', 'Monaco', 'Cascadia Mono', 'Segoe UI Mono', monospace;
 
   /* Type scale */
   --text-xl: 18px;
@@ -68,13 +62,14 @@
   --text-xs: 10px;
 
   /* Spacing tokens */
+  --space-xs: 4px;
   --space-sm: 8px;
-  /* NOTE: --space-lg removed — was defined but unused across the codebase */
+  --space-md: 16px;
+  --space-lg: 24px;
 
   /* Transitions */
   --dur-fast: 150ms ease-out;
   --dur-mid: 250ms ease-out;
-  --ease-liquid: cubic-bezier(0.34, 1.56, 0.64, 1);
   --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
 
   /* Border Radius */
@@ -83,41 +78,9 @@
   --radius-lg: 16px;
   --radius-xl: 24px;
   --radius-pill: 999px;
+
   /* Loading dot token */
   --loading-dot-size: 4px;
-}
-
-/* ── Blob Scene ──────────────────────────────────────────────── */
-.blob-scene {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  overflow: hidden;
-  pointer-events: none;
-}
-
-.blob {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(60px);
-  opacity: 0.45;
-  animation: blobFloat 18s ease-in-out infinite;
-}
-
-.blob-img {
-  width: 100vw;
-  height: 100vh;
-  top: 0;
-  left: 0;
-  animation: blobFloat 25s ease-in-out infinite;
-  opacity: 0.6;
-}
-
-@keyframes blobFloat {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  25%       { transform: translate(2%, 3%) scale(1.03); }
-  50%       { transform: translate(-1.5%, -2%) scale(0.98); }
-  75%       { transform: translate(1%, -1%) scale(1.01); }
 }
 
 /* --- Reset --- */
@@ -136,15 +99,15 @@ body {
 
 #root { width: 100%; min-height: 100vh; letter-spacing: 0; }
 
-/* --- Scrollbar (Aqua Accent) --- */
+/* --- Scrollbar --- */
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb {
-  background: rgba(var(--accent-aqua-rgb, 94, 231, 223), 0.35);
+  background: rgba(0, 0, 0, 0.15);
   border-radius: 2px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(var(--accent-aqua-rgb, 94, 231, 223), 0.55);
+  background: rgba(0, 0, 0, 0.25);
 }
 
 /* --- Typography --- */
@@ -154,11 +117,11 @@ h1, h2, h3, h4 {
   font-family: var(--font-ui);
 }
 a {
-  color: var(--led-amber);
+  color: var(--accent-blue);
   text-decoration: none;
   transition: color var(--dur-fast), opacity var(--dur-fast);
 }
-a:hover { color: var(--led-amber-warm); }
+a:hover { opacity: 0.8; }
 button {
   font-family: var(--font-ui);
   cursor: pointer;
@@ -171,26 +134,23 @@ input, textarea {
   outline: none;
 }
 
-/* --- Autofill Override (remove yellow background) --- */
+/* --- Autofill Override --- */
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,
 input:-webkit-autofill:active {
   -webkit-box-shadow: 0 0 0 1000px var(--bg-primary) inset !important;
-  -webkit-text-fill-color: rgba(255, 255, 255, 0.90) !important;
-  caret-color: rgba(255, 255, 255, 0.90) !important;
+  -webkit-text-fill-color: var(--text-primary) !important;
+  caret-color: var(--text-primary) !important;
   background-color: var(--bg-primary) !important;
 }
 
 /* --- Focus --- */
 :focus { outline: none; }
-:focus-visible {
-  outline: none;
-}
 
 /* --- Selection --- */
 ::selection {
-  background: rgba(var(--accent-aqua-rgb), 0.22);
+  background: rgba(var(--accent-blue-rgb), 0.15);
   color: var(--text-bright);
 }
 
@@ -204,7 +164,7 @@ input:-webkit-autofill:active {
   width: var(--loading-dot-size);
   height: var(--loading-dot-size);
   border-radius: 50%;
-  background: var(--led-amber-mid);
+  background: var(--accent-blue);
   animation: dotPulse 1.4s ease-in-out infinite;
 }
 .loading-dots span:nth-child(2) { animation-delay: .2s; }
@@ -214,13 +174,13 @@ input:-webkit-autofill:active {
   50% { opacity: 1; transform: scale(1); }
 }
 
-/* --- Shared LED dot animation (consumed by SettingsPanel, BookmarkImport) --- */
+/* --- Shared dot animation --- */
 @keyframes ledDotPulse {
   0%, 100% { opacity: 0.3; transform: scale(0.8); }
   50% { opacity: 1; transform: scale(1); }
 }
 
-/* --- Shared fade-in animation (consumed by SettingsPanel, AddShortcutDialog) --- */
+/* --- Shared fade-in animation --- */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(-4px); }
   to   { opacity: 1; transform: translateY(0); }

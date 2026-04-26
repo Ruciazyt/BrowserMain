@@ -1,13 +1,13 @@
-/* ── Search bar — glass capsule + portal dropdown ─────────────── */
+/* ── Search bar — clean white pill ──────────────────────────── */
 .outer {
   width: 100%;
-  max-width: 500px;
+  max-width: 560px;
   transition: max-width 0.35s ease;
   min-width: 0;
 }
 
 .outer:focus-within {
-  max-width: 560px;
+  max-width: 620px;
 }
 
 .container {
@@ -15,23 +15,19 @@
   display: flex;
   align-items: center;
   gap: 0;
-  background: var(--glass-white-md);
-  backdrop-filter: var(--blur-md);
-  -webkit-backdrop-filter: var(--blur-md);
-  border: 1px solid var(--glass-border);
-  border-radius: 50px;
+  background: var(--surface-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: 999px;
   padding: 0;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+  box-shadow: var(--shadow-sm);
   transition:
-    background 0.3s ease,
     box-shadow 0.3s ease,
     border-color 0.3s ease;
 }
 
 .container:focus-within {
-  background: rgba(255, 255, 255, 0.22);
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
-  border-color: var(--glass-border-bright);
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.12), var(--shadow-md);
 }
 
 .searchIcon {
@@ -39,9 +35,9 @@
   align-items: center;
   justify-content: center;
   width: 44px;
-  height: 48px;
+  height: 44px;
   flex-shrink: 0;
-  color: var(--text-bright);
+  color: var(--text-tertiary);
   padding-left: 6px;
 }
 
@@ -49,29 +45,29 @@
   position: relative;
   flex-shrink: 0;
   padding: 0 4px 0 0;
-  height: 48px;
+  height: 44px;
   display: flex;
   align-items: center;
-  border-right: 1px solid rgba(255, 255, 255, 0.2);
+  border-right: 1px solid var(--border-primary);
 }
 
 .engineButton {
   display: flex;
   align-items: center;
   gap: 4px;
-  height: 34px;
+  height: 32px;
   padding: 0 10px;
   border-radius: 20px;
   background: transparent;
   cursor: pointer;
   transition: background 150ms;
-  color: rgba(255, 255, 255, 0.9);
+  color: var(--text-primary);
   flex-shrink: 0;
   border: none;
 }
 
 .engineButton:hover {
-  background: rgba(255, 255, 255, 0.12);
+  background: var(--surface-hover);
 }
 
 .engineButton svg:first-child {
@@ -82,23 +78,21 @@
 .engineButton svg:last-child {
   width: 12px;
   height: 12px;
-  opacity: 0.7;
+  opacity: 0.5;
 }
 
-/* Portal dropdown：纯色底，避免与父级毛玻璃叠层 */
+/* Portal dropdown — white bg */
 .dropdown {
-  background-color: #14161c !important;
+  background-color: #ffffff !important;
   background-image: none !important;
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
-  border: 1px solid rgba(255, 255, 255, 0.22);
-  border-radius: 12px;
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-md);
   overflow: hidden;
   max-height: 420px;
   overflow-y: auto;
-  box-shadow:
-    0 2px 0 rgba(0, 0, 0, 0.35) inset,
-    0 16px 48px rgba(0, 0, 0, 0.65);
+  box-shadow: var(--shadow-xl);
   isolation: isolate;
 }
 
@@ -110,7 +104,7 @@
   padding: 10px 14px;
   cursor: pointer;
   transition: background 150ms;
-  color: rgba(255, 255, 255, 0.9);
+  color: var(--text-primary);
   font-size: var(--text-sm);
   text-align: left;
   border: none;
@@ -119,12 +113,12 @@
 }
 
 .dropdownItem:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--surface-hover);
 }
 
 .dropdownItem.selected {
-  background: rgba(94, 231, 223, 0.18);
-  color: var(--accent-aqua);
+  background: var(--accent-blue-light);
+  color: var(--accent-blue);
 }
 
 .dropdownItem svg {
@@ -135,13 +129,13 @@
 
 .checkmark {
   margin-left: auto;
-  color: var(--accent-aqua);
+  color: var(--accent-blue);
 }
 
 .divider {
   width: 1px;
   height: 22px;
-  background: rgba(255, 255, 255, 0.2);
+  background: var(--border-primary);
   flex-shrink: 0;
 }
 
@@ -151,7 +145,7 @@
   align-items: center;
   flex: 1;
   min-width: 0;
-  height: 48px;
+  height: 44px;
   padding: 0 8px 0 12px;
 }
 
@@ -159,7 +153,7 @@
   flex: 1;
   background: transparent;
   border: none;
-  color: rgba(255, 255, 255, 0.95);
+  color: var(--text-primary);
   font-size: var(--text-md);
   font-family: var(--font-ui), 'Segoe UI', system-ui, sans-serif;
   min-width: 0;
@@ -168,7 +162,7 @@
 }
 
 .input::placeholder {
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--text-tertiary);
 }
 
 .shortcutHintInline {
@@ -182,19 +176,18 @@
 .kbdBadge {
   display: inline-flex;
   align-items: center;
+  gap: 4px;
   padding: 2px 8px;
-  background: rgba(255, 149, 0, 0.12);
-  border: 1px solid rgba(255, 149, 0, 0.3);
+  background: var(--surface-secondary);
+  border: 1px solid var(--border-primary);
   border-radius: 6px;
-  color: var(--led-amber);
-  font-family: var(--font-led);
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
   font-size: var(--text-xs);
   font-weight: 500;
-  letter-spacing: 0.3px;
-  text-shadow: 0 0 8px var(--led-amber-glow);
   cursor: default;
   user-select: none;
-  opacity: 0.90;
+  opacity: 0.7;
   transition: opacity var(--dur-fast);
 }
 
@@ -207,26 +200,25 @@
 }
 
 .searchBtn {
-  height: 48px;
+  height: 44px;
   padding: 0 18px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(255, 255, 255, 0.12);
+  background: var(--accent-blue);
   border: none;
-  border-left: 1px solid rgba(255, 255, 255, 0.2);
-  color: rgba(255, 255, 255, 0.95);
+  color: #ffffff;
   flex-shrink: 0;
   transition: background 150ms;
   cursor: pointer;
   font-size: var(--text-sm);
   font-family: var(--font-ui), 'Segoe UI', sans-serif;
-  font-weight: 600;
-  border-radius: 0 50px 50px 0;
+  font-weight: 500;
+  border-radius: 0 999px 999px 0;
 }
 
 .searchBtn:hover {
-  background: rgba(255, 255, 255, 0.2);
+  background: #0066d6;
 }
 
 .searchBtn svg {
@@ -242,7 +234,7 @@
   align-items: center;
   justify-content: center;
   background: transparent;
-  color: rgba(255, 255, 255, 0.45);
+  color: var(--text-tertiary);
   flex-shrink: 0;
   transition: all 150ms;
   border: none;
@@ -252,11 +244,11 @@
 }
 
 .clearBtn:hover {
-  background: rgba(255, 255, 255, 0.12);
-  color: rgba(255, 255, 255, 0.85);
+  background: var(--surface-hover);
+  color: var(--text-primary);
 }
 
 .clearBtn svg {
-  width: 10px;
-  height: 10px;
+  width: 12px;
+  height: 12px;
 }

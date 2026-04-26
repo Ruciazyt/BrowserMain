@@ -78,6 +78,8 @@ function SortableShortcutWrap({
   onAdd,
   existingGroups,
   isGroupPreviewTarget,
+  isGlobalEditing,
+  onEnterEditMode,
 }: {
   shortcut: Shortcut;
   index: number;
@@ -90,6 +92,8 @@ function SortableShortcutWrap({
   onAdd?: () => void;
   existingGroups: string[];
   isGroupPreviewTarget?: boolean;
+  isGlobalEditing?: boolean;
+  onEnterEditMode?: () => void;
 }) {
   return (
     <div
@@ -109,6 +113,8 @@ function SortableShortcutWrap({
         onAdd={onAdd}
         existingGroups={existingGroups}
         isGroupPreviewTarget={isGroupPreviewTarget}
+        isGlobalEditing={isGlobalEditing}
+        onEnterEditMode={onEnterEditMode}
       />
     </div>
   );
@@ -130,6 +136,7 @@ export default function ShortcutGrid({ shortcuts, onDelete, onUpdate, onReorder,
   const [activeDragId, setActiveDragId] = useState<string | null>(null);
   const [groupPreviewTargetId, setGroupPreviewTargetId] = useState<string | null>(null);
   const [dragActive, setDragActive] = useState(false);
+  const [isGlobalEditing, setIsGlobalEditing] = useState(false);
 
   useEffect(() => {
     const el = panelRef.current;
@@ -285,6 +292,15 @@ export default function ShortcutGrid({ shortcuts, onDelete, onUpdate, onReorder,
   const globalIndex = (shortcutId: string) => flat.findIndex((shortcut) => shortcut.id === shortcutId);
 
   useEffect(() => {
+    if (!isGlobalEditing) return;
+    const handler = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') setIsGlobalEditing(false);
+    };
+    document.addEventListener('keydown', handler);
+    return () => document.removeEventListener('keydown', handler);
+  }, [isGlobalEditing]);
+
+  useEffect(() => {
     sortableInstancesRef.current.forEach((instance) => instance.destroy());
     sortableInstancesRef.current = [];
 
@@ -296,7 +312,7 @@ export default function ShortcutGrid({ shortcuts, onDelete, onUpdate, onReorder,
         group: 'browsermain-shortcuts',
         draggable: '[data-shortcut-id]',
         handle: '[data-drag-handle="true"]',
-        filter: 'button, input, textarea, [data-no-drag="true"]',
+        filter: 'input, textarea',
         preventOnFilter: false,
         animation: 180,
         easing: 'cubic-bezier(0.22, 1, 0.36, 1)',
@@ -307,7 +323,7 @@ export default function ShortcutGrid({ shortcuts, onDelete, onUpdate, onReorder,
         chosenClass: styles.sortableChosen,
         dragClass: styles.sortableDrag,
         forceFallback: false,
-        delayOnTouchOnly: true,
+        disabled: !isGlobalEditing,
         onStart: (event: SortableEvent) => {
           const dragged = event.item as HTMLElement;
           setActiveDragId(dragged.dataset.shortcutId || null);
@@ -352,6 +368,10 @@ export default function ShortcutGrid({ shortcuts, onDelete, onUpdate, onReorder,
           return true;
         },
         onEnd: (event: SortableEvent) => {
+          // Immediately clean up ghost/chosen/drag classes from all containers
+          document.querySelectorAll(`.${styles.sortableGhost}, .${styles.sortableChosen}, .${styles.sortableDrag}`).forEach((el) => {
+            el.classList.remove(styles.sortableGhost, styles.sortableChosen, styles.sortableDrag);
+          });
           const activeId = (event.item as HTMLElement).dataset.shortcutId || null;
           const overId = dropTargetIdRef.current;
           if (activeId && groupPreviewTargetId && overId === groupPreviewTargetId && activeId !== overId) {
@@ -372,25 +392,47 @@ export default function ShortcutGrid({ shortcuts, onDelete, onUpdate, onReorder,
     });
 
     return () => {
-      sortableInstancesRef.current.forEach((instance) => instance.destroy());
+      // Clean up ghost/chosen/drag classes before destroying instances
+      sortableInstancesRef.current.forEach((instance) => {
+        instance.el.querySelectorAll(`.${styles.sortableGhost}, .${styles.sortableChosen}, .${styles.sortableDrag}`).forEach((el) => {
+          el.classList.remove(styles.sortableGhost, styles.sortableChosen, styles.sortableDrag);
+        });
+        instance.destroy();
+      });
       sortableInstancesRef.current = [];
       clearGroupIntent();
     };
   }, [groups, flat, existingGroups, groupPreviewTargetId, t]);
 
+  // Toggle sortable enabled/disabled when edit mode changes — no destroy/recreate
+  useEffect(() => {
+    sortableInstancesRef.current.forEach((instance) => {
+      instance.option('disabled', !isGlobalEditing);
+    });
+  }, [isGlobalEditing]);
+
   return (
     <div className={`${styles.panel} ${dragActive ? styles.dragActive : ''}`} ref={panelRef}>
-      <div className={styles.cardTitle}>{t('shortcutsTitle')}</div>
       {shortcuts.length > 0 && (
         <div className={styles.headerRow}>
-          <span />
-          <span className={styles.count}>
-            {t('shortcutsCount', {
-              count: shortcuts.length,
-              groupSuffix: groups.length > 1 ? t('groupSuffix', { count: groups.length }) : '',
-            })}
-          </span>
-          <span className={styles.hint}>{t('rightClickToEdit')}</span>
+          <span className={styles.headerTitle}>{t('shortcutsTitle')}</span>
+          <button
+            className={`${styles.editBtn} ${isGlobalEditing ? styles.editBtnActive : ''}`}
+            title={isGlobalEditing ? t('done') : t('edit')}
+            onClick={() => setIsGlobalEditing((prev) => !prev)}
+          >
+            {isGlobalEditing ? (
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="20 6 9 17 4 12"/>
+              </svg>
+            ) : (
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+                <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+              </svg>
+            )}
+            {isGlobalEditing ? t('done') : t('edit')}
+          </button>
         </div>
       )}
       {shortcuts.length === 0 ? (
@@ -450,6 +492,8 @@ export default function ShortcutGrid({ shortcuts, onDelete, onUpdate, onReorder,
                   onAdd={onAdd}
                   existingGroups={existingGroups}
                   isGroupPreviewTarget={groupPreviewTargetId === shortcut.id && activeDragId !== shortcut.id}
+                  isGlobalEditing={isGlobalEditing}
+                  onEnterEditMode={() => setIsGlobalEditing(true)}
                 />
               ))}
               {onAdd && groupIndex === groups.length - 1 && (
@@ -467,6 +511,7 @@ export default function ShortcutGrid({ shortcuts, onDelete, onUpdate, onReorder,
                   title={t('addShortcut')}
                 >
                   <span className={styles.addTileIcon}>+</span>
+                  <span className={styles.addTileLabel}>{t('addWebsite')}</span>
                 </button>
               )}
             </div>

@@ -3,6 +3,13 @@ import { Settings, BackgroundConfig, getSettings, saveSettings } from '../utils/
 
 export type AppLocale = 'system' | 'zh-CN' | 'en';
 
+interface AIConfigUpdate {
+  aiEndpoint?: string;
+  aiModel?: string;
+  aiTemperature?: number;
+  aiMaxTokens?: number;
+}
+
 interface SettingsContextValue {
   settings: Settings;
   loading: boolean;
@@ -11,6 +18,7 @@ interface SettingsContextValue {
   updateUserName: (name: string) => Promise<void>;
   updateClockFormat: (clockIs24h: boolean) => Promise<void>;
   updateLocale: (locale: AppLocale) => Promise<void>;
+  updateAIConfig: (config: AIConfigUpdate) => void;
 }
 
 const SettingsContext = createContext<SettingsContextValue | null>(null);
@@ -72,6 +80,14 @@ function useSettingsState(): SettingsContextValue {
     });
   }, []);
 
+  const updateAIConfig = useCallback((config: AIConfigUpdate) => {
+    setSettings((prev) => {
+      const newSettings = { ...prev, ...config };
+      saveSettings(newSettings);
+      return newSettings;
+    });
+  }, []);
+
   return {
     settings,
     loading,
@@ -80,6 +96,7 @@ function useSettingsState(): SettingsContextValue {
     updateUserName,
     updateClockFormat,
     updateLocale,
+    updateAIConfig,
   };
 }
 
