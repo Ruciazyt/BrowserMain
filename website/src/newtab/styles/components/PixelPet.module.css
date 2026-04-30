@@ -1,0 +1,799 @@
+/* ── Pixel Pet — multi-species pixel-art pets ────────────── */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 6px 0 2px;
+  user-select: none;
+  position: relative;
+  flex-shrink: 0;
+}
+
+/* ── Species selector ─────────────────────────────────── */
+.selector {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 6px;
+}
+
+.speciesBtn {
+  width: 22px;
+  height: 22px;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--border-primary);
+  background: var(--surface-secondary);
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--dur-fast);
+  padding: 0;
+  line-height: 1;
+}
+
+.speciesBtn:hover {
+  border-color: var(--accent-blue);
+  background: var(--accent-blue-light);
+}
+
+.speciesBtn.active {
+  border-color: var(--accent-blue);
+  background: var(--accent-blue-light);
+  box-shadow: 0 0 0 1px var(--accent-blue);
+}
+
+/* ── Pixel canvas ─────────────────────────────────────── */
+.canvasWrap {
+  position: relative;
+  width: 64px;
+  height: 52px;
+  cursor: pointer;
+}
+
+.canvas {
+  position: relative;
+  width: 64px;
+  height: 52px;
+  animation: float 3s ease-in-out infinite;
+}
+
+.canvas:hover {
+  animation-play-state: paused;
+}
+
+/* ── Base pixel element ───────────────────────────────── */
+.pixel {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  top: 0;
+  left: 0;
+  background: transparent;
+}
+
+/* ── British Shorthair (英短) — round face, gray-blue ── */
+.pixelBritish {
+  composes: pixel;
+  box-shadow:
+    /* Left ear */
+    8px  0px  0 0 #7E9CA0,
+    12px 0px  0 0 #7E9CA0,
+    4px  4px  0 0 #4A6A6E,
+    8px  4px  0 0 #7E9CA0,
+    12px 4px  0 0 #7E9CA0,
+    16px 4px  0 0 #4A6A6E,
+    /* Right ear */
+    44px 0px  0 0 #7E9CA0,
+    48px 0px  0 0 #7E9CA0,
+    40px 4px  0 0 #4A6A6E,
+    44px 4px  0 0 #7E9CA0,
+    48px 4px  0 0 #7E9CA0,
+    52px 4px  0 0 #4A6A6E,
+    /* Head top */
+    8px  8px  0 0 #4A6A6E,
+    12px 8px  0 0 #7E9CA0,
+    16px 8px  0 0 #7E9CA0,
+    20px 8px  0 0 #7E9CA0,
+    24px 8px  0 0 #7E9CA0,
+    28px 8px  0 0 #7E9CA0,
+    32px 8px  0 0 #7E9CA0,
+    36px 8px  0 0 #7E9CA0,
+    40px 8px  0 0 #7E9CA0,
+    44px 8px  0 0 #4A6A6E,
+    /* Eyes row */
+    8px  12px 0 0 #4A6A6E,
+    12px 12px 0 0 #7E9CA0,
+    16px 12px 0 0 #D4763C,
+    20px 12px 0 0 #4A6A6E,
+    24px 12px 0 0 #7E9CA0,
+    28px 12px 0 0 #7E9CA0,
+    32px 12px 0 0 #4A6A6E,
+    36px 12px 0 0 #D4763C,
+    40px 12px 0 0 #7E9CA0,
+    44px 12px 0 0 #4A6A6E,
+    /* Nose row */
+    8px  16px 0 0 #4A6A6E,
+    12px 16px 0 0 #7E9CA0,
+    16px 16px 0 0 #7E9CA0,
+    20px 16px 0 0 #7E9CA0,
+    24px 16px 0 0 #E8A0BF,
+    28px 16px 0 0 #E8A0BF,
+    32px 16px 0 0 #7E9CA0,
+    36px 16px 0 0 #7E9CA0,
+    40px 16px 0 0 #7E9CA0,
+    44px 16px 0 0 #4A6A6E,
+    /* Mouth row */
+    12px 20px 0 0 #4A6A6E,
+    16px 20px 0 0 #7E9CA0,
+    20px 20px 0 0 #7E9CA0,
+    24px 20px 0 0 #9AB5B8,
+    28px 20px 0 0 #9AB5B8,
+    32px 20px 0 0 #7E9CA0,
+    36px 20px 0 0 #7E9CA0,
+    40px 20px 0 0 #4A6A6E,
+    /* Chin */
+    16px 24px 0 0 #4A6A6E,
+    20px 24px 0 0 #7E9CA0,
+    24px 24px 0 0 #9AB5B8,
+    28px 24px 0 0 #9AB5B8,
+    32px 24px 0 0 #7E9CA0,
+    36px 24px 0 0 #4A6A6E,
+    /* Body top */
+    12px 28px 0 0 #4A6A6E,
+    16px 28px 0 0 #7E9CA0,
+    20px 28px 0 0 #9AB5B8,
+    24px 28px 0 0 #9AB5B8,
+    28px 28px 0 0 #9AB5B8,
+    32px 28px 0 0 #9AB5B8,
+    36px 28px 0 0 #7E9CA0,
+    40px 28px 0 0 #4A6A6E,
+    /* Body mid */
+    12px 32px 0 0 #4A6A6E,
+    16px 32px 0 0 #7E9CA0,
+    20px 32px 0 0 #9AB5B8,
+    24px 32px 0 0 #C0D5D8,
+    28px 32px 0 0 #C0D5D8,
+    32px 32px 0 0 #9AB5B8,
+    36px 32px 0 0 #7E9CA0,
+    40px 32px 0 0 #4A6A6E,
+    /* Body lower */
+    12px 36px 0 0 #4A6A6E,
+    16px 36px 0 0 #7E9CA0,
+    20px 36px 0 0 #7E9CA0,
+    24px 36px 0 0 #9AB5B8,
+    28px 36px 0 0 #9AB5B8,
+    32px 36px 0 0 #7E9CA0,
+    36px 36px 0 0 #7E9CA0,
+    40px 36px 0 0 #4A6A6E,
+    /* Legs */
+    12px 40px 0 0 #4A6A6E,
+    16px 40px 0 0 #7E9CA0,
+    20px 40px 0 0 #7E9CA0,
+    32px 40px 0 0 #7E9CA0,
+    36px 40px 0 0 #7E9CA0,
+    40px 40px 0 0 #4A6A6E,
+    /* Paws */
+    8px  44px 0 0 #4A6A6E,
+    12px 44px 0 0 #4A6A6E,
+    16px 44px 0 0 #4A6A6E,
+    20px 44px 0 0 #4A6A6E,
+    32px 44px 0 0 #4A6A6E,
+    36px 44px 0 0 #4A6A6E,
+    40px 44px 0 0 #4A6A6E,
+    44px 44px 0 0 #4A6A6E,
+    /* Tail */
+    44px 28px 0 0 #7E9CA0,
+    48px 24px 0 0 #7E9CA0,
+    52px 20px 0 0 #7E9CA0,
+    52px 16px 0 0 #4A6A6E;
+}
+
+.blinkBritish {
+  composes: pixel;
+  box-shadow:
+    20px 12px 0 0 #7E9CA0,
+    32px 12px 0 0 #7E9CA0;
+  opacity: 0;
+  transition: opacity 0.05s;
+}
+
+/* ── Golden Retriever (金毛) — floppy ears, golden ──── */
+.pixelGolden {
+  composes: pixel;
+  box-shadow:
+    /* Left floppy ear */
+    0px  8px  0 0 #B8863C,
+    4px  8px  0 0 #C89848,
+    0px  12px 0 0 #B8863C,
+    4px  12px 0 0 #C89848,
+    /* Right floppy ear */
+    52px 8px  0 0 #B8863C,
+    56px 8px  0 0 #C89848,
+    52px 12px 0 0 #B8863C,
+    56px 12px 0 0 #C89848,
+    /* Head top */
+    12px 4px  0 0 #D4A550,
+    16px 4px  0 0 #D4A550,
+    20px 4px  0 0 #D4A550,
+    24px 4px  0 0 #D4A550,
+    28px 4px  0 0 #D4A550,
+    32px 4px  0 0 #D4A550,
+    36px 4px  0 0 #D4A550,
+    40px 4px  0 0 #D4A550,
+    /* Head */
+    8px  8px  0 0 #C09040,
+    12px 8px  0 0 #D4A550,
+    16px 8px  0 0 #D4A550,
+    20px 8px  0 0 #D4A550,
+    24px 8px  0 0 #D4A550,
+    28px 8px  0 0 #D4A550,
+    32px 8px  0 0 #D4A550,
+    36px 8px  0 0 #D4A550,
+    40px 8px  0 0 #D4A550,
+    44px 8px  0 0 #C09040,
+    /* Eyes row */
+    8px  12px 0 0 #C09040,
+    12px 12px 0 0 #D4A550,
+    16px 12px 0 0 #3A3A3A,
+    20px 12px 0 0 #D4A550,
+    24px 12px 0 0 #D4A550,
+    28px 12px 0 0 #D4A550,
+    32px 12px 0 0 #D4A550,
+    36px 12px 0 0 #3A3A3A,
+    40px 12px 0 0 #D4A550,
+    44px 12px 0 0 #C09040,
+    /* Snout row */
+    8px  16px 0 0 #C09040,
+    12px 16px 0 0 #D4A550,
+    16px 16px 0 0 #D4A550,
+    20px 16px 0 0 #EBD8A0,
+    24px 16px 0 0 #EBD8A0,
+    28px 16px 0 0 #3A3A3A,
+    32px 16px 0 0 #EBD8A0,
+    36px 16px 0 0 #D4A550,
+    40px 16px 0 0 #D4A550,
+    44px 16px 0 0 #C09040,
+    /* Mouth row */
+    12px 20px 0 0 #C09040,
+    16px 20px 0 0 #D4A550,
+    20px 20px 0 0 #EBD8A0,
+    24px 20px 0 0 #EBD8A0,
+    28px 20px 0 0 #EBD8A0,
+    32px 20px 0 0 #EBD8A0,
+    36px 20px 0 0 #D4A550,
+    40px 20px 0 0 #C09040,
+    /* Tongue */
+    24px 24px 0 0 #E87070,
+    28px 24px 0 0 #E87070,
+    /* Body top */
+    8px  28px 0 0 #C09040,
+    12px 28px 0 0 #D4A550,
+    16px 28px 0 0 #D4A550,
+    20px 28px 0 0 #EBD8A0,
+    24px 28px 0 0 #EBD8A0,
+    28px 28px 0 0 #EBD8A0,
+    32px 28px 0 0 #EBD8A0,
+    36px 28px 0 0 #D4A550,
+    40px 28px 0 0 #D4A550,
+    44px 28px 0 0 #C09040,
+    /* Body mid */
+    8px  32px 0 0 #C09040,
+    12px 32px 0 0 #D4A550,
+    16px 32px 0 0 #EBD8A0,
+    20px 32px 0 0 #EBD8A0,
+    24px 32px 0 0 #EBD8A0,
+    28px 32px 0 0 #EBD8A0,
+    32px 32px 0 0 #EBD8A0,
+    36px 32px 0 0 #EBD8A0,
+    40px 32px 0 0 #D4A550,
+    44px 32px 0 0 #C09040,
+    /* Body lower */
+    12px 36px 0 0 #C09040,
+    16px 36px 0 0 #D4A550,
+    20px 36px 0 0 #D4A550,
+    24px 36px 0 0 #D4A550,
+    28px 36px 0 0 #D4A550,
+    32px 36px 0 0 #D4A550,
+    36px 36px 0 0 #D4A550,
+    40px 36px 0 0 #C09040,
+    /* Legs */
+    12px 40px 0 0 #C09040,
+    16px 40px 0 0 #D4A550,
+    20px 40px 0 0 #D4A550,
+    32px 40px 0 0 #D4A550,
+    36px 40px 0 0 #D4A550,
+    40px 40px 0 0 #C09040,
+    /* Paws */
+    8px  44px 0 0 #C09040,
+    12px 44px 0 0 #C09040,
+    16px 44px 0 0 #C09040,
+    20px 44px 0 0 #C09040,
+    32px 44px 0 0 #C09040,
+    36px 44px 0 0 #C09040,
+    40px 44px 0 0 #C09040,
+    44px 44px 0 0 #C09040,
+    /* Tail */
+    44px 28px 0 0 #D4A550,
+    48px 24px 0 0 #D4A550,
+    52px 20px 0 0 #EBD8A0,
+    56px 16px 0 0 #EBD8A0;
+}
+
+.blinkGolden {
+  composes: pixel;
+  box-shadow:
+    16px 12px 0 0 #D4A550,
+    36px 12px 0 0 #D4A550;
+  opacity: 0;
+  transition: opacity 0.05s;
+}
+
+/* ── Husky (哈士奇) — pointy ears, mask, blue eyes ──── */
+.pixelHusky {
+  composes: pixel;
+  box-shadow:
+    /* Left ear */
+    8px  0px  0 0 #3A3A3A,
+    12px 0px  0 0 #3A3A3A,
+    4px  4px  0 0 #555555,
+    8px  4px  0 0 #3A3A3A,
+    12px 4px  0 0 #3A3A3A,
+    16px 4px  0 0 #555555,
+    /* Right ear */
+    44px 0px  0 0 #3A3A3A,
+    48px 0px  0 0 #3A3A3A,
+    40px 4px  0 0 #555555,
+    44px 4px  0 0 #3A3A3A,
+    48px 4px  0 0 #3A3A3A,
+    52px 4px  0 0 #555555,
+    /* Head — mask top */
+    8px  8px  0 0 #555555,
+    12px 8px  0 0 #555555,
+    16px 8px  0 0 #FFFFFF,
+    20px 8px  0 0 #FFFFFF,
+    24px 8px  0 0 #FFFFFF,
+    28px 8px  0 0 #FFFFFF,
+    32px 8px  0 0 #FFFFFF,
+    36px 8px  0 0 #FFFFFF,
+    40px 8px  0 0 #555555,
+    44px 8px  0 0 #555555,
+    /* Eyes — heterochromia: left blue, right brown */
+    8px  12px 0 0 #555555,
+    12px 12px 0 0 #FFFFFF,
+    16px 12px 0 0 #4ABED4,
+    20px 12px 0 0 #555555,
+    24px 12px 0 0 #FFFFFF,
+    28px 12px 0 0 #FFFFFF,
+    32px 12px 0 0 #555555,
+    36px 12px 0 0 #8B5E3C,
+    40px 12px 0 0 #FFFFFF,
+    44px 12px 0 0 #555555,
+    /* Nose row */
+    8px  16px 0 0 #555555,
+    12px 16px 0 0 #FFFFFF,
+    16px 16px 0 0 #FFFFFF,
+    20px 16px 0 0 #FFFFFF,
+    24px 16px 0 0 #3A3A3A,
+    28px 16px 0 0 #3A3A3A,
+    32px 16px 0 0 #FFFFFF,
+    36px 16px 0 0 #FFFFFF,
+    40px 16px 0 0 #FFFFFF,
+    44px 16px 0 0 #555555,
+    /* Mouth */
+    12px 20px 0 0 #555555,
+    16px 20px 0 0 #FFFFFF,
+    20px 20px 0 0 #FFFFFF,
+    24px 20px 0 0 #AAAAAA,
+    28px 20px 0 0 #AAAAAA,
+    32px 20px 0 0 #FFFFFF,
+    36px 20px 0 0 #FFFFFF,
+    40px 20px 0 0 #555555,
+    /* Chin */
+    16px 24px 0 0 #555555,
+    20px 24px 0 0 #FFFFFF,
+    24px 24px 0 0 #FFFFFF,
+    28px 24px 0 0 #FFFFFF,
+    32px 24px 0 0 #FFFFFF,
+    36px 24px 0 0 #555555,
+    /* Body top */
+    12px 28px 0 0 #555555,
+    16px 28px 0 0 #FFFFFF,
+    20px 28px 0 0 #FFFFFF,
+    24px 28px 0 0 #FFFFFF,
+    28px 28px 0 0 #FFFFFF,
+    32px 28px 0 0 #FFFFFF,
+    36px 28px 0 0 #FFFFFF,
+    40px 28px 0 0 #555555,
+    /* Body mid */
+    12px 32px 0 0 #555555,
+    16px 32px 0 0 #FFFFFF,
+    20px 32px 0 0 #E8E8E8,
+    24px 32px 0 0 #E8E8E8,
+    28px 32px 0 0 #E8E8E8,
+    32px 32px 0 0 #E8E8E8,
+    36px 32px 0 0 #FFFFFF,
+    40px 32px 0 0 #555555,
+    /* Body lower */
+    12px 36px 0 0 #555555,
+    16px 36px 0 0 #FFFFFF,
+    20px 36px 0 0 #FFFFFF,
+    24px 36px 0 0 #FFFFFF,
+    28px 36px 0 0 #FFFFFF,
+    32px 36px 0 0 #FFFFFF,
+    36px 36px 0 0 #FFFFFF,
+    40px 36px 0 0 #555555,
+    /* Legs */
+    12px 40px 0 0 #555555,
+    16px 40px 0 0 #FFFFFF,
+    20px 40px 0 0 #FFFFFF,
+    32px 40px 0 0 #FFFFFF,
+    36px 40px 0 0 #FFFFFF,
+    40px 40px 0 0 #555555,
+    /* Paws */
+    8px  44px 0 0 #555555,
+    12px 44px 0 0 #555555,
+    16px 44px 0 0 #555555,
+    20px 44px 0 0 #555555,
+    32px 44px 0 0 #555555,
+    36px 44px 0 0 #555555,
+    40px 44px 0 0 #555555,
+    44px 44px 0 0 #555555,
+    /* Curled tail */
+    44px 24px 0 0 #FFFFFF,
+    48px 20px 0 0 #FFFFFF,
+    52px 24px 0 0 #555555,
+    52px 28px 0 0 #555555;
+}
+
+.blinkHusky {
+  composes: pixel;
+  box-shadow:
+    20px 12px 0 0 #FFFFFF,
+    32px 12px 0 0 #FFFFFF;
+  opacity: 0;
+  transition: opacity 0.05s;
+}
+
+/* ── Original blue cat (默认蓝猫) ───────────────────── */
+.pixelBlue {
+  composes: pixel;
+  box-shadow:
+    /* Left ear */
+    4px  0px  0 0 #007AFF,
+    8px  0px  0 0 #007AFF,
+    0px  4px  0 0 #1D1D1F,
+    4px  4px  0 0 #007AFF,
+    8px  4px  0 0 #007AFF,
+    12px 4px  0 0 #1D1D1F,
+    0px  8px  0 0 #1D1D1F,
+    4px  8px  0 0 #007AFF,
+    8px  8px  0 0 #007AFF,
+    12px 8px  0 0 #1D1D1F,
+    /* Right ear */
+    44px 0px  0 0 #007AFF,
+    48px 0px  0 0 #007AFF,
+    40px 4px  0 0 #1D1D1F,
+    44px 4px  0 0 #007AFF,
+    48px 4px  0 0 #007AFF,
+    52px 4px  0 0 #1D1D1F,
+    40px 8px  0 0 #1D1D1F,
+    44px 8px  0 0 #007AFF,
+    48px 8px  0 0 #007AFF,
+    52px 8px  0 0 #1D1D1F,
+    /* Head top */
+    8px  12px 0 0 #1D1D1F,
+    12px 12px 0 0 #007AFF,
+    16px 12px 0 0 #007AFF,
+    20px 12px 0 0 #007AFF,
+    24px 12px 0 0 #007AFF,
+    28px 12px 0 0 #007AFF,
+    32px 12px 0 0 #007AFF,
+    36px 12px 0 0 #007AFF,
+    40px 12px 0 0 #007AFF,
+    44px 12px 0 0 #1D1D1F,
+    /* Eyes row */
+    8px  16px 0 0 #1D1D1F,
+    12px 16px 0 0 #007AFF,
+    16px 16px 0 0 #ffffff,
+    20px 16px 0 0 #1D1D1F,
+    24px 16px 0 0 #007AFF,
+    28px 16px 0 0 #007AFF,
+    32px 16px 0 0 #1D1D1F,
+    36px 16px 0 0 #ffffff,
+    40px 16px 0 0 #007AFF,
+    44px 16px 0 0 #1D1D1F,
+    /* Nose row */
+    8px  20px 0 0 #1D1D1F,
+    12px 20px 0 0 #007AFF,
+    16px 20px 0 0 #007AFF,
+    20px 20px 0 0 #007AFF,
+    24px 20px 0 0 #FF9500,
+    28px 20px 0 0 #FF9500,
+    32px 20px 0 0 #007AFF,
+    36px 20px 0 0 #007AFF,
+    40px 20px 0 0 #007AFF,
+    44px 20px 0 0 #1D1D1F,
+    /* Mouth row */
+    12px 24px 0 0 #1D1D1F,
+    16px 24px 0 0 #007AFF,
+    20px 24px 0 0 #007AFF,
+    24px 24px 0 0 #86868B,
+    28px 24px 0 0 #86868B,
+    32px 24px 0 0 #007AFF,
+    36px 24px 0 0 #007AFF,
+    40px 24px 0 0 #1D1D1F,
+    /* Head bottom */
+    16px 28px 0 0 #1D1D1F,
+    20px 28px 0 0 #007AFF,
+    24px 28px 0 0 #007AFF,
+    28px 28px 0 0 #007AFF,
+    32px 28px 0 0 #007AFF,
+    36px 28px 0 0 #1D1D1F,
+    /* Body top */
+    12px 32px 0 0 #1D1D1F,
+    16px 32px 0 0 #007AFF,
+    20px 32px 0 0 #007AFF,
+    24px 32px 0 0 #007AFF,
+    28px 32px 0 0 #007AFF,
+    32px 32px 0 0 #007AFF,
+    36px 32px 0 0 #007AFF,
+    40px 32px 0 0 #1D1D1F,
+    /* Body mid */
+    12px 36px 0 0 #1D1D1F,
+    16px 36px 0 0 #007AFF,
+    20px 36px 0 0 #ffffff,
+    24px 36px 0 0 #ffffff,
+    28px 36px 0 0 #ffffff,
+    32px 36px 0 0 #007AFF,
+    36px 36px 0 0 #007AFF,
+    40px 36px 0 0 #1D1D1F,
+    /* Body lower */
+    12px 40px 0 0 #1D1D1F,
+    16px 40px 0 0 #007AFF,
+    20px 40px 0 0 #007AFF,
+    24px 40px 0 0 #007AFF,
+    28px 40px 0 0 #007AFF,
+    32px 40px 0 0 #007AFF,
+    36px 40px 0 0 #007AFF,
+    40px 40px 0 0 #1D1D1F,
+    /* Legs */
+    12px 44px 0 0 #1D1D1F,
+    16px 44px 0 0 #007AFF,
+    20px 44px 0 0 #007AFF,
+    32px 44px 0 0 #007AFF,
+    36px 44px 0 0 #007AFF,
+    40px 44px 0 0 #1D1D1F,
+    /* Paws */
+    8px  48px 0 0 #1D1D1F,
+    12px 48px 0 0 #1D1D1F,
+    16px 48px 0 0 #1D1D1F,
+    20px 48px 0 0 #1D1D1F,
+    32px 48px 0 0 #1D1D1F,
+    36px 48px 0 0 #1D1D1F,
+    40px 48px 0 0 #1D1D1F,
+    44px 48px 0 0 #1D1D1F,
+    /* Tail */
+    44px 32px 0 0 #007AFF,
+    48px 28px 0 0 #007AFF,
+    52px 24px 0 0 #007AFF,
+    52px 20px 0 0 #1D1D1F;
+}
+
+.blinkBlue {
+  composes: pixel;
+  box-shadow:
+    20px 16px 0 0 #007AFF,
+    32px 16px 0 0 #007AFF;
+  opacity: 0;
+  transition: opacity 0.05s;
+}
+
+/* ── Blink state ─────────────────────────────────────── */
+.blink .blinkBritish,
+.blink .blinkGolden,
+.blink .blinkHusky,
+.blink .blinkBlue {
+  opacity: 1;
+}
+
+/* ── Tail animation (CSS tail element) ───────────────── */
+.tail {
+  position: absolute;
+  right: -2px;
+  bottom: 8px;
+  width: 4px;
+  height: 10px;
+  border-radius: 2px 2px 0 0;
+  transform-origin: bottom center;
+  animation: tailWag 1.5s ease-in-out infinite;
+}
+
+.tailBritish { background: #7E9CA0; }
+.tailGolden  { background: #D4A550; }
+.tailHusky   { background: #FFFFFF; }
+.tailBlue    { background: #007AFF; }
+
+/* ── Float / bob animation ───────────────────────────── */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+@keyframes tailWag {
+  0%, 100% { transform: rotate(-15deg); }
+  50% { transform: rotate(15deg); }
+}
+
+/* ── Zzz bubble ──────────────────────────────────────── */
+.zzz {
+  position: absolute;
+  top: -2px;
+  right: -8px;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--accent-blue);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.sleep .zzz {
+  animation: zzzFloat 2s ease-in-out infinite;
+}
+
+@keyframes zzzFloat {
+  0% { opacity: 0; transform: translate(0, 0) scale(0.6); }
+  20% { opacity: 1; }
+  100% { opacity: 0; transform: translate(8px, -18px) scale(1.2); }
+}
+
+/* ── Sleep state ─────────────────────────────────────── */
+.sleep .canvas {
+  animation: float 4s ease-in-out infinite;
+  opacity: 0.7;
+}
+
+.sleep .tail {
+  animation-duration: 3s;
+}
+
+/* ── Happy particles ─────────────────────────────────── */
+.particles {
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 64px;
+  height: 32px;
+  pointer-events: none;
+  overflow: visible;
+}
+
+.particle {
+  position: absolute;
+  font-size: 10px;
+  opacity: 0;
+  animation: particlePop 0.8s ease-out forwards;
+}
+
+.particle:nth-child(1) { left: 10%; animation-delay: 0s; }
+.particle:nth-child(2) { left: 35%; animation-delay: 0.1s; }
+.particle:nth-child(3) { left: 60%; animation-delay: 0.2s; }
+.particle:nth-child(4) { left: 85%; animation-delay: 0.15s; }
+
+@keyframes particlePop {
+  0% { opacity: 0; transform: translateY(0) scale(0.5); }
+  30% { opacity: 1; transform: translateY(-8px) scale(1); }
+  100% { opacity: 0; transform: translateY(-24px) scale(0.3); }
+}
+
+/* ── Happy state — bounce ────────────────────────────── */
+.happy .canvas {
+  animation: happyBounce 0.5s ease-in-out;
+}
+
+@keyframes happyBounce {
+  0%, 100% { transform: translateY(0) scale(1); }
+  30% { transform: translateY(-8px) scale(1.05); }
+  60% { transform: translateY(-2px) scale(0.98); }
+}
+
+/* ── Eating animation ────────────────────────────────── */
+.eating .canvas {
+  animation: eat 0.6s ease-in-out;
+}
+
+@keyframes eat {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  25% { transform: translateY(2px) rotate(-3deg); }
+  50% { transform: translateY(0) rotate(0deg); }
+  75% { transform: translateY(2px) rotate(3deg); }
+}
+
+/* ── Food emoji ──────────────────────────────────────── */
+.foodEmoji {
+  position: absolute;
+  bottom: -2px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 12px;
+  animation: foodDrop 0.6s ease-in forwards;
+  pointer-events: none;
+}
+
+@keyframes foodDrop {
+  0% { opacity: 1; transform: translateX(-50%) translateY(-16px); }
+  60% { opacity: 1; transform: translateX(-50%) translateY(0); }
+  100% { opacity: 0; transform: translateX(-50%) translateY(0) scale(0.5); }
+}
+
+/* ── Mood bar ────────────────────────────────────────── */
+.moodBar {
+  width: 56px;
+  height: 4px;
+  background: var(--border-secondary);
+  border-radius: 2px;
+  margin-top: 4px;
+  overflow: hidden;
+  position: relative;
+}
+
+.moodFill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.5s var(--ease-smooth), background 0.5s;
+}
+
+.moodHigh   { background: var(--success); }
+.moodMedium { background: #FF9500; }
+.moodLow    { background: var(--danger); }
+
+/* ── Status text ─────────────────────────────────────── */
+.status {
+  font-size: var(--text-xs);
+  color: var(--text-tertiary);
+  margin-top: 2px;
+  min-height: 14px;
+  white-space: nowrap;
+  transition: opacity var(--dur-fast);
+}
+
+/* ── Action buttons ──────────────────────────────────── */
+.actions {
+  display: flex;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.actionBtn {
+  width: 24px;
+  height: 24px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-primary);
+  background: var(--surface-secondary);
+  font-size: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--dur-fast);
+  padding: 0;
+  line-height: 1;
+}
+
+.actionBtn:hover {
+  background: var(--accent-blue-light);
+  border-color: var(--accent-blue);
+  transform: translateY(-1px);
+}
+
+.actionBtn:active {
+  transform: translateY(0);
+}
+
+.actionBtn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  transform: none;
+}

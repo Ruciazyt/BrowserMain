@@ -137,6 +137,18 @@ export default function ShortcutGrid({ shortcuts, onDelete, onUpdate, onReorder,
   const [groupPreviewTargetId, setGroupPreviewTargetId] = useState<string | null>(null);
   const [dragActive, setDragActive] = useState(false);
   const [isGlobalEditing, setIsGlobalEditing] = useState(false);
+  const [renamingGroupName, setRenamingGroupName] = useState<string | null>(null);
+  const [renameInputValue, setRenameInputValue] = useState('');
+  const renameInputRef = useRef<HTMLInputElement>(null);
+
+  // Refs for values consumed by SortableJS callbacks — kept in sync so the
+  // Sortable-create effect doesn't need to re-run on every data change.
+  const flatRef = useRef(flat);
+  flatRef.current = flat;
+  const groupsRef = useRef(groups);
+  groupsRef.current = groups;
+  const groupPreviewTargetIdRef = useRef(groupPreviewTargetId);
+  groupPreviewTargetIdRef.current = groupPreviewTargetId;
 
   useEffect(() => {
     const el = panelRef.current;
@@ -156,6 +168,25 @@ export default function ShortcutGrid({ shortcuts, onDelete, onUpdate, onReorder,
     [shortcuts]
   );
 
+  const startRenameGroup = (groupName: string) => {
+    setRenamingGroupName(groupName);
+    setRenameInputValue(groupName === 'Default' ? '' : groupName);
+    setTimeout(() => renameInputRef.current?.select(), 0);
+  };
+
+  const commitGroupRename = (oldName: string, newName: string) => {
+    setRenamingGroupName(null);
+    const trimmed = newName.trim();
+    if (!trimmed || trimmed === oldName) return;
+    const target = trimmed === 'Default' ? undefined : trimmed;
+    for (const s of shortcuts) {
+      const g = s.group?.trim() || 'Default';
+      if (g === oldName) {
+        onUpdate(s.id, { group: target });
+      }
+    }
+  };
+
   const clearGroupIntent = () => {
     if (groupIntentTimerRef.current !== null) {
       window.clearTimeout(groupIntentTimerRef.current);
@@ -173,7 +204,7 @@ export default function ShortcutGrid({ shortcuts, onDelete, onUpdate, onReorder,
   };
 
   const buildOrderFromDom = (): string[] => {
-    return groups.flatMap((group) => {
+    return groupsRef.current.flatMap((group) => {
       const container = groupContainerRefs.current[group.name];
       if (!container) return [];
       return Array.from(container.querySelectorAll<HTMLElement>('[data-shortcut-id]'))
@@ -183,12 +214,12 @@ export default function ShortcutGrid({ shortcuts, onDelete, onUpdate, onReorder,
   };
 
   const applyOrderedIds = (orderedIds: string[]) => {
-    if (orderedIds.length !== flat.length) return;
-    const shortcutMap = new Map(flat.map((shortcut) => [shortcut.id, shortcut]));
+    if (orderedIds.length !== flatRef.current.length) return;
+    const shortcutMap = new Map(flatRef.current.map((shortcut) => [shortcut.id, shortcut]));
     const merged = orderedIds.reduce<Shortcut[]>((acc, id, index) => {
       const shortcut = shortcutMap.get(id);
       if (!shortcut) return acc;
-      const container = groups
+      const container = groupsRef.current
         .map((group) => groupContainerRefs.current[group.name])
         .find((node) => node?.querySelector(`[data-shortcut-id="${id}"]`));
       const groupName = container?.dataset.groupName;
@@ -200,23 +231,23 @@ export default function ShortcutGrid({ shortcuts, onDelete, onUpdate, onReorder,
       return acc;
     }, []);
 
-    if (merged.length === flat.length) {
+    if (merged.length === flatRef.current.length) {
       onReorder(merged);
     }
   };
 
   const applyGroupMerge = (activeId: string, overId: string) => {
-    const activeShortcut = flat.find((shortcut) => shortcut.id === activeId);
-    const overShortcut = flat.find((shortcut) => shortcut.id === overId);
+    const activeShortcut = flatRef.current.find((shortcut) => shortcut.id === activeId);
+    const overShortcut = flatRef.current.find((shortcut) => shortcut.id === overId);
     if (!activeShortcut || !overShortcut) return;
 
     const targetGroup = normalizeGroupName(overShortcut.group)
       || createUniqueGroupName(overShortcut.title.trim() || t('defaultGroupName'), existingGroups);
 
     const orderedIds = buildOrderFromDom();
-    if (orderedIds.length !== flat.length) return;
+    if (orderedIds.length !== flatRef.current.length) return;
 
-    const shortcutMap = new Map(flat.map((shortcut) => [shortcut.id, shortcut]));
+    const shortcutMap = new Map(flatRef.current.map((shortcut) => [shortcut.id, shortcut]));
     const merged = orderedIds.map((id, index) => {
       const shortcut = shortcutMap.get(id)!;
       if (id === activeId || id === overId) {
@@ -304,7 +335,7 @@ export default function ShortcutGrid({ shortcuts, onDelete, onUpdate, onReorder,
     sortableInstancesRef.current.forEach((instance) => instance.destroy());
     sortableInstancesRef.current = [];
 
-    groups.forEach((group) => {
+    groupsRef.current.forEach((group) => {
       const container = groupContainerRefs.current[group.name];
       if (!container) return;
 
@@ -341,8 +372,8 @@ export default function ShortcutGrid({ shortcuts, onDelete, onUpdate, onReorder,
             return true;
           }
 
-          const activeShortcut = flat.find((shortcut) => shortcut.id === activeId);
-          const overShortcut = flat.find((shortcut) => shortcut.id === overId);
+          const activeShortcut = flatRef.current.find((shortcut) => shortcut.id === activeId);
+          const overShortcut = flatRef.current.find((shortcut) => shortcut.id === overId);
           if (!activeShortcut || !overShortcut) {
             clearGroupIntent();
             return true;
@@ -394,14 +425,14 @@ export default function ShortcutGrid({ shortcuts, onDelete, onUpdate, onReorder,
 
           const activeId = (event.item as HTMLElement).dataset.shortcutId || null;
           const overId = dropTargetIdRef.current;
-          if (activeId && groupPreviewTargetId && overId === groupPreviewTargetId && activeId !== overId) {
+          if (activeId && groupPreviewTargetIdRef.current && overId === groupPreviewTargetIdRef.current && activeId !== overId) {
             applyGroupMerge(activeId, overId);
             resetDragState();
             return;
           }
 
           const orderedIds = buildOrderFromDom();
-          if (orderedIds.length === flat.length) {
+          if (orderedIds.length === flatRef.current.length) {
             applyOrderedIds(orderedIds);
           }
           resetDragState();
@@ -422,7 +453,7 @@ export default function ShortcutGrid({ shortcuts, onDelete, onUpdate, onReorder,
       sortableInstancesRef.current = [];
       clearGroupIntent();
     };
-  }, [groups, flat, existingGroups, groupPreviewTargetId, t]);
+  }, [existingGroups, t]);
 
   // Toggle sortable enabled/disabled when edit mode changes — no destroy/recreate
   useEffect(() => {
@@ -486,9 +517,28 @@ export default function ShortcutGrid({ shortcuts, onDelete, onUpdate, onReorder,
         groups.map((group, groupIndex) => (
           <div key={group.name} className={styles.groupSection}>
             {groups.length > 1 && (
-              <div className={styles.groupHeader}>
-                <span className={styles.groupName}>{group.name}</span>
-                <span className={styles.groupCount}>({group.shortcuts.length})</span>
+              <div className={styles.groupHeader} onClick={() => renamingGroupName !== group.name && startRenameGroup(group.name)}>
+                {renamingGroupName === group.name ? (
+                  <input
+                    ref={renameInputRef}
+                    className={styles.groupRenameInput}
+                    value={renameInputValue}
+                    onChange={(e) => setRenameInputValue(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') { commitGroupRename(group.name, renameInputValue); }
+                      if (e.key === 'Escape') { setRenamingGroupName(null); }
+                    }}
+                    onBlur={() => commitGroupRename(group.name, renameInputValue)}
+                    onClick={(e) => e.stopPropagation()}
+                    placeholder={t('groupRenamePlaceholder')}
+                    maxLength={30}
+                  />
+                ) : (
+                  <>
+                    <span className={styles.groupName}>{group.name}</span>
+                    <span className={styles.groupCount}>({group.shortcuts.length})</span>
+                  </>
+                )}
               </div>
             )}
             <div

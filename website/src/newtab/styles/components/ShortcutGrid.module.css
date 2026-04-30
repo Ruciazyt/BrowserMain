@@ -270,6 +270,12 @@
   border-radius: 4px;
   background: rgba(0, 122, 255, 0.06);
   border: 1px solid rgba(0, 122, 255, 0.12);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.groupHeader:hover {
+  background: rgba(0, 122, 255, 0.1);
 }
 
 .groupName {
@@ -283,6 +289,22 @@
 .groupCount {
   font-size: var(--text-md);
   color: #999999;
+}
+
+.groupRenameInput {
+  font-size: var(--text-md);
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  color: #007AFF;
+  background: transparent;
+  border: none;
+  outline: none;
+  border-bottom: 1.5px solid #007AFF;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  min-width: 0;
 }
 
 .groupTiles {
