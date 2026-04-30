@@ -367,27 +367,6 @@ export default function SettingsPanel({ open, onClose, initialView = 'main', onB
                   />
                 </div>
 
-                <div className={styles.fieldRow}>
-                  <label className={styles.fieldLabel}>{t('aiTemperature')}: {settings.aiTemperature ?? 0.7}</label>
-                  <input
-                    type="range" min="0" max="2" step="0.1"
-                    value={settings.aiTemperature ?? 0.7}
-                    onChange={(e) => updateAIConfig({ aiTemperature: parseFloat(e.target.value) })}
-                    style={{ width: '100%' }}
-                  />
-                </div>
-
-                <div className={styles.fieldRow}>
-                  <label className={styles.fieldLabel}>{t('aiMaxTokens')}</label>
-                  <input
-                    type="number"
-                    className={styles.fieldInput}
-                    value={settings.aiMaxTokens || ''}
-                    onChange={(e) => updateAIConfig({ aiMaxTokens: e.target.value ? parseInt(e.target.value) : undefined })}
-                    placeholder={t('aiMaxTokensPlaceholder')}
-                  />
-                </div>
-
                 <button
                   className={styles.testBtn}
                   onClick={async () => {

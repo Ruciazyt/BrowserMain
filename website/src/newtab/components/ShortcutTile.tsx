@@ -394,15 +394,13 @@ export default function ShortcutTile({
           setKeyboardFocus(false);
         }}
       >
-        <div className={styles.iconWrapper} data-drag-handle="true" title={t('dragClickEnter')}>
+        <div className={styles.iconWrapper} data-drag-handle="true">
           {faviconSrc ? (
             <img
               src={faviconSrc}
               alt=""
               draggable={false}
-              onDragStart={(e) => e.preventDefault()}
               onError={handleFaviconError}
-              title={shortcut.url}
             />
           ) : (
             <GlobeIcon />

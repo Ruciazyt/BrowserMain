@@ -19,7 +19,7 @@
 }
 
 .description {
-  font-size: 13px;
+  font-size: var(--text-md);
   color: var(--text-secondary);
   white-space: nowrap;
 }
@@ -31,13 +31,13 @@
 }
 
 .location {
-  font-size: 12px;
+  font-size: var(--text-md);
   color: var(--text-secondary);
   white-space: nowrap;
 }
 
 .aqi {
-  font-size: 12px;
+  font-size: var(--text-md);
   color: var(--text-tertiary);
   display: flex;
   align-items: center;

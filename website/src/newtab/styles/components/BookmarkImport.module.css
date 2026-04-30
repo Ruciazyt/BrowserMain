@@ -62,7 +62,7 @@
 
 .summaryTitle {
   margin-top: 8px;
-  font-size: 16px;
+  font-size: var(--text-2xl);
   line-height: 1.35;
   color: var(--text-primary);
   font-weight: 600;
@@ -70,7 +70,7 @@
 
 .summaryText {
   margin-top: 6px;
-  font-size: 12px;
+  font-size: var(--text-md);
   line-height: 1.6;
   color: var(--text-secondary);
 }
@@ -108,7 +108,7 @@
   min-width: 0;
   padding: 11px 14px;
   border-radius: var(--radius-sm);
-  font-size: 12px;
+  font-size: var(--text-md);
   background: var(--surface-primary);
   border: 1px solid var(--border-primary);
   color: var(--text-primary);
@@ -133,7 +133,7 @@
   border: 1px solid var(--border-primary);
   background: var(--surface-secondary);
   color: var(--text-primary);
-  font-size: 12px;
+  font-size: var(--text-md);
   transition: all var(--dur-fast);
 }
 
@@ -158,7 +158,7 @@
 }
 
 .toolbarMeta {
-  font-size: 12px;
+  font-size: var(--text-md);
   color: var(--text-tertiary);
 }
 
@@ -185,7 +185,7 @@
 }
 
 .treeHeaderTitle {
-  font-size: 13px;
+  font-size: var(--text-md);
   font-weight: 600;
   color: var(--text-primary);
 }
@@ -215,7 +215,7 @@
 }
 
 .folderTitle {
-  font-size: 12px;
+  font-size: var(--text-md);
   line-height: 1.4;
 }
 
@@ -235,12 +235,12 @@
 }
 
 .emptyResultsTitle {
-  font-size: 14px;
+  font-size: var(--text-md);
   color: var(--text-primary);
 }
 
 .emptyResultsText {
-  font-size: 12px;
+  font-size: var(--text-md);
   color: var(--text-tertiary);
 }
 

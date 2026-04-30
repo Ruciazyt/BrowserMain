@@ -82,10 +82,6 @@
   cursor: grabbing;
 }
 
-.container:hover .iconWrapper {
-  transform: scale(1.05);
-}
-
 .iconWrapper img {
   width: 32px;
   height: 32px;
@@ -103,7 +99,7 @@
 
 /* ── Title ────────────────────────────────────────────────── */
 .title {
-  font-size: 12px;
+  font-size: var(--text-md);
   font-weight: 400;
   color: #333333;
   text-align: center;
@@ -178,7 +174,7 @@
   background: transparent;
   border: none;
   color: #333333;
-  font-size: 13px;
+  font-size: var(--text-md);
   cursor: pointer;
   border-radius: 4px;
   transition: background 100ms ease;
@@ -216,7 +212,7 @@
 }
 
 .submenu .contextMenuItem {
-  font-size: 13px;
+  font-size: var(--text-md);
   padding: 6px 10px;
 }
 
@@ -305,7 +301,7 @@
   border: none;
   color: #ffffff;
   border-radius: 4px;
-  font-size: 11px;
+  font-size: var(--text-md);
   font-weight: 500;
   cursor: pointer;
   transition: background 150ms ease;
@@ -322,7 +318,7 @@
   color: #86868B;
   border: 1px solid #E0E0E0;
   border-radius: 4px;
-  font-size: 11px;
+  font-size: var(--text-md);
   cursor: pointer;
   transition: all 150ms ease;
 }

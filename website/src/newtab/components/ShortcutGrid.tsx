@@ -372,6 +372,26 @@ export default function ShortcutGrid({ shortcuts, onDelete, onUpdate, onReorder,
           document.querySelectorAll(`.${styles.sortableGhost}, .${styles.sortableChosen}, .${styles.sortableDrag}`).forEach((el) => {
             el.classList.remove(styles.sortableGhost, styles.sortableChosen, styles.sortableDrag);
           });
+
+          // Browsers synthesize a click event after native drag-and-drop.
+          // SortableJS cannot reliably suppress it in fallback-less mode,
+          // and React reconciliation after onReorder can race with that click.
+          // Block the next click on ANY shortcut tile (except action buttons)
+          // at the document level — the drop may have shifted tiles under the
+          // cursor, so the click target is not necessarily the dragged item.
+          const blockClick = (e: MouseEvent) => {
+            const target = e.target as HTMLElement;
+            const tile = target.closest('[data-shortcut-id]');
+            if (tile && !target.closest('button, a, input, textarea')) {
+              e.preventDefault();
+              e.stopPropagation();
+              e.stopImmediatePropagation();
+            }
+            document.removeEventListener('click', blockClick, true);
+          };
+          document.addEventListener('click', blockClick, true);
+          window.setTimeout(() => document.removeEventListener('click', blockClick, true), 300);
+
           const activeId = (event.item as HTMLElement).dataset.shortcutId || null;
           const overId = dropTargetIdRef.current;
           if (activeId && groupPreviewTargetId && overId === groupPreviewTargetId && activeId !== overId) {

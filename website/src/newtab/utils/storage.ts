@@ -17,8 +17,6 @@ export interface Settings {
   locale?: 'system' | 'zh-CN' | 'en';
   aiEndpoint?: string;
   aiModel?: string;
-  aiTemperature?: number;
-  aiMaxTokens?: number;
 }
 
 export interface BackgroundConfig {

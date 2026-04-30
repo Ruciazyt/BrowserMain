@@ -6,8 +6,6 @@ export type AppLocale = 'system' | 'zh-CN' | 'en';
 interface AIConfigUpdate {
   aiEndpoint?: string;
   aiModel?: string;
-  aiTemperature?: number;
-  aiMaxTokens?: number;
 }
 
 interface SettingsContextValue {

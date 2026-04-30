@@ -62,8 +62,7 @@ export default function AIAssistant({ collapsed, onToggle }: { collapsed?: boole
       apiKey,
       model: settings.aiModel || 'gpt-4o',
       messages: allMessages,
-      temperature: settings.aiTemperature ?? 0.7,
-      maxTokens: settings.aiMaxTokens,
+      temperature: 0.7,
     });
 
     port.onMessage.addListener((msg: { type: string; content?: string; error?: string }) => {

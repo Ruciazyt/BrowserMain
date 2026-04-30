@@ -19,7 +19,7 @@
 }
 
 .panelTitle {
-  font-size: 15px;
+  font-size: var(--text-2xl);
   font-weight: 600;
   color: var(--text-primary);
 }
@@ -78,7 +78,7 @@
 }
 
 .collapsedLabel {
-  font-size: 11px;
+  font-size: var(--text-md);
   font-weight: 500;
   color: var(--text-secondary);
   writing-mode: vertical-rl;
@@ -98,7 +98,7 @@
 .placeholder {
   text-align: center;
   color: var(--text-tertiary);
-  font-size: 13px;
+  font-size: var(--text-md);
   padding: 40px 0;
   line-height: 1.6;
 }
@@ -106,7 +106,7 @@
 .message {
   padding: 8px 12px;
   border-radius: var(--radius-sm);
-  font-size: 13px;
+  font-size: var(--text-md);
   line-height: 1.5;
   max-width: 85%;
   word-break: break-word;
@@ -161,7 +161,7 @@
   border: 1px solid var(--border-primary);
   background: var(--surface-secondary);
   color: var(--text-primary);
-  font-size: 13px;
+  font-size: var(--text-md);
   outline: none;
   transition: border-color var(--dur-fast);
 }

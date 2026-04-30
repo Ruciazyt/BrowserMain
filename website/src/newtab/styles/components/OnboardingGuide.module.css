@@ -50,7 +50,7 @@
 
 /* ── Content ────────────────────────────────────────────────── */
 .content { padding: 0 26px; text-align: center; }
-.title { font-size: 18px; font-weight: 600; color: var(--text-primary); margin-bottom: 10px; }
+.title { font-size: var(--text-2xl); font-weight: 600; color: var(--text-primary); margin-bottom: 10px; }
 .description { font-size: 14px; color: var(--text-secondary); line-height: 1.65; margin-bottom: 12px; }
 .hint {
   display: inline-block; font-size: 10px;
@@ -70,7 +70,7 @@
 .right { display: flex; justify-content: flex-end; }
 .skipBtn {
   background: none; border: none;
-  color: var(--text-tertiary); font-size: 13px;
+  color: var(--text-tertiary); font-size: var(--text-md);
   cursor: pointer; padding: 8px 12px;
   transition: color var(--dur-fast); font-family: var(--font-body);
 }
@@ -79,14 +79,14 @@
   background: transparent;
   border: 1px solid var(--border-primary);
   color: var(--text-primary);
-  font-size: 13px; font-weight: 500;
+  font-size: var(--text-md); font-weight: 500;
   padding: 8px 16px; border-radius: var(--radius-sm);
   cursor: pointer; transition: all var(--dur-fast); font-family: var(--font-body);
 }
 .prevBtn:hover, .nextBtn:hover { background: var(--surface-hover); border-color: var(--accent-blue); color: var(--accent-blue); }
 .getStartedBtn {
   background: var(--accent-blue);
-  color: #ffffff; font-size: 13px; font-weight: 600;
+  color: #ffffff; font-size: var(--text-md); font-weight: 600;
   padding: 8px 20px; border-radius: var(--radius-sm);
   border: none; cursor: pointer; transition: all var(--dur-fast); font-family: var(--font-body);
 }

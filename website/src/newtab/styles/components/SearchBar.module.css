@@ -105,7 +105,7 @@
   cursor: pointer;
   transition: background 150ms;
   color: var(--text-primary);
-  font-size: var(--text-sm);
+  font-size: var(--text-md);
   text-align: left;
   border: none;
   background: none;
@@ -211,7 +211,7 @@
   flex-shrink: 0;
   transition: background 150ms;
   cursor: pointer;
-  font-size: var(--text-sm);
+  font-size: var(--text-md);
   font-family: var(--font-ui), 'Segoe UI', sans-serif;
   font-weight: 500;
   border-radius: 0 999px 999px 0;

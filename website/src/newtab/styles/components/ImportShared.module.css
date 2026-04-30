@@ -23,7 +23,7 @@
   gap: 6px;
   padding: 8px 10px;
   border-radius: var(--radius-sm);
-  font-size: 12px;
+  font-size: var(--text-md);
   color: var(--text-secondary);
   border: 1px solid var(--border-primary);
   transition: all var(--dur-fast);
@@ -37,7 +37,7 @@
 }
 
 .headerTitle {
-  font-size: 15px;
+  font-size: var(--text-2xl);
   font-weight: 600;
   color: var(--text-primary);
 }
@@ -73,7 +73,7 @@
 .ledLoading span:nth-child(3) { animation-delay: .4s; }
 
 .loadingText {
-  font-size: 13px;
+  font-size: var(--text-md);
   color: var(--text-tertiary);
 }
 
@@ -84,7 +84,7 @@
 
 .emptyText,
 .errorText {
-  font-size: 13px;
+  font-size: var(--text-md);
   color: var(--text-tertiary);
   text-align: center;
 }
@@ -105,13 +105,13 @@
 }
 
 .resultTitle {
-  font-size: 16px;
+  font-size: var(--text-2xl);
   font-weight: 600;
   color: var(--text-primary);
 }
 
 .resultDetail {
-  font-size: 13px;
+  font-size: var(--text-md);
   color: var(--text-tertiary);
   text-align: center;
 }
@@ -120,7 +120,7 @@
   margin-top: 8px;
   padding: 10px 28px;
   border-radius: var(--radius-sm);
-  font-size: 13px;
+  font-size: var(--text-md);
   font-weight: 500;
   color: #ffffff;
   border: none;
@@ -144,7 +144,7 @@
 }
 
 .selectedCount {
-  font-size: 12px;
+  font-size: var(--text-md);
   color: var(--text-tertiary);
   flex: 1;
   white-space: nowrap;
@@ -156,7 +156,7 @@
   min-height: 40px;
   padding: 8px 18px;
   border-radius: var(--radius-sm);
-  font-size: 13px;
+  font-size: var(--text-md);
   font-weight: 500;
   color: #ffffff;
   border: none;
@@ -284,7 +284,7 @@
 }
 
 .folderTitle {
-  font-size: 13px;
+  font-size: var(--text-md);
   color: var(--text-primary);
   white-space: nowrap;
   overflow: hidden;
