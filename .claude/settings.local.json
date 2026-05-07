@@ -8,7 +8,9 @@
       "Bash(python3 -c ' *)",
       "Bash(findstr /S /I \"useEffect.*background\\\\|background.*useEffect\" *.tsx *.ts)",
       "Bash(./node_modules/.bin/tsc --noEmit)",
-      "Bash(npx vite *)"
+      "Bash(npx vite *)",
+      "WebFetch(domain:stitch.withgoogle.com)",
+      "WebSearch"
     ]
   }
 }

@@ -270,7 +270,7 @@ export default function AddShortcutDialog({ open, shortcuts, url, title, favicon
                 <option key={g} value={g} />
               ))}
             </datalist>
-            <span className={styles.pasteHint} style={{ fontSize: 10, opacity: 0.55 }}>
+            <span className={styles.pasteHint} style={{ fontSize: 10, opacity: 0.7 }}>
               {existingGroups.length > 0
                 ? existingGroups.length > 1
                   ? t('groupsAvailablePlural', { count: existingGroups.length })

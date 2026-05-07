@@ -8,10 +8,16 @@
   const groupInput = document.getElementById('group-input');
   const faviconPreview = document.getElementById('favicon-preview');
   const faviconDomain = document.getElementById('favicon-domain');
+  const faviconRow = document.getElementById('favicon-row');
   const msgBar = document.getElementById('msg-bar');
   const form = document.getElementById('form');
+  const btnSave = document.getElementById('btn-save');
   const btnCancel = document.getElementById('btn-cancel');
+  const btnClose = document.getElementById('btn-close');
+  const statusDot = document.getElementById('status-dot');
+  const successFlash = document.getElementById('success-flash');
   const groupDatalist = document.getElementById('group-suggestions');
+  const groupHint = document.getElementById('group-hint');
 
   // ── URL param helpers ────────────────────────────────────────────────────
 
@@ -30,6 +36,15 @@
       return 'https://www.google.com/s2/favicons?domain=' + encodeURIComponent(hostname) + '&sz=64';
     } catch {
       return '';
+    }
+  }
+
+  function isUrl(val) {
+    try {
+      const u = new URL(val);
+      return u.protocol === 'http:' || u.protocol === 'https:';
+    } catch {
+      return false;
     }
   }
 
@@ -56,12 +71,17 @@
     } catch {
       faviconDomain.textContent = initUrl;
     }
+    faviconRow.style.display = '';
   }
 
   // ── Dynamic favicon on URL change ───────────────────────────────────────
 
   urlInput.addEventListener('input', function () {
     const val = urlInput.value.trim();
+    urlInput.classList.remove('input-error');
+    clearMsg();
+    updateStatusDot(val);
+
     if (val) {
       try {
         const { hostname } = new URL(val);
@@ -69,38 +89,56 @@
         faviconPreview.src = getSmartFavicon(val);
       } catch {
         faviconDomain.textContent = val;
-        faviconPreview.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+        faviconPreview.src = '';
       }
+      faviconRow.style.display = '';
     } else {
       faviconDomain.textContent = '—';
-      faviconPreview.src = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+      faviconPreview.src = '';
+      faviconRow.style.display = 'none';
     }
   });
+
+  // ── Status dot ──────────────────────────────────────────────────────────
+
+  function updateStatusDot(val) {
+    if (!val) {
+      statusDot.className = 'status-dot';
+      return;
+    }
+    if (!isUrl(val)) {
+      statusDot.className = 'status-dot invalid';
+      return;
+    }
+    // Check duplicate via storage
+    chrome.storage.local.get('browsermain_shortcuts', function (result) {
+      const shortcuts = result['browsermain_shortcuts'] || [];
+      const isDuplicate = shortcuts.some(function (s) { return s.url.toLowerCase() === val.toLowerCase(); });
+      if (isDuplicate) {
+        statusDot.className = 'status-dot duplicate';
+      } else {
+        statusDot.className = 'status-dot valid';
+      }
+    });
+  }
+
+  updateStatusDot(initUrl);
 
   // ── Helpers ───────────────────────────────────────────────────────────────
 
   function showError(msg) {
-    msgBar.className = 'msg-bar error';
-    msgBar.textContent = msg;
+    msgBar.className = 'msg-bar visible error';
+    msgBar.textContent = '⚠ ' + msg;
   }
 
   function showWarning(msg) {
-    msgBar.className = 'msg-bar warning';
-    msgBar.textContent = msg;
+    msgBar.className = 'msg-bar visible warning';
+    msgBar.textContent = '⚠ ' + msg;
   }
 
   function clearMsg() {
     msgBar.className = 'msg-bar';
     msgBar.textContent = '';
-  }
-
-  function validateUrl(val) {
-    try {
-      const u = new URL(val);
-      return u.protocol === 'http:' || u.protocol === 'https:';
-    } catch {
-      return false;
-    }
   }
 
   // ── Save ─────────────────────────────────────────────────────────────────
@@ -113,36 +151,42 @@
     const title = titleInput.value.trim();
 
     if (!url) {
-      urlInput.classList.add('error');
+      urlInput.classList.add('input-error');
       showError('URL is required');
       urlInput.focus();
       return;
     }
 
-    if (!validateUrl(url)) {
-      urlInput.classList.add('error');
+    if (!isUrl(url)) {
+      urlInput.classList.add('input-error');
       showError('Enter a valid http/https URL');
       urlInput.focus();
       return;
     }
 
-    // Build favicon from current URL if not set
     const favicon = faviconPreview.src && !faviconPreview.src.startsWith('data:')
       ? faviconPreview.src
       : getSmartFavicon(url);
 
     const group = groupInput.value.trim() || undefined;
 
+    btnSave.disabled = true;
+
     chrome.runtime.sendMessage(
       { type: 'ADD_SHORTCUT', url, title, favicon, group },
-      (response) => {
+      function (response) {
+        btnSave.disabled = false;
+
         if (chrome.runtime.lastError) {
           showError('Extension error: ' + chrome.runtime.lastError.message);
           return;
         }
+
         if (response && response.success) {
           chrome.runtime.sendMessage({ type: 'SHORTCUT_ADDED' });
-          setTimeout(() => window.close(), 50);
+          form.style.display = 'none';
+          successFlash.classList.add('visible');
+          setTimeout(function () { window.close(); }, 800);
         } else if (response && response.duplicate) {
           showWarning('Already in your shortcuts');
         } else {
@@ -164,24 +208,30 @@
       option.value = g;
       groupDatalist.appendChild(option);
     });
+    if (groups.length > 0) {
+      groupHint.textContent = groups.length === 1
+        ? '1 group available'
+        : groups.length + ' groups available';
+    } else {
+      groupHint.textContent = 'No groups yet';
+    }
   });
 
-  // ── Cancel ────────────────────────────────────────────────────────────────
+  // ── Cancel / Close ──────────────────────────────────────────────────────
 
-  btnCancel.addEventListener('click', function () {
-    window.close();
-  });
+  btnCancel.addEventListener('click', function () { window.close(); });
+  btnClose.addEventListener('click', function () { window.close(); });
 
-  // ── Escape closes popup ───────────────────────────────────────────────────
+  // ── Escape closes popup ─────────────────────────────────────────────────
 
   document.addEventListener('keydown', function (e) {
     if (e.key === 'Escape') window.close();
   });
 
-  // ── Clear error state on input ───────────────────────────────────────────
+  // ── Clear error state on input ──────────────────────────────────────────
 
   urlInput.addEventListener('input', function () {
-    urlInput.classList.remove('error');
+    urlInput.classList.remove('input-error');
     clearMsg();
   });
 

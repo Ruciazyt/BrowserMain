@@ -7,18 +7,18 @@
   gap: 6px;
   width: 100px;
   height: 100px;
-  border-radius: 4px;
+  border-radius: var(--radius-xs);
   cursor: pointer;
   transition: background 150ms ease;
-  background: #FFFFFF;
-  border: 1px solid #E0E0E0;
+  background: var(--surface-primary);
+  border: 1px solid var(--hairline);
   position: relative;
   user-select: none;
   overflow: visible;
 }
 
 .container:hover {
-  background: #F8F8F8;
+  background: var(--canvas-parchment);
 }
 
 .container.dragging {
@@ -28,16 +28,16 @@
 }
 
 .container.dragOver {
-  background: #F0F5FF;
+  background: var(--accent-blue-light);
 }
 
 .groupPreviewTarget {
-  background: #F0F5FF;
-  box-shadow: inset 0 0 0 2px rgba(0, 122, 255, 0.35);
+  background: var(--accent-blue-light);
+  box-shadow: inset 0 0 0 2px rgba(0, 102, 204, 0.35);
 }
 
 .groupPreviewTarget .iconWrapper {
-  border-color: rgba(0, 122, 255, 0.3);
+  border-color: rgba(0, 102, 204, 0.3);
 }
 
 .groupPreviewBadge {
@@ -46,7 +46,7 @@
   right: -2px;
   padding: 2px 6px;
   border-radius: 999px;
-  background: #007AFF;
+  background: var(--accent-blue);
   color: #ffffff;
   font-size: 8px;
   font-weight: 700;
@@ -58,7 +58,7 @@
 
 .container.dropBefore,
 .container.dropAfter {
-  outline: 2px solid #007AFF;
+  outline: 2px solid var(--accent-blue);
   outline-offset: -2px;
 }
 
@@ -66,7 +66,7 @@
 .iconWrapper {
   width: 32px;
   height: 32px;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   overflow: hidden;
   display: flex;
   align-items: center;
@@ -94,14 +94,14 @@
 .iconFallback {
   width: 32px;
   height: 32px;
-  color: #999999;
+  color: var(--text-tertiary);
 }
 
 /* ── Title ────────────────────────────────────────────────── */
 .title {
   font-size: var(--text-md);
   font-weight: 400;
-  color: #333333;
+  color: var(--ink-muted-80);
   text-align: center;
   max-width: 90px;
   overflow: hidden;
@@ -132,7 +132,7 @@
   height: 18px;
   border-radius: 50%;
   background: rgba(0, 0, 0, 0.06);
-  color: #999999;
+  color: var(--text-tertiary);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -157,10 +157,10 @@
 .contextMenu {
   position: fixed;
   z-index: 9999;
-  background: #FFFFFF;
-  border: 1px solid #E0E0E0;
-  border-radius: 6px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.03);
+  background: var(--surface-primary);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-xl);
   padding: 4px;
   min-width: 140px;
 }
@@ -173,17 +173,17 @@
   padding: 8px 12px;
   background: transparent;
   border: none;
-  color: #333333;
+  color: var(--ink-muted-80);
   font-size: var(--text-md);
   cursor: pointer;
-  border-radius: 4px;
+  border-radius: var(--radius-xs);
   transition: background 100ms ease;
   text-align: left;
 }
 
 .contextMenuItem:hover {
-  background: #F8F8F8;
-  color: #1D1D1F;
+  background: var(--canvas-parchment);
+  color: var(--text-primary);
 }
 
 .contextMenuItemWrapper {
@@ -202,9 +202,9 @@
   left: 100%;
   top: 0;
   min-width: 140px;
-  background: #FFFFFF;
-  border: 1px solid #E0E0E0;
-  border-radius: 6px;
+  background: var(--surface-primary);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-sm);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.03);
   padding: 4px;
   z-index: 10000;
@@ -217,8 +217,8 @@
 }
 
 .submenu .contextMenuItem:hover {
-  background: rgba(0, 122, 255, 0.06);
-  color: #007AFF;
+  background: rgba(0, 102, 204, 0.06);
+  color: var(--accent-blue);
 }
 
 .contextMenuItemDisabled {
@@ -228,7 +228,7 @@
 
 .contextMenuItemDisabled:hover {
   background: transparent !important;
-  color: #333333 !important;
+  color: var(--ink-muted-80) !important;
 }
 
 /* ── Edit mode ────────────────────────────────────────────── */
@@ -242,11 +242,11 @@
   flex-direction: column;
   gap: 5px;
   padding: 10px;
-  background: #FFFFFF;
-  border: 1px solid #E0E0E0;
-  border-radius: 6px;
+  background: var(--surface-primary);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-sm);
   width: 220px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.10);
+  box-shadow: var(--shadow-xl);
 }
 
 .editIconRow {
@@ -260,20 +260,20 @@
   width: 28px;
   height: 28px;
   object-fit: contain;
-  border-radius: 4px;
+  border-radius: var(--radius-xs);
 }
 
 .editFaviconGlobe {
   width: 24px;
   height: 24px;
-  color: #999999;
+  color: var(--text-tertiary);
 }
 
 .editInput {
-  background: #F5F5F7;
-  border: 1px solid #E0E0E0;
-  border-radius: 4px;
-  color: #333333;
+  background: var(--canvas-parchment);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-xs);
+  color: var(--ink-muted-80);
   font-size: 12px;
   padding: 6px 8px;
   outline: none;
@@ -282,7 +282,7 @@
 }
 
 .editInput:focus {
-  border-color: #007AFF;
+  border-color: var(--accent-blue);
 }
 
 .editInputError {
@@ -297,35 +297,35 @@
 .saveBtn {
   flex: 1;
   padding: 5px 8px;
-  background: #007AFF;
+  background: var(--accent-blue);
   border: none;
   color: #ffffff;
-  border-radius: 4px;
+  border-radius: var(--radius-xs);
   font-size: var(--text-md);
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
   transition: background 150ms ease;
 }
 
-.saveBtn:hover {
-  background: #0066D6;
+.saveBtn:active {
+  transform: scale(0.95);
 }
 
 .cancelBtn {
   flex: 1;
   padding: 5px 8px;
   background: transparent;
-  color: #86868B;
-  border: 1px solid #E0E0E0;
-  border-radius: 4px;
+  color: var(--text-secondary);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-xs);
   font-size: var(--text-md);
   cursor: pointer;
   transition: all 150ms ease;
 }
 
 .cancelBtn:hover {
-  background: #F8F8F8;
-  color: #333333;
+  background: var(--canvas-parchment);
+  color: var(--ink-muted-80);
 }
 
 .editGroupInput {
@@ -349,16 +349,16 @@
   bottom: -26px;
   left: 50%;
   transform: translateX(-50%);
-  background: #FFFFFF;
-  border: 1px solid #E0E0E0;
-  border-radius: 4px;
+  background: var(--surface-primary);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-xs);
   padding: 3px 8px;
   font-size: 10px;
-  color: #86868B;
+  color: var(--text-secondary);
   white-space: nowrap;
   pointer-events: none;
   z-index: 20;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  box-shadow: none;
 }
 
 /* ── Global edit mode (iOS-like) ──────────────────────────── */
@@ -390,7 +390,7 @@
   left: 50%;
   transform: translateX(-50%);
   font-size: 9px;
-  color: #86868B;
+  color: var(--text-secondary);
   white-space: nowrap;
   pointer-events: none;
   z-index: 20;

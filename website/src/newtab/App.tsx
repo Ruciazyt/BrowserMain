@@ -12,6 +12,7 @@ import WeatherWidget from './components/WeatherWidget';
 import NewsSection from './components/NewsSection';
 import MarketIndices from './components/MarketIndices';
 import AIAssistant from './components/AIAssistant';
+import PixelPet from './components/PixelPet';
 import { useI18n, type MessageKey } from './i18n';
 import './styles/global.css';
 import styles from './styles/App.module.css';
@@ -61,6 +62,22 @@ export default function App() {
   const [activeNav, setActiveNav] = useState('home');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [aiCollapsed, setAiCollapsed] = useState(false);
+  const userToggledSidebar = useRef(false);
+
+  // Auto-collapse sidebar on narrow viewports
+  useEffect(() => {
+    const mql = window.matchMedia('(max-width: 1024px)');
+    const handler = (e: MediaQueryListEvent | MediaQueryList) => {
+      if (e.matches) {
+        setSidebarCollapsed(true);
+      } else if (!userToggledSidebar.current) {
+        setSidebarCollapsed(false);
+      }
+    };
+    handler(mql);
+    mql.addEventListener('change', handler);
+    return () => mql.removeEventListener('change', handler);
+  }, []);
 
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [addDialogData, setAddDialogData] = useState({ url: '', title: '', favicon: '' });
@@ -179,7 +196,7 @@ export default function App() {
           })}
         </nav>
         <div className={styles.sidebarBottom}>
-          <button className={styles.sidebarIconBtn} onClick={() => setSidebarCollapsed(!sidebarCollapsed)} aria-label="Toggle sidebar" title="Toggle sidebar">
+          <button className={styles.sidebarIconBtn} onClick={() => { userToggledSidebar.current = true; setSidebarCollapsed(!sidebarCollapsed); }} aria-label="Toggle sidebar" title="Toggle sidebar">
             {sidebarCollapsed ? <ExpandIcon /> : <CollapseIcon />}
           </button>
         </div>
@@ -231,6 +248,7 @@ export default function App() {
           </div>
           <div className={`${styles.aiWrap} ${aiCollapsed ? styles.aiWrapCollapsed : ''}`}>
             <AIAssistant collapsed={aiCollapsed} onToggle={() => setAiCollapsed(!aiCollapsed)} />
+            {!aiCollapsed && <PixelPet species={settings.petSpecies || 'brown'} />}
           </div>
         </div>
       </main>

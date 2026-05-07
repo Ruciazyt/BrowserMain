@@ -60,15 +60,15 @@
 }
 .faviconImg { width: 20px; height: 20px; object-fit: contain; border-radius: 4px; }
 .faviconGlobe { width: 20px; height: 20px; color: var(--text-tertiary); opacity: 0.70; flex-shrink: 0; border-radius: 4px; }
-.faviconHint { font-size: 10px; color: var(--text-tertiary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.faviconDomain { font-size: 12px; color: var(--text-secondary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500; display: block; }
+.faviconHint { font-size: 10px; color: var(--text-secondary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.faviconDomain { font-size: 12px; color: var(--text-primary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; display: block; }
 .faviconTextCol { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 
 /* ── Form fields ─────────────────────────────────────────────── */
 .field { display: flex; flex-direction: column; gap: 6px; }
 .label {
-  font-size: var(--text-md); font-weight: 500;
-  color: var(--text-secondary);
+  font-size: var(--text-md); font-weight: 600;
+  color: var(--text-primary);
 }
 .input {
   padding: 10px 14px; border-radius: var(--radius-sm);
@@ -80,8 +80,8 @@
   transition: border-color var(--dur-fast), box-shadow var(--dur-fast);
   width: 100%;
 }
-.input::placeholder { color: var(--text-tertiary); }
-.input:focus { border-color: var(--accent-blue); box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1); }
+.input::placeholder { color: var(--text-secondary); }
+.input:focus { border-color: var(--accent-blue); box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1); }
 
 /* URL input wrapper — positions the status dot inside the field */
 .inputWrapper {
@@ -126,15 +126,17 @@
 
 .saveBtn {
   padding: 8px 20px; border-radius: var(--radius-sm);
-  font-size: var(--text-md); font-weight: 500;
+  font-size: var(--text-md); font-weight: 600;
   color: #ffffff;
   background: var(--accent-blue);
   border: none; cursor: pointer;
   transition: all var(--dur-fast);
 }
 .saveBtn:hover:not(:disabled) {
-  background: #0066d6;
-  transform: translateY(-1px);
+  background: var(--accent-blue);
+}
+.saveBtn:active:not(:disabled) {
+  transform: scale(0.95);
 }
 .saveBtn:disabled { opacity: 0.42; cursor: not-allowed; }
 

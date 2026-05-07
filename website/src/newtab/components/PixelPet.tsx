@@ -3,55 +3,32 @@ import { useI18n } from '../i18n';
 import styles from '../styles/components/PixelPet.module.css';
 
 type PetState = 'idle' | 'blink' | 'happy' | 'sleep' | 'eating';
-type Species = 'british' | 'golden' | 'husky' | 'blue';
+type Species = 'brown' | 'orange' | 'white' | 'gray';
 
-interface PetData {
-  species: Species;
-  happiness: number;   // 0-100
-  hunger: number;      // 0-100 (100 = full)
+interface PixelPetProps {
+  species?: Species;
 }
-
-const STORAGE_KEY = 'pixelPet';
 
 const SLEEP_TIMEOUT = 20000;
 const BLINK_MIN = 3000;
 const BLINK_MAX = 6000;
 const BLINK_DUR = 200;
-
-const HUNGER_DECAY = 2;    // per 10s
-const HAPPY_DECAY = 1;     // per 10s
+const HUNGER_DECAY = 2;
+const HAPPY_DECAY = 1;
 const FEED_AMOUNT = 25;
 const PET_AMOUNT = 15;
 
-const speciesList: { id: Species; emoji: string }[] = [
-  { id: 'blue',    emoji: '🐱' },
-  { id: 'british', emoji: '😺' },
-  { id: 'golden',  emoji: '🐕' },
-  { id: 'husky',   emoji: '🐺' },
-];
-
 const foodBySpecies: Record<Species, string> = {
-  british: '🐟',
-  golden:  '🦴',
-  husky:   '🥩',
-  blue:    '🥛',
+  brown:  '🦴',
+  orange: '🐟',
+  white:  '🥛',
+  gray:   '🐟',
 };
 
-function loadPet(): PetData {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) return { ...{ species: 'blue' as Species, happiness: 80, hunger: 80 }, ...JSON.parse(raw) };
-  } catch {}
-  return { species: 'blue', happiness: 80, hunger: 80 };
-}
-
-function savePet(data: PetData) {
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch {}
-}
-
-export default function PixelPet() {
+export default function PixelPet({ species = 'brown' }: PixelPetProps) {
   const { t } = useI18n();
-  const [pet, setPet] = useState<PetData>(loadPet);
+  const [happiness, setHappiness] = useState(80);
+  const [hunger, setHunger] = useState(80);
   const [state, setState] = useState<PetState>('idle');
   const [showFood, setShowFood] = useState(false);
 
@@ -59,28 +36,20 @@ export default function PixelPet() {
   const blinkRef = useRef<ReturnType<typeof setTimeout>>();
   const blinkOffRef = useRef<ReturnType<typeof setTimeout>>();
 
-  // Persist
-  useEffect(() => { savePet(pet); }, [pet]);
-
-  // Decay hunger & happiness over time
+  // Decay stats
   useEffect(() => {
     const iv = setInterval(() => {
-      setPet((p) => ({
-        ...p,
-        hunger: Math.max(0, p.hunger - HUNGER_DECAY),
-        happiness: Math.max(0, p.happiness - HAPPY_DECAY),
-      }));
+      setHunger((h) => Math.max(0, h - HUNGER_DECAY));
+      setHappiness((h) => Math.max(0, h - HAPPY_DECAY));
     }, 10000);
     return () => clearInterval(iv);
   }, []);
 
-  // Sleep timer
   const resetSleep = useCallback(() => {
     if (sleepRef.current) clearTimeout(sleepRef.current);
     sleepRef.current = setTimeout(() => setState('sleep'), SLEEP_TIMEOUT);
   }, []);
 
-  // Blink loop
   const scheduleBlink = useCallback(() => {
     if (blinkRef.current) clearTimeout(blinkRef.current);
     const delay = BLINK_MIN + Math.random() * (BLINK_MAX - BLINK_MIN);
@@ -105,7 +74,6 @@ export default function PixelPet() {
     return () => { if (sleepRef.current) clearTimeout(sleepRef.current); };
   }, [resetSleep]);
 
-  // Interactions
   const wake = useCallback(() => {
     if (state === 'sleep') setState('idle');
     resetSleep();
@@ -114,7 +82,7 @@ export default function PixelPet() {
   const handlePet = useCallback(() => {
     wake();
     setState('happy');
-    setPet((p) => ({ ...p, happiness: Math.min(100, p.happiness + PET_AMOUNT) }));
+    setHappiness((h) => Math.min(100, h + PET_AMOUNT));
     setTimeout(() => setState((prev) => (prev === 'happy' ? 'idle' : prev)), 800);
   }, [wake]);
 
@@ -122,21 +90,13 @@ export default function PixelPet() {
     wake();
     setState('eating');
     setShowFood(true);
-    setPet((p) => ({ ...p, hunger: Math.min(100, p.hunger + FEED_AMOUNT) }));
+    setHunger((h) => Math.min(100, h + FEED_AMOUNT));
     setTimeout(() => {
       setShowFood(false);
       setState((prev) => (prev === 'eating' ? 'idle' : prev));
     }, 700);
   }, [wake]);
 
-  const handleSpecies = useCallback((s: Species) => {
-    setPet((p) => ({ ...p, species: s }));
-    setState('happy');
-    resetSleep();
-    setTimeout(() => setState((prev) => (prev === 'happy' ? 'idle' : prev)), 600);
-  }, [resetSleep]);
-
-  const { species, happiness, hunger } = pet;
   const mood = Math.round((happiness + hunger) / 2);
 
   const stateClass =
@@ -157,39 +117,25 @@ export default function PixelPet() {
     '';
 
   const pixelClass =
-    species === 'british' ? styles.pixelBritish :
-    species === 'golden'  ? styles.pixelGolden :
-    species === 'husky'   ? styles.pixelHusky :
-    styles.pixelBlue;
+    species === 'brown'  ? styles.pixelBrown :
+    species === 'orange' ? styles.pixelOrange :
+    species === 'white'  ? styles.pixelWhite :
+    styles.pixelGray;
 
   const blinkClass =
-    species === 'british' ? styles.blinkBritish :
-    species === 'golden'  ? styles.blinkGolden :
-    species === 'husky'   ? styles.blinkHusky :
-    styles.blinkBlue;
+    species === 'brown'  ? styles.blinkBrown :
+    species === 'orange' ? styles.blinkOrange :
+    species === 'white'  ? styles.blinkWhite :
+    styles.blinkGray;
 
   const tailClass =
-    species === 'british' ? styles.tailBritish :
-    species === 'golden'  ? styles.tailGolden :
-    species === 'husky'   ? styles.tailHusky :
-    styles.tailBlue;
+    species === 'brown'  ? styles.tailBrown :
+    species === 'orange' ? styles.tailOrange :
+    species === 'white'  ? styles.tailWhite :
+    styles.tailGray;
 
   return (
     <div className={`${styles.container} ${stateClass}`}>
-      {/* Species selector */}
-      <div className={styles.selector}>
-        {speciesList.map((s) => (
-          <button
-            key={s.id}
-            className={`${styles.speciesBtn} ${species === s.id ? styles.active : ''}`}
-            onClick={() => handleSpecies(s.id)}
-            title={t(`petSpecies_${s.id}`)}
-          >
-            {s.emoji}
-          </button>
-        ))}
-      </div>
-
       {/* Pet canvas */}
       <div className={styles.canvasWrap} onClick={handlePet} title={t('pixelPetTooltip')}>
         <div className={styles.canvas}>

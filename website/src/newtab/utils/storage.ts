@@ -17,6 +17,7 @@ export interface Settings {
   locale?: 'system' | 'zh-CN' | 'en';
   aiEndpoint?: string;
   aiModel?: string;
+  petSpecies?: 'brown' | 'orange' | 'white' | 'gray';
 }
 
 export interface BackgroundConfig {

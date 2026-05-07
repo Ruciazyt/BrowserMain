@@ -2,7 +2,6 @@ import { useState, useRef, useEffect } from 'react';
 import { useSettings } from '../hooks/useSettings';
 import { getAIKey } from '../utils/aiStorage';
 import { useI18n } from '../i18n';
-import PixelPet from './PixelPet';
 import styles from '../styles/components/AIAssistant.module.css';
 
 interface ChatMessage {
@@ -137,7 +136,6 @@ export default function AIAssistant({ collapsed, onToggle }: { collapsed?: boole
         ))}
         <div ref={messagesEndRef} />
       </div>
-      <PixelPet />
       <div className={styles.inputRow}>
         <input
           ref={inputRef}

@@ -17,6 +17,7 @@ interface SettingsContextValue {
   updateClockFormat: (clockIs24h: boolean) => Promise<void>;
   updateLocale: (locale: AppLocale) => Promise<void>;
   updateAIConfig: (config: AIConfigUpdate) => void;
+  updatePetSpecies: (species: 'brown' | 'orange' | 'white' | 'gray') => void;
 }
 
 const SettingsContext = createContext<SettingsContextValue | null>(null);
@@ -86,6 +87,14 @@ function useSettingsState(): SettingsContextValue {
     });
   }, []);
 
+  const updatePetSpecies = useCallback((species: 'brown' | 'orange' | 'white' | 'gray') => {
+    setSettings((prev) => {
+      const newSettings = { ...prev, petSpecies: species };
+      saveSettings(newSettings);
+      return newSettings;
+    });
+  }, []);
+
   return {
     settings,
     loading,
@@ -95,6 +104,7 @@ function useSettingsState(): SettingsContextValue {
     updateClockFormat,
     updateLocale,
     updateAIConfig,
+    updatePetSpecies,
   };
 }
 

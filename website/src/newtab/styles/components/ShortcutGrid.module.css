@@ -24,7 +24,7 @@
 .headerTitle {
   font-size: var(--text-2xl);
   font-weight: 600;
-  color: #333333;
+  color: var(--ink-muted-80);
 }
 
 .editBtn {
@@ -33,12 +33,12 @@
   gap: 4px;
   background: none;
   border: none;
-  color: #666666;
+  color: var(--text-secondary);
   font-size: 14px;
   line-height: 1;
   cursor: pointer;
   padding: 4px 8px;
-  border-radius: 4px;
+  border-radius: var(--radius-xs);
   transition: background 150ms ease;
 }
 
@@ -49,23 +49,23 @@
 
 .editBtn:hover {
   background: #F0F0F0;
-  color: #333333;
+  color: var(--ink-muted-80);
 }
 
 .editBtnActive {
-  color: #007AFF;
-  background: rgba(0, 122, 255, 0.08);
+  color: var(--accent-blue);
+  background: var(--accent-blue-light);
 }
 
 .editBtnActive:hover {
-  background: rgba(0, 122, 255, 0.14);
-  color: #0066D6;
+  background: var(--accent-blue-hover);
+  color: var(--accent-blue);
 }
 
 /* ── Sortable items ───────────────────────────────────────── */
 .sortableItem {
   position: relative;
-  border-radius: 4px;
+  border-radius: var(--radius-xs);
   touch-action: none;
   justify-self: stretch;
   align-self: start;
@@ -96,18 +96,18 @@
   grid-column: 1 / -1;
   text-align: center;
   padding: 36px 20px;
-  color: #999999;
+  color: var(--text-tertiary);
 }
 
 .emptyTitle {
   font-size: 14px;
-  color: #666666;
+  color: var(--text-secondary);
   margin-bottom: 6px;
 }
 
 .emptyHint {
   font-size: var(--text-md);
-  color: #999999;
+  color: var(--text-tertiary);
 }
 
 .emptyActions {
@@ -126,12 +126,12 @@
   justify-content: center;
   width: 100px;
   height: 100px;
-  border-radius: 4px;
+  border-radius: var(--radius-xs);
   cursor: pointer;
-  background: #FFFFFF;
+  background: var(--surface-primary);
   border: 1px dashed #CCCCCC;
   transition: all 150ms ease;
-  color: #999999;
+  color: var(--text-tertiary);
 }
 
 .addTile::before {
@@ -139,13 +139,13 @@
 }
 
 .addTile:hover {
-  background: #F8F8F8;
-  border-color: #007AFF;
-  color: #007AFF;
+  background: var(--canvas-parchment);
+  border-color: var(--accent-blue);
+  color: var(--accent-blue);
 }
 
 .addTile:focus-visible {
-  outline: 2px solid #007AFF;
+  outline: 2px solid var(--accent-blue);
   outline-offset: 2px;
 }
 
@@ -168,24 +168,26 @@
   gap: 6px;
   margin: 16px auto 0;
   padding: 10px 24px;
-  border-radius: 6px;
-  background: #007AFF;
+  border-radius: var(--radius-sm);
+  background: var(--accent-blue);
   border: none;
   color: #ffffff;
   font-size: var(--text-md);
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
   transition: all 150ms ease;
 }
 
 .emptyAddBtn:hover {
-  background: #0066D6;
-  transform: translateY(-1px);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  background: var(--accent-blue);
+}
+
+.emptyAddBtn:active {
+  transform: scale(0.95);
 }
 
 .emptyAddBtn:focus-visible {
-  outline: 2px solid #007AFF;
+  outline: 2px solid var(--accent-blue);
   outline-offset: 2px;
 }
 
@@ -200,31 +202,31 @@
   justify-content: center;
   min-height: 42px;
   padding: 10px 18px;
-  border-radius: 6px;
-  background: #FFFFFF;
-  border: 1px solid #E0E0E0;
-  color: #333333;
+  border-radius: var(--radius-sm);
+  background: var(--surface-primary);
+  border: 1px solid var(--hairline);
+  color: var(--ink-muted-80);
   font-size: var(--text-md);
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
   transition: all 150ms ease;
 }
 
 .emptySecondaryBtn:hover {
-  background: #F8F8F8;
-  border-color: #007AFF;
+  background: var(--canvas-parchment);
+  border-color: var(--accent-blue);
 }
 
 .emptySecondaryBtn:focus-visible {
-  outline: 2px solid #007AFF;
+  outline: 2px solid var(--accent-blue);
   outline-offset: 2px;
 }
 
 /* ── Drag states ──────────────────────────────────────────── */
 .draggingOver {
-  outline: 2px dashed #007AFF;
+  outline: 2px dashed var(--accent-blue);
   outline-offset: 2px;
-  border-radius: 4px;
+  border-radius: var(--radius-xs);
 }
 
 .dragging {
@@ -234,9 +236,9 @@
 .sortableGhost {
   opacity: 0.25 !important;
   transform: scale(0.92);
-  outline: 2px dashed #007AFF;
+  outline: 2px dashed var(--accent-blue);
   outline-offset: 2px;
-  border-radius: 4px;
+  border-radius: var(--radius-xs);
 }
 
 .sortableChosen {
@@ -246,8 +248,8 @@
 .sortableDrag {
   opacity: 0.96 !important;
   transform: rotate(1deg) scale(1.06) !important;
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.15) !important;
-  border-radius: 4px;
+  box-shadow: var(--shadow-product) !important;
+  border-radius: var(--radius-xs);
 }
 
 .panel.dragActive {
@@ -267,40 +269,40 @@
   gap: 6px;
   padding: 4px 8px;
   margin-bottom: 2px;
-  border-radius: 4px;
-  background: rgba(0, 122, 255, 0.06);
-  border: 1px solid rgba(0, 122, 255, 0.12);
+  border-radius: var(--radius-xs);
+  background: rgba(0, 102, 204, 0.06);
+  border: 1px solid rgba(0, 102, 204, 0.12);
   cursor: pointer;
   transition: background 0.15s;
 }
 
 .groupHeader:hover {
-  background: rgba(0, 122, 255, 0.1);
+  background: rgba(0, 102, 204, 0.1);
 }
 
 .groupName {
   font-size: var(--text-md);
-  font-weight: 500;
+  font-weight: 600;
   letter-spacing: 0.5px;
   text-transform: uppercase;
-  color: #007AFF;
+  color: var(--accent-blue);
 }
 
 .groupCount {
   font-size: var(--text-md);
-  color: #999999;
+  color: var(--text-tertiary);
 }
 
 .groupRenameInput {
   font-size: var(--text-md);
-  font-weight: 500;
+  font-weight: 600;
   letter-spacing: 0.5px;
   text-transform: uppercase;
-  color: #007AFF;
+  color: var(--accent-blue);
   background: transparent;
   border: none;
   outline: none;
-  border-bottom: 1.5px solid #007AFF;
+  border-bottom: 1.5px solid var(--accent-blue);
   padding: 0;
   margin: 0;
   width: 100%;

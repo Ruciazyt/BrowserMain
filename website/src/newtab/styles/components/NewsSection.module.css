@@ -52,7 +52,7 @@
 }
 
 .card:hover {
-  box-shadow: var(--shadow-md);
+  box-shadow: none;
 }
 
 .cardHeader {
@@ -60,7 +60,7 @@
   font-size: var(--text-md);
   font-weight: 600;
   color: var(--accent-blue);
-  background: rgba(0, 122, 255, 0.04);
+  background: rgba(0, 102, 204, 0.04);
   border-bottom: 1px solid var(--border-secondary);
   letter-spacing: 0.02em;
   cursor: grab;
@@ -176,12 +176,12 @@
 }
 
 .chosen {
-  box-shadow: var(--shadow-lg);
+  box-shadow: var(--shadow-product);
   z-index: 10;
 }
 
 .drag {
   opacity: 0.95 !important;
   transform: rotate(1deg) scale(1.03) !important;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12) !important;
+  box-shadow: var(--shadow-product) !important;
 }

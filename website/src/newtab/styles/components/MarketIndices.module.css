@@ -1,6 +1,9 @@
 /* ── Market Indices Strip ──────────────────────────────────── */
 .wrap {
-  flex-shrink: 0;
+  flex-shrink: 1;
+  min-width: 0;
+  max-width: 50%;
+  overflow: hidden;
 }
 
 .strip {
@@ -18,8 +21,8 @@
 /* ── Card ─────────────────────────────────────────────────── */
 .card {
   flex-shrink: 0;
-  min-width: 140px;
-  padding: 10px 14px;
+  min-width: 120px;
+  padding: 8px 12px;
   background: var(--surface-primary);
   border: 1px solid var(--border-primary);
   border-radius: var(--radius-md);
@@ -27,12 +30,12 @@
 }
 
 .card:hover {
-  box-shadow: var(--shadow-sm);
+  box-shadow: none;
 }
 
 .name {
   font-size: var(--text-md);
-  font-weight: 500;
+  font-weight: 600;
   color: var(--text-secondary);
   margin-bottom: 4px;
   white-space: nowrap;
@@ -41,7 +44,7 @@
 }
 
 .price {
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 700;
   color: var(--text-primary);
   letter-spacing: -0.02em;
@@ -51,7 +54,7 @@
 
 .change {
   font-size: var(--text-md);
-  font-weight: 500;
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
 }
 

@@ -32,7 +32,7 @@ const CheckIcon = () => (
 );
 
 export default function SettingsPanel({ open, onClose, initialView = 'main', onBookmarkImportComplete }: SettingsPanelProps) {
-  const { settings, updateEngine, updateBackground, updateClockFormat, updateLocale, updateAIConfig } = useSettings();
+  const { settings, updateEngine, updateBackground, updateClockFormat, updateLocale, updateAIConfig, updatePetSpecies } = useSettings();
   const { t } = useI18n();
   const { shortcuts, updateShortcut } = useShortcuts();
   const [imagePreview, setImagePreview] = useState(settings.background.imageUrl || '');
@@ -319,6 +319,21 @@ export default function SettingsPanel({ open, onClose, initialView = 'main', onB
                     >
                       12H
                     </button>
+                  </div>
+                </div>
+                <div className={styles.clockFormatRow}>
+                  <span className={styles.clockFormatLabel}>{t('petSpecies')}</span>
+                  <div className={styles.clockFormatToggle}>
+                    {(['brown', 'orange', 'white', 'gray'] as const).map((s) => (
+                      <button
+                        key={s}
+                        className={`${styles.clockFormatBtn} ${(settings.petSpecies || 'brown') === s ? styles.active : ''}`}
+                        onClick={() => updatePetSpecies(s)}
+                        title={t(`petSpecies_${s}`)}
+                      >
+                        {s === 'brown' ? '🐕' : s === 'orange' ? '🐱' : s === 'white' ? '🐶' : '😺'}
+                      </button>
+                    ))}
                   </div>
                 </div>
               </div>

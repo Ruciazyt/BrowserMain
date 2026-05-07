@@ -5,66 +5,129 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Add Shortcut</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+    :root {
+      --bg: #ffffff;
+      --surface-secondary: #f5f5f7;
+      --surface-hover: rgba(0, 0, 0, 0.04);
+      --border-primary: #e0e0e0;
+      --border-secondary: #f0f0f0;
+      --text-primary: #1d1d1f;
+      --text-secondary: #86868b;
+      --text-tertiary: #AEAEB2;
+      --accent-blue: #0066cc;
+      --success: #34C759;
+      --danger: #FF3B30;
+      --status-duplicate: #FF9500;
+      --radius-sm: 8px;
+      --radius-lg: 18px;
+    }
+
     body {
       width: 100%;
-      background: #0a0a0f;
-      color: #c8c8d0;
-      font-family: 'JetBrains Mono', 'Courier New', monospace;
-      font-size: 10px;
-      padding: 12px 14px 14px;
-      user-select: none;
+      background: var(--bg);
+      color: var(--text-primary);
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      font-size: 14px;
       overflow: hidden;
+    }
+
+    /* ── Modal card ── */
+    .card {
+      position: relative;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+
+    /* Top accent bar */
+    .card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 2px;
+      background: var(--accent-blue);
+      z-index: 10; pointer-events: none;
     }
 
     /* ── Header ── */
     .header {
       display: flex;
       align-items: center;
-      gap: 8px;
-      margin-bottom: 12px;
-    }
-
-    .header-dot {
-      width: 6px; height: 6px;
-      background: #ff9500;
-      border-radius: 50%;
-      box-shadow: 0 0 6px #ff9500;
+      justify-content: space-between;
+      padding: 20px 20px 14px;
+      border-bottom: 1px solid var(--border-secondary);
     }
 
     .header-title {
-      font-size: 10px;
+      font-size: 22px;
       font-weight: 600;
-      letter-spacing: 0.16em;
-      color: #ff9500;
-      text-shadow: 0 0 8px #ff950088;
+      color: var(--text-primary);
+    }
+
+    .close-btn {
+      width: 30px; height: 30px;
+      border-radius: var(--radius-sm);
+      display: flex; align-items: center; justify-content: center;
+      background: var(--surface-secondary);
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition: all 150ms ease-out;
+      border: none;
+    }
+
+    .close-btn:hover {
+      background: var(--surface-hover);
+      color: var(--text-primary);
+    }
+
+    /* ── Form body ── */
+    .body {
+      padding: 16px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
     }
 
     /* ── Favicon row ── */
     .favicon-row {
       display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 9px;
-      padding: 6px 8px;
-      background: #12121a;
-      border: 1px solid #1e1e2e;
-      border-radius: 4px;
-      min-height: 34px;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 14px;
+      min-height: 44px;
+      background: var(--surface-secondary);
+      border: 1px solid var(--border-secondary);
+      border-radius: var(--radius-sm);
     }
 
     .favicon-img {
-      width: 15px; height: 15px;
-      border-radius: 2px;
+      width: 20px; height: 20px;
+      border-radius: 4px;
       flex-shrink: 0;
+      object-fit: contain;
+    }
+
+    .favicon-text-col {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      min-width: 0;
     }
 
     .favicon-domain {
-      font-size: 8px;
-      color: #5a5a70;
+      font-size: 12px;
+      color: var(--text-primary);
+      font-weight: 600;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .favicon-hint {
+      font-size: 10px;
+      color: var(--text-secondary);
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -72,144 +135,222 @@
 
     /* ── Form fields ── */
     .field {
-      margin-bottom: 7px;
-    }
-
-    .field-label {
-      display: block;
-      font-size: 8px;
-      letter-spacing: 0.1em;
-      color: #5a5a70;
-      margin-bottom: 4px;
-      text-transform: uppercase;
-    }
-
-    .field-input {
-      width: 100%;
-      background: #12121a;
-      border: 1px solid #1e1e2e;
-      border-radius: 4px;
-      color: #c8c8d0;
-      font-family: 'JetBrains Mono', 'Courier New', monospace;
-      font-size: 10px;
-      padding: 7px 8px;
-      outline: none;
-      transition: border-color 0.15s, box-shadow 0.15s;
-      min-height: 34px;
-    }
-
-    .field-input:focus {
-      border-color: #ff9500;
-      box-shadow: 0 0 0 2px #ff950022, 0 0 10px #ff950011;
-      color: #fff;
-    }
-
-    .field-input.error {
-      border-color: #ff4a4a;
-      box-shadow: 0 0 0 2px #ff4a4a22;
-    }
-
-    #url-input { margin-bottom: 7px; }
-    #title-input { margin-bottom: 7px; }
-
-    /* ── Group field ── */
-    #group-input { margin-bottom: 10px; }
-    datalist { display: none; } /* hide native datalist dropdowns in this minimal UI */
-
-    /* ── Error / warning message ── */
-    .msg-bar {
-      display: none;
-      font-size: 9px;
-      letter-spacing: 0.06em;
-      padding: 4px 6px;
-      border-radius: 3px;
-      margin-bottom: 8px;
-    }
-    .msg-bar.error   { display: block; background: #ff4a4a18; color: #ff6b6b; border: 1px solid #ff4a4a44; }
-    .msg-bar.warning { display: block; background: #ffb80018; color: #ffb800; border: 1px solid #ffb80044; }
-
-    /* ── Buttons ── */
-    .btn-row {
       display: flex;
-      gap: 8px;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .field label {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .field input {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      font-size: 14px;
+      color: var(--text-primary);
+      background: var(--surface-secondary);
+      border: 1px solid var(--border-primary);
+      border-radius: var(--radius-sm);
+      padding: 10px 14px;
+      outline: none;
+      transition: border-color 150ms ease-out, box-shadow 150ms ease-out;
+      width: 100%;
+    }
+
+    .field input::placeholder {
+      color: var(--text-secondary);
+    }
+
+    .field input:focus {
+      border-color: var(--accent-blue);
+      box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+    }
+
+    .field input.input-error {
+      border-color: var(--danger);
+      box-shadow: 0 0 0 3px rgba(255, 59, 48, 0.1);
+    }
+
+    .input-wrapper {
+      position: relative;
+      width: 100%;
+    }
+
+    .input-wrapper input {
+      padding-right: 30px;
+    }
+
+    .status-dot {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      pointer-events: none;
+      flex-shrink: 0;
+      display: none;
+    }
+
+    .status-dot.valid    { display: block; background: var(--success); }
+    .status-dot.duplicate { display: block; background: var(--status-duplicate); }
+    .status-dot.invalid  { display: block; background: var(--danger); }
+
+    /* ── Message bar ── */
+    .msg-bar {
+      font-size: 11px;
+      padding: 0;
       margin-top: 2px;
+      display: none;
+    }
+
+    .msg-bar.visible {
+      display: block;
+    }
+
+    .msg-bar.error {
+      color: var(--danger);
+    }
+
+    .msg-bar.warning {
+      color: var(--status-duplicate);
+    }
+
+    /* ── Footer ── */
+    .footer {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+      padding: 14px 20px 18px;
+      border-top: 1px solid var(--border-secondary);
     }
 
     .btn {
-      flex: 1;
-      padding: 8px 0;
-      border: none;
-      border-radius: 4px;
-      font-family: 'JetBrains Mono', 'Courier New', monospace;
-      font-size: 9px;
-      font-weight: 600;
-      letter-spacing: 0.16em;
+      padding: 8px 18px;
+      border-radius: var(--radius-sm);
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      font-size: 14px;
       cursor: pointer;
-      transition: opacity 0.15s, box-shadow 0.15s;
-      min-height: 36px;
+      transition: all 150ms ease-out;
+      border: none;
+      outline: none;
+    }
+
+    .btn:disabled {
+      opacity: 0.42;
+      cursor: not-allowed;
     }
 
     .btn-save {
-      background: rgba(125, 211, 232, 0.12);
-      color: #7dd3e8;
-      border: 1px solid rgba(125, 211, 232, 0.3);
-      backdrop-filter: blur(4px);
-      text-shadow: 0 0 8px #7dd3e866;
+      padding: 8px 20px;
+      font-weight: 600;
+      color: #ffffff;
+      background: var(--accent-blue);
     }
 
-    .btn-save:hover {
-      background: rgba(125, 211, 232, 0.2);
-      box-shadow: 0 0 12px #7dd3e833;
+    .btn-save:not(:disabled):hover {
+      background: var(--accent-blue);
+    }
+
+    .btn-save:not(:disabled):active {
+      transform: scale(0.95);
     }
 
     .btn-cancel {
-      background: #1a1a24;
-      color: #5a5a70;
-      border: 1px solid #2a2a3a;
+      font-weight: 400;
+      color: var(--text-secondary);
+      border: 1px solid var(--border-primary);
+      background: transparent;
     }
 
-    .btn-cancel:hover {
-      color: #888;
-      border-color: #3a3a4a;
+    .btn-cancel:not(:disabled):hover {
+      background: var(--surface-hover);
+      color: var(--text-primary);
     }
+
+    /* ── Success flash ── */
+    .success-flash {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      color: var(--success);
+      font-size: 14px;
+      font-weight: 500;
+      gap: 8px;
+      animation: fadeIn 200ms ease;
+    }
+
+    .success-flash.visible {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    datalist { display: none; }
   </style>
 </head>
 <body>
 
-  <div class="header">
-    <div class="header-dot"></div>
-    <span class="header-title">ADD SHORTCUT</span>
+  <div class="card">
+    <div class="header">
+      <span class="header-title">Add Shortcut</span>
+      <button class="close-btn" id="btn-close" aria-label="Close">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <path d="M1 1l12 12M13 1L1 13" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </div>
+
+    <form id="form" novalidate>
+      <div class="body">
+        <div class="favicon-row" id="favicon-row" style="display:none">
+          <img class="favicon-img" id="favicon-preview" src="" alt="" />
+          <div class="favicon-text-col">
+            <span class="favicon-domain" id="favicon-domain">—</span>
+            <span class="favicon-hint">Current page</span>
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="url-input">URL</label>
+          <div class="input-wrapper">
+            <input id="url-input" type="text" placeholder="https://example.com" autocomplete="off" spellcheck="false" autofocus />
+            <span class="status-dot" id="status-dot"></span>
+          </div>
+          <div class="msg-bar" id="msg-bar"></div>
+        </div>
+
+        <div class="field">
+          <label for="title-input">Title</label>
+          <input id="title-input" type="text" placeholder="Shortcut name" autocomplete="off" spellcheck="false" />
+        </div>
+
+        <div class="field">
+          <label for="group-input">Group</label>
+          <input id="group-input" type="text" placeholder="e.g. Work, Social" autocomplete="off" spellcheck="false" list="group-suggestions" />
+          <datalist id="group-suggestions"></datalist>
+          <span id="group-hint" style="font-size:11px;color:var(--accent-blue);margin-top:2px"></span>
+        </div>
+      </div>
+
+      <div class="footer">
+        <button type="button" class="btn btn-cancel" id="btn-cancel">Cancel</button>
+        <button type="submit" class="btn btn-save" id="btn-save">Save</button>
+      </div>
+    </form>
+
+    <div class="success-flash" id="success-flash">
+      <span>&#10003; Saved</span>
+    </div>
   </div>
-
-  <div class="favicon-row">
-    <img class="favicon-img" id="favicon-preview" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="" />
-    <span class="favicon-domain" id="favicon-domain">—</span>
-  </div>
-
-  <div class="msg-bar" id="msg-bar"></div>
-
-  <form id="form" novalidate>
-    <div class="field">
-      <label class="field-label" for="url-input">URL</label>
-      <input class="field-input" id="url-input" type="url" placeholder="https://" autocomplete="off" spellcheck="false" />
-    </div>
-
-    <div class="field">
-      <label class="field-label" for="title-input">TITLE</label>
-      <input class="field-input" id="title-input" type="text" placeholder="Page title" autocomplete="off" spellcheck="false" />
-    </div>
-
-    <div class="field">
-      <label class="field-label" for="group-input">GROUP <span style="opacity:0.4;font-size:9px">(optional)</span></label>
-      <input class="field-input" id="group-input" type="text" placeholder="e.g. Work, Social" autocomplete="off" spellcheck="false" list="group-suggestions" />
-      <datalist id="group-suggestions"></datalist>
-    </div>
-
-    <div class="btn-row">
-      <button class="btn btn-save" type="submit">SAVE</button>
-      <button class="btn btn-cancel" type="button" id="btn-cancel">CANCEL</button>
-    </div>
-  </form>
 
   <script src="quickadd.js"></script>
 </body>

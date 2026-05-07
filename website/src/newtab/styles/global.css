@@ -1,6 +1,6 @@
 /* ============================================
    BrowserMain - Global Styles
-   Clean White Minimalist Theme
+   Apple Design Language
    ============================================ */
 
 /* --- CSS Variables --- */
@@ -9,19 +9,27 @@
   --bg-primary: #ffffff;
   --bg-secondary: #f5f5f7;
   --bg-tertiary: #fafafa;
+  --canvas: #ffffff;
+  --canvas-parchment: #f5f5f7;
+  --surface-pearl: #fafafc;
 
   /* Accent colors */
-  --accent-blue: #007AFF;
-  --accent-blue-rgb: 0, 122, 255;
-  --accent-blue-light: rgba(0, 122, 255, 0.08);
-  --accent-blue-hover: rgba(0, 122, 255, 0.12);
+  --accent-blue: #0066cc;
+  --accent-blue-rgb: 0, 102, 204;
+  --accent-blue-light: rgba(0, 102, 204, 0.08);
+  --accent-blue-hover: rgba(0, 102, 204, 0.12);
+  --accent-blue-focus: #0071e3;
+  --accent-blue-on-dark: #2997ff;
 
   /* Text Colors */
-  --text-primary: #1D1D1F;
-  --text-secondary: #86868B;
+  --text-primary: #1d1d1f;
+  --text-secondary: #86868b;
   --text-tertiary: #AEAEB2;
   --text-bright: #000000;
   --text-dim: rgba(0, 0, 0, 0.35);
+  --ink: #1d1d1f;
+  --ink-muted-80: #333333;
+  --ink-muted-48: #7a7a7a;
 
   /* Semantic Colors */
   --success: #34C759;
@@ -37,39 +45,52 @@
   --surface-secondary: #f5f5f7;
   --surface-hover: rgba(0, 0, 0, 0.04);
   --surface-active: rgba(0, 0, 0, 0.06);
+  --surface-tile-1: #272729;
+  --surface-tile-2: #2a2a2c;
+  --surface-tile-3: #252527;
 
   /* Borders */
-  --border-primary: #E5E5EA;
-  --border-secondary: #F2F2F7;
+  --border-primary: #e0e0e0;
+  --border-secondary: #f0f0f0;
   --border-focus: var(--accent-blue);
+  --hairline: #e0e0e0;
+  --divider-soft: #f0f0f0;
 
-  /* Shadows */
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06);
-  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.08);
-  --shadow-lg: 0 4px 16px rgba(0, 0, 0, 0.10);
+  /* Shadows — Apple: none on chrome, single product shadow only */
+  --shadow-sm: none;
+  --shadow-md: none;
+  --shadow-lg: none;
   --shadow-xl: 0 8px 32px rgba(0, 0, 0, 0.12);
+  --shadow-product: rgba(0, 0, 0, 0.22) 3px 5px 30px 0;
 
   /* Typography */
-  --font-ui: 'Lato', sans-serif;
-  --font-display: 'Lato', sans-serif;
-  --font-body: 'Lato', sans-serif;
+  --font-ui: 'SF Pro Text', 'Inter', system-ui, -apple-system, sans-serif;
+  --font-display: 'SF Pro Display', 'Inter', system-ui, -apple-system, sans-serif;
+  --font-body: 'SF Pro Text', 'Inter', system-ui, -apple-system, sans-serif;
   --font-mono: 'JetBrains Mono', 'SF Mono', 'SFMono-Regular', monospace;
   --font-led: 'JetBrains Mono', 'SF Mono', 'SFMono-Regular', monospace;
 
-  /* Type scale */
-  --text-4xl: 48px;
-  --text-2xl: 20px;
+  /* Type scale — scaled down ~0.85x from Apple spec for browser new tab density */
+  --text-hero: 48px;
+  --text-4xl: 34px;
+  --text-3xl: 28px;
+  --text-2xl: 22px;
   --text-xl: 18px;
   --text-lg: 16px;
   --text-md: 14px;
   --text-sm: 12px;
-  --text-xs: 10px;
+  --text-xs: 11px;
+  --text-xxs: 10px;
 
   /* Spacing tokens */
-  --space-xs: 4px;
-  --space-sm: 8px;
+  --space-xxs: 4px;
+  --space-xs: 8px;
+  --space-sm: 12px;
   --space-md: 16px;
   --space-lg: 24px;
+  --space-xl: 32px;
+  --space-xxl: 48px;
+  --space-section: 80px;
 
   /* Transitions */
   --dur-fast: 150ms ease-out;
@@ -77,11 +98,14 @@
   --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
 
   /* Border Radius */
+  --radius-none: 0px;
+  --radius-xs: 5px;
   --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
+  --radius-md: 11px;
+  --radius-lg: 18px;
   --radius-xl: 24px;
-  --radius-pill: 999px;
+  --radius-pill: 9999px;
+  --radius-full: 9999px;
 
   /* Loading dot token */
   --loading-dot-size: 4px;
@@ -101,7 +125,7 @@ body {
   min-height: 100vh;
 }
 
-#root { width: 100%; min-height: 100vh; letter-spacing: 0; }
+#root { width: 100%; min-height: 100vh; letter-spacing: -0.01em; }
 
 /* --- Scrollbar --- */
 ::-webkit-scrollbar { width: 4px; }
@@ -118,7 +142,8 @@ body {
 h1, h2, h3, h4 {
   font-weight: 600;
   color: var(--text-bright);
-  font-family: var(--font-ui);
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
 }
 a {
   color: var(--accent-blue);
@@ -128,6 +153,7 @@ a {
 a:hover { opacity: 0.8; }
 button {
   font-family: var(--font-ui);
+  font-weight: 400;
   cursor: pointer;
   border: none;
   outline: none;

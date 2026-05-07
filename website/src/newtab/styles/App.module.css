@@ -87,7 +87,7 @@
 .sidebarItem.active {
   background: var(--accent-blue-light);
   color: var(--accent-blue);
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .sidebarItemIcon {
@@ -142,7 +142,7 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  padding: 24px 40px;
+  padding: 20px 32px;
   overflow-y: auto;
   transition: margin-left 0.25s var(--ease-smooth);
 }
@@ -188,7 +188,7 @@
 
 .searchRow > :first-child {
   flex: 1;
-  min-width: 0;
+  min-width: 400px;
 }
 
 /* ── Shortcuts + News + AI row ─────────────────────────────────── */
@@ -213,6 +213,9 @@
 .aiWrap {
   width: 320px;
   flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
   transition: width 0.25s var(--ease-smooth);
 }
 
@@ -220,20 +223,85 @@
   width: 48px;
 }
 
+
 /* ── Card ─────────────────────────────────────────────────── */
 .card {
   width: 100%;
   background: var(--surface-primary);
   border: 1px solid var(--border-primary);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-sm);
+  box-shadow: none;
   overflow: hidden;
-  transition:
-    transform var(--dur-mid) var(--ease-smooth),
-    box-shadow var(--dur-mid);
+  transition: transform var(--dur-mid) var(--ease-smooth);
 }
 
-.card:hover {
-  box-shadow: var(--shadow-md);
+/* ── Responsive ────────────────────────────────────────────── */
+
+/* <= 1280px: AI panel stacks below news, shortcuts + news side by side */
+@media (max-width: 1280px) {
+  .contentRow {
+    flex-wrap: wrap;
+  }
+  .shortcutsWrap {
+    flex: 2;
+    min-width: 200px;
+  }
+  .newsWrap {
+    flex: 3;
+    min-width: 0;
+  }
+  .aiWrap {
+    width: 100%;
+    flex-direction: row;
+  }
+  .aiWrapCollapsed {
+    width: 100%;
+  }
+}
+
+/* <= 1024px: sidebar auto-collapsed, tighter padding */
+@media (max-width: 1024px) {
+  .main {
+    padding: 20px 24px;
+  }
+}
+
+/* <= 768px: single column, hide market indices row */
+@media (max-width: 768px) {
+  .main {
+    padding: 16px;
+  }
+  .header {
+    flex-direction: column;
+    gap: 12px;
+  }
+  .heroGroup {
+    gap: 16px;
+  }
+  .searchRow {
+    flex-direction: column;
+    gap: 12px;
+  }
+  .searchRow > :first-child {
+    min-width: 0;
+  }
+  .searchRow > :last-child {
+    display: none;
+  }
+  .contentRow {
+    flex-direction: column;
+  }
+  .shortcutsWrap,
+  .newsWrap {
+    flex: none;
+    width: 100%;
+  }
+  .aiWrap {
+    width: 100%;
+    flex-direction: column;
+  }
+  .aiWrapCollapsed {
+    width: 100%;
+  }
 }
 

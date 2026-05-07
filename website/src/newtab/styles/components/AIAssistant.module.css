@@ -68,7 +68,7 @@
 
 .collapsedBar:hover {
   background: var(--surface-hover);
-  box-shadow: var(--shadow-sm);
+  box-shadow: none;
 }
 
 .collapsedIcon {
@@ -79,7 +79,7 @@
 
 .collapsedLabel {
   font-size: var(--text-md);
-  font-weight: 500;
+  font-weight: 600;
   color: var(--text-secondary);
   writing-mode: vertical-rl;
   letter-spacing: 0.05em;
@@ -137,7 +137,7 @@
 .cursor {
   animation: blink 0.8s step-end infinite;
   color: var(--accent-blue);
-  font-weight: 500;
+  font-weight: 600;
 }
 
 @keyframes blink {
@@ -194,7 +194,11 @@
 }
 
 .sendBtn:hover:not(:disabled) {
-  background: #0066d6;
+  background: var(--accent-blue);
+}
+
+.sendBtn:active:not(:disabled) {
+  transform: scale(0.95);
 }
 
 .sendBtn:disabled {
