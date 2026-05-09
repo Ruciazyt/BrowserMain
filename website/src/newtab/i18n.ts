@@ -136,6 +136,7 @@ const messages = {
     skipTour: 'Skip tour',
     getStarted: 'Get Started →',
     nav_home: 'Home',
+    nav_ai: 'AI Chat',
     nav_study: 'Study',
     nav_work: 'Work',
     nav_news: 'News',
@@ -315,6 +316,7 @@ const messages = {
     skipTour: '跳过引导',
     getStarted: '开始使用 →',
     nav_home: '首页',
+    nav_ai: 'AI 对话',
     nav_study: '学习',
     nav_work: '工作',
     nav_news: '新闻',
@@ -391,7 +393,7 @@ export function useI18n() {
   const language: Language = locale.startsWith('zh') ? 'zh' : 'en';
 
   const t = useMemo(() => {
-    return (key: MessageKey, vars?: Record<string, string | number>) => interpolate(messages[language][key], vars);
+    return (key: MessageKey, vars?: Record<string, string | number>) => interpolate((messages[language] as Record<string, string>)[key], vars);
   }, [language]);
 
   return {

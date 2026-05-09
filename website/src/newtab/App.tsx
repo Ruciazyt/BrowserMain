@@ -12,6 +12,7 @@ import WeatherWidget from './components/WeatherWidget';
 import NewsSection from './components/NewsSection';
 import MarketIndices from './components/MarketIndices';
 import AIAssistant from './components/AIAssistant';
+import AIChatPage from './components/AIChatPage';
 import PixelPet from './components/PixelPet';
 import { useI18n, type MessageKey } from './i18n';
 import './styles/global.css';
@@ -34,6 +35,13 @@ const HomeIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
 );
 
+const AIChatIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+    <path d="M8 9h8"/><path d="M8 13h5"/>
+  </svg>
+);
+
 const CollapseIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
 );
@@ -49,6 +57,7 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { id: 'home', icon: HomeIcon },
+  { id: 'ai', icon: AIChatIcon },
   { id: 'settings', icon: SettingsIcon },
 ];
 
@@ -204,53 +213,59 @@ export default function App() {
 
       {/* ── Main Content ── */}
       <main className={`${styles.main} ${sidebarCollapsed ? styles.mainFull : ''}`}>
-        {/* Header: Clock + Greeting (left) | Weather (right) */}
-        <div className={styles.header}>
-          <div className={styles.heroGroup}>
-            <Clock />
-            <Greeting userName={settings.userName} />
-          </div>
-          <div className={styles.headerRight}>
-            <WeatherWidget />
-          </div>
-        </div>
+        {activeNav === 'ai' ? (
+          <AIChatPage />
+        ) : (
+          <>
+            {/* Header: Clock + Greeting (left) | Weather (right) */}
+            <div className={styles.header}>
+              <div className={styles.heroGroup}>
+                <Clock />
+                <Greeting userName={settings.userName} />
+              </div>
+              <div className={styles.headerRight}>
+                <WeatherWidget />
+              </div>
+            </div>
 
-        {/* Search bar + Market indices row */}
-        <div className={styles.searchRow}>
-          <SearchBar defaultEngine={settings.defaultEngine} onEngineChange={updateEngine} />
-          <MarketIndices />
-        </div>
+            {/* Search bar + Market indices row */}
+            <div className={styles.searchRow}>
+              <SearchBar defaultEngine={settings.defaultEngine} onEngineChange={updateEngine} />
+              <MarketIndices />
+            </div>
 
-        {/* Shortcuts (left) + News (center) + AI (right) */}
-        <div className={styles.contentRow}>
-          <div className={styles.shortcutsWrap}>
-            <ShortcutGrid
-              shortcuts={shortcuts}
-              onDelete={removeShortcut}
-              onUpdate={updateShortcut}
-              onReorder={reorderShortcuts}
-              onAdd={() => {
-                setAddDialogData({ url: '', title: '', favicon: '' });
-                setAddDialogOpen(true);
-              }}
-              onImportBookmarks={() => {
-                setSettingsInitialView('bookmarkImport');
-                setSettingsOpen(true);
-              }}
-              onImportShortcuts={() => {
-                setSettingsInitialView('shortcutImport');
-                setSettingsOpen(true);
-              }}
-            />
-          </div>
-          <div className={styles.newsWrap}>
-            <NewsSection columns={aiCollapsed ? 3 : 2} />
-          </div>
-          <div className={`${styles.aiWrap} ${aiCollapsed ? styles.aiWrapCollapsed : ''}`}>
-            <AIAssistant collapsed={aiCollapsed} onToggle={() => setAiCollapsed(!aiCollapsed)} />
-            {!aiCollapsed && <PixelPet species={settings.petSpecies || 'brown'} />}
-          </div>
-        </div>
+            {/* Shortcuts (left) + News (center) + AI (right) */}
+            <div className={styles.contentRow}>
+              <div className={styles.shortcutsWrap}>
+                <ShortcutGrid
+                  shortcuts={shortcuts}
+                  onDelete={removeShortcut}
+                  onUpdate={updateShortcut}
+                  onReorder={reorderShortcuts}
+                  onAdd={() => {
+                    setAddDialogData({ url: '', title: '', favicon: '' });
+                    setAddDialogOpen(true);
+                  }}
+                  onImportBookmarks={() => {
+                    setSettingsInitialView('bookmarkImport');
+                    setSettingsOpen(true);
+                  }}
+                  onImportShortcuts={() => {
+                    setSettingsInitialView('shortcutImport');
+                    setSettingsOpen(true);
+                  }}
+                />
+              </div>
+              <div className={styles.newsWrap}>
+                <NewsSection columns={aiCollapsed ? 3 : 2} />
+              </div>
+              <div className={`${styles.aiWrap} ${aiCollapsed ? styles.aiWrapCollapsed : ''}`}>
+                <AIAssistant collapsed={aiCollapsed} onToggle={() => setAiCollapsed(!aiCollapsed)} />
+                {!aiCollapsed && <PixelPet species={settings.petSpecies || 'brown'} />}
+              </div>
+            </div>
+          </>
+        )}
       </main>
 
       {/* Settings panel */}
