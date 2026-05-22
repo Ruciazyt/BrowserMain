@@ -7,7 +7,9 @@ import EngineIcon from './EngineIcon';
 import BookmarkImport from './BookmarkImport';
 import ShortcutImport from './ShortcutImport';
 import { useShortcuts } from '../hooks/useShortcuts';
-import { getAIKey, saveAIKey, clearAIKey } from '../utils/aiStorage';
+import { getMatrixAccessToken, saveMatrixAccessToken, getMatrixBotToken, saveMatrixBotToken } from '../utils/matrixStorage';
+import { getAIKey, saveAIKey } from '../utils/aiStorage';
+import * as sdk from 'matrix-js-sdk';
 import styles from '../styles/components/SettingsPanel.module.css';
 
 interface SettingsPanelProps {
@@ -32,7 +34,7 @@ const CheckIcon = () => (
 );
 
 export default function SettingsPanel({ open, onClose, initialView = 'main', onBookmarkImportComplete }: SettingsPanelProps) {
-  const { settings, updateEngine, updateBackground, updateClockFormat, updateLocale, updateAIConfig, updatePetSpecies } = useSettings();
+  const { settings, updateEngine, updateBackground, updateClockFormat, updateLocale, updateMatrixConfig, updateAIConfig, updatePetSpecies } = useSettings();
   const { t } = useI18n();
   const { shortcuts, updateShortcut } = useShortcuts();
   const [imagePreview, setImagePreview] = useState(settings.background.imageUrl || '');
@@ -43,6 +45,17 @@ export default function SettingsPanel({ open, onClose, initialView = 'main', onB
   const [showClearSuccess, setShowClearSuccess] = useState(false);
   const [groupToDelete, setGroupToDelete] = useState<string | null>(null);
   const [groupDeleteSuccess, setGroupDeleteSuccess] = useState('');
+
+  // Matrix settings state
+  const [matrixToken, setMatrixToken] = useState('');
+  const [matrixTokenVisible, setMatrixTokenVisible] = useState(false);
+  const [matrixTesting, setMatrixTesting] = useState(false);
+  const [matrixTestResult, setMatrixTestResult] = useState<'success' | 'error' | null>(null);
+  const [matrixTestError, setMatrixTestError] = useState('');
+
+  // Matrix bot settings state
+  const [botToken, setBotToken] = useState('');
+  const [botTokenVisible, setBotTokenVisible] = useState(false);
 
   // AI settings state
   const [aiKey, setAiKey] = useState('');
@@ -57,6 +70,10 @@ export default function SettingsPanel({ open, onClose, initialView = 'main', onB
 
   useEffect(() => {
     if (!open) return;
+    getMatrixAccessToken().then(setMatrixToken);
+    setMatrixTestResult(null);
+    setMatrixTestError('');
+    getMatrixBotToken().then(setBotToken);
     getAIKey().then(setAiKey);
     setAiTestResult(null);
     setAiTestError('');
@@ -345,9 +362,19 @@ export default function SettingsPanel({ open, onClose, initialView = 'main', onB
                   <label className={styles.fieldLabel}>{t('aiEndpoint')}</label>
                   <input
                     className={styles.fieldInput}
-                    value={settings.aiEndpoint || ''}
-                    onChange={(e) => updateAIConfig({ aiEndpoint: e.target.value })}
+                    value={settings.matrixHomeserver || ''}
+                    onChange={(e) => updateMatrixConfig({ matrixHomeserver: e.target.value })}
                     placeholder={t('aiEndpointPlaceholder')}
+                  />
+                </div>
+
+                <div className={styles.fieldRow}>
+                  <label className={styles.fieldLabel}>{t('aiModel')}</label>
+                  <input
+                    className={styles.fieldInput}
+                    value={settings.matrixUserId || ''}
+                    onChange={(e) => updateMatrixConfig({ matrixUserId: e.target.value })}
+                    placeholder={t('aiModelPlaceholder')}
                   />
                 </div>
 
@@ -356,10 +383,130 @@ export default function SettingsPanel({ open, onClose, initialView = 'main', onB
                   <div style={{ display: 'flex', gap: 6, flex: 1 }}>
                     <input
                       className={styles.fieldInput}
+                      type={matrixTokenVisible ? 'text' : 'password'}
+                      value={matrixToken}
+                      onChange={(e) => { setMatrixToken(e.target.value); saveMatrixAccessToken(e.target.value); }}
+                      placeholder={t('aiApiKeyPlaceholder')}
+                      style={{ flex: 1 }}
+                    />
+                    <button
+                      className={styles.eyeBtn}
+                      onClick={() => setMatrixTokenVisible(!matrixTokenVisible)}
+                      aria-label="Toggle visibility"
+                    >
+                      {matrixTokenVisible ? '⊙' : '◉'}
+                    </button>
+                  </div>
+                </div>
+
+                <div className={styles.fieldRow}>
+                  <label className={styles.fieldLabel}>{t('aiRoomId')}</label>
+                  <input
+                    className={styles.fieldInput}
+                    value={settings.matrixRoomId || ''}
+                    onChange={(e) => updateMatrixConfig({ matrixRoomId: e.target.value })}
+                    placeholder={t('aiRoomIdPlaceholder')}
+                  />
+                </div>
+
+                <div className={styles.fieldRow}>
+                  <label className={styles.fieldLabel}>{t('aiBotUserId')}</label>
+                  <input
+                    className={styles.fieldInput}
+                    value={settings.matrixBotUserId || ''}
+                    onChange={(e) => updateMatrixConfig({ matrixBotUserId: e.target.value })}
+                    placeholder={t('aiBotUserIdPlaceholder')}
+                  />
+                </div>
+
+                <div className={styles.fieldRow}>
+                  <label className={styles.fieldLabel}>{t('aiBotToken')}</label>
+                  <div style={{ display: 'flex', gap: 6, flex: 1 }}>
+                    <input
+                      className={styles.fieldInput}
+                      type={botTokenVisible ? 'text' : 'password'}
+                      value={botToken}
+                      onChange={(e) => { setBotToken(e.target.value); saveMatrixBotToken(e.target.value); }}
+                      placeholder={t('aiBotTokenPlaceholder')}
+                      style={{ flex: 1 }}
+                    />
+                    <button
+                      className={styles.eyeBtn}
+                      onClick={() => setBotTokenVisible(!botTokenVisible)}
+                      aria-label="Toggle visibility"
+                    >
+                      {botTokenVisible ? '⊙' : '◉'}
+                    </button>
+                  </div>
+                </div>
+
+                <button
+                  className={styles.testBtn}
+                  onClick={async () => {
+                    if (!settings.matrixHomeserver || !matrixToken) return;
+                    setMatrixTesting(true);
+                    setMatrixTestResult(null);
+                    setMatrixTestError('');
+                    try {
+                      const testClient = sdk.createClient({
+                        baseUrl: settings.matrixHomeserver,
+                        accessToken: matrixToken,
+                        userId: settings.matrixUserId || '',
+                        useAuthorizationHeader: true,
+                      });
+                      await testClient.whoami();
+                      setMatrixTestResult('success');
+                    } catch (err: any) {
+                      setMatrixTestResult('error');
+                      setMatrixTestError(err.message || 'Unknown error');
+                    } finally {
+                      setMatrixTesting(false);
+                    }
+                  }}
+                  disabled={matrixTesting || !settings.matrixHomeserver || !matrixToken}
+                >
+                  {matrixTesting ? t('aiTesting') : t('aiTestConnection')}
+                </button>
+                {matrixTestResult === 'success' && (
+                  <div className={styles.successMsg}>{t('aiTestSuccess')}</div>
+                )}
+                {matrixTestResult === 'error' && (
+                  <div className={styles.errorMsg}>{t('aiTestFailed')}: {matrixTestError}</div>
+                )}
+              </div>
+
+              <div className={styles.section}>
+                <div className={styles.sectionTitle}>{t('aiSettingsAssistant')}</div>
+
+                <div className={styles.fieldRow}>
+                  <label className={styles.fieldLabel}>{t('aiApiEndpoint')}</label>
+                  <input
+                    className={styles.fieldInput}
+                    value={settings.aiEndpoint || ''}
+                    onChange={(e) => updateAIConfig({ aiEndpoint: e.target.value })}
+                    placeholder={t('aiApiEndpointPlaceholder')}
+                  />
+                </div>
+
+                <div className={styles.fieldRow}>
+                  <label className={styles.fieldLabel}>{t('aiModelLabel')}</label>
+                  <input
+                    className={styles.fieldInput}
+                    value={settings.aiModel || ''}
+                    onChange={(e) => updateAIConfig({ aiModel: e.target.value })}
+                    placeholder={t('aiModelLabelPlaceholder')}
+                  />
+                </div>
+
+                <div className={styles.fieldRow}>
+                  <label className={styles.fieldLabel}>{t('aiApiKeyLabel')}</label>
+                  <div style={{ display: 'flex', gap: 6, flex: 1 }}>
+                    <input
+                      className={styles.fieldInput}
                       type={aiKeyVisible ? 'text' : 'password'}
                       value={aiKey}
                       onChange={(e) => { setAiKey(e.target.value); saveAIKey(e.target.value); }}
-                      placeholder={t('aiApiKeyPlaceholder')}
+                      placeholder={t('aiApiKeyLabelPlaceholder')}
                       style={{ flex: 1 }}
                     />
                     <button
@@ -372,16 +519,6 @@ export default function SettingsPanel({ open, onClose, initialView = 'main', onB
                   </div>
                 </div>
 
-                <div className={styles.fieldRow}>
-                  <label className={styles.fieldLabel}>{t('aiModel')}</label>
-                  <input
-                    className={styles.fieldInput}
-                    value={settings.aiModel || ''}
-                    onChange={(e) => updateAIConfig({ aiModel: e.target.value })}
-                    placeholder={t('aiModelPlaceholder')}
-                  />
-                </div>
-
                 <button
                   className={styles.testBtn}
                   onClick={async () => {
@@ -390,22 +527,33 @@ export default function SettingsPanel({ open, onClose, initialView = 'main', onB
                     setAiTesting(true);
                     setAiTestResult(null);
                     setAiTestError('');
-                    chrome.runtime.sendMessage({
-                      type: 'AI_CHAT',
-                      endpoint: settings.aiEndpoint,
-                      apiKey: key,
-                      model: settings.aiModel || 'gpt-4o',
-                      messages: [{ role: 'user', content: 'Hi' }],
-                      maxTokens: 5,
-                    }, (res: { success?: boolean; content?: string; error?: string }) => {
-                      setAiTesting(false);
-                      if (res.success) {
+                    try {
+                      const res = await fetch(settings.aiEndpoint, {
+                        method: 'POST',
+                        headers: {
+                          'Authorization': 'Bearer ' + key,
+                          'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                          model: settings.aiModel || 'gpt-4o',
+                          messages: [{ role: 'user', content: 'Hi' }],
+                          max_tokens: 5,
+                          stream: false,
+                        }),
+                      });
+                      if (res.ok) {
                         setAiTestResult('success');
                       } else {
+                        const text = await res.text();
                         setAiTestResult('error');
-                        setAiTestError(res.error || 'Unknown error');
+                        setAiTestError(`HTTP ${res.status}: ${text.slice(0, 100)}`);
                       }
-                    });
+                    } catch (err: any) {
+                      setAiTestResult('error');
+                      setAiTestError(err.message || 'Unknown error');
+                    } finally {
+                      setAiTesting(false);
+                    }
                   }}
                   disabled={aiTesting || !settings.aiEndpoint || !aiKey}
                 >

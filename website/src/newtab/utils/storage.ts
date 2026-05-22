@@ -15,6 +15,10 @@ export interface Settings {
   userName?: string;
   clockIs24h?: boolean;
   locale?: 'system' | 'zh-CN' | 'en';
+  matrixHomeserver?: string;
+  matrixUserId?: string;
+  matrixRoomId?: string;
+  matrixBotUserId?: string;
   aiEndpoint?: string;
   aiModel?: string;
   petSpecies?: 'brown' | 'orange' | 'white' | 'gray';

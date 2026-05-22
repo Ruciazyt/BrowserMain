@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { useSettings } from '../hooks/useSettings';
 import { getAIKey } from '../utils/aiStorage';
 import { useI18n } from '../i18n';
-import styles from '../styles/components/AIChatPage.module.css';
+import styles from '../styles/components/AIChatTab.module.css';
 
 interface ChatMessage {
   id: string;
@@ -15,15 +15,14 @@ interface ChatMessage {
 let msgCounter = 0;
 function genId() { return `msg-${Date.now()}-${++msgCounter}`; }
 
-export default function AIChatPage() {
+export default function AIChatTab() {
   const { settings } = useSettings();
   const { t } = useI18n();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
   const [isStreaming, setIsStreaming] = useState(false);
-  const portRef = useRef<chrome.runtime.Port | null>(null);
+  const abortRef = useRef<AbortController | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -31,9 +30,9 @@ export default function AIChatPage() {
 
   const cleanup = useCallback(() => {
     setIsStreaming(false);
-    if (portRef.current) {
-      portRef.current.disconnect();
-      portRef.current = null;
+    if (abortRef.current) {
+      abortRef.current.abort();
+      abortRef.current = null;
     }
   }, []);
 
@@ -56,41 +55,83 @@ export default function AIChatPage() {
     const allMessages = [...messages, userMsg].map((m) => ({ role: m.role, content: m.content }));
     const assistantId = assistantMsg.id;
 
-    const port = chrome.runtime.connect({ name: 'AI_CHAT_STREAM' });
-    portRef.current = port;
+    const abortController = new AbortController();
+    abortRef.current = abortController;
 
-    port.postMessage({
-      endpoint: settings.aiEndpoint,
-      apiKey,
-      model: settings.aiModel || 'gpt-4o',
-      messages: allMessages,
-      temperature: 0.7,
-    });
+    try {
+      const response = await fetch(settings.aiEndpoint, {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + apiKey,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          model: settings.aiModel || 'gpt-4o',
+          messages: allMessages,
+          stream: true,
+          temperature: 0.7,
+        }),
+        signal: abortController.signal,
+      });
 
-    port.onMessage.addListener((msg: { type: string; content?: string; error?: string }) => {
-      if (msg.type === 'chunk' && msg.content) {
+      if (!response.ok) {
+        const errText = await response.text();
         setMessages((prev) =>
-          prev.map((m) => m.id === assistantId ? { ...m, content: m.content + msg.content } : m)
-        );
-      } else if (msg.type === 'done') {
-        setMessages((prev) =>
-          prev.map((m) => m.id === assistantId ? { ...m, streaming: false } : m)
+          prev.map((m) => m.id === assistantId ? { ...m, content: `HTTP ${response.status}: ${errText.slice(0, 200)}`, error: true, streaming: false } : m)
         );
         cleanup();
-      } else if (msg.type === 'error') {
-        setMessages((prev) =>
-          prev.map((m) => m.id === assistantId ? { ...m, content: msg.error || 'Unknown error', error: true, streaming: false } : m)
-        );
-        cleanup();
+        return;
       }
-    });
 
-    port.onDisconnect.addListener(() => {
+      const reader = response.body!.getReader();
+      const decoder = new TextDecoder();
+      let buffer = '';
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        buffer += decoder.decode(value, { stream: true });
+        const lines = buffer.split('\n');
+        buffer = lines.pop()!;
+
+        for (const line of lines) {
+          const trimmedLine = line.trim();
+          if (!trimmedLine || !trimmedLine.startsWith('data: ')) continue;
+          const data = trimmedLine.slice(6);
+          if (data === '[DONE]') {
+            setMessages((prev) =>
+              prev.map((m) => m.id === assistantId ? { ...m, streaming: false } : m)
+            );
+            cleanup();
+            return;
+          }
+          try {
+            const parsed = JSON.parse(data);
+            const content = parsed.choices?.[0]?.delta?.content;
+            if (content) {
+              setMessages((prev) =>
+                prev.map((m) => m.id === assistantId ? { ...m, content: m.content + content } : m)
+              );
+            }
+          } catch {
+            // skip malformed lines
+          }
+        }
+      }
+
       setMessages((prev) =>
-        prev.map((m) => m.id === assistantId && m.streaming ? { ...m, streaming: false } : m)
+        prev.map((m) => m.id === assistantId ? { ...m, streaming: false } : m)
       );
+    } catch (err: any) {
+      if (err.name !== 'AbortError') {
+        setMessages((prev) =>
+          prev.map((m) => m.id === assistantId ? { ...m, content: err.message || 'Unknown error', error: true, streaming: false } : m)
+        );
+      }
+    } finally {
       cleanup();
-    });
+    }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -108,9 +149,9 @@ export default function AIChatPage() {
   const configured = !!(settings.aiEndpoint);
 
   return (
-    <div className={styles.page}>
+    <div className={styles.container}>
       <div className={styles.header}>
-        <h1 className={styles.title}>{t('aiAssistantTitle')}</h1>
+        <span className={styles.headerTitle}>{t('aiAssistantTitle')}</span>
         {messages.length > 0 && (
           <button className={styles.clearBtn} onClick={handleClear} title={t('clear')}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
@@ -152,7 +193,6 @@ export default function AIChatPage() {
       <div className={styles.inputBar}>
         <div className={styles.inputContainer}>
           <textarea
-            ref={inputRef}
             className={styles.input}
             value={input}
             onChange={(e) => setInput(e.target.value)}

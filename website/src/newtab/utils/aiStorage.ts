@@ -13,9 +13,3 @@ export async function saveAIKey(key: string): Promise<void> {
     chrome.storage.local.set({ [AI_KEY_STORAGE]: key }, resolve);
   });
 }
-
-export async function clearAIKey(): Promise<void> {
-  return new Promise((resolve) => {
-    chrome.storage.local.remove(AI_KEY_STORAGE, resolve);
-  });
-}

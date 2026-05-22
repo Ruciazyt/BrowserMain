@@ -216,11 +216,6 @@
   display: flex;
   flex-direction: column;
   gap: 12px;
-  transition: width 0.25s var(--ease-smooth);
-}
-
-.aiWrapCollapsed {
-  width: 48px;
 }
 
 
@@ -253,9 +248,6 @@
   .aiWrap {
     width: 100%;
     flex-direction: row;
-  }
-  .aiWrapCollapsed {
-    width: 100%;
   }
 }
 
@@ -299,9 +291,6 @@
   .aiWrap {
     width: 100%;
     flex-direction: column;
-  }
-  .aiWrapCollapsed {
-    width: 100%;
   }
 }
 

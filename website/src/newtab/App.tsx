@@ -11,8 +11,7 @@ import OnboardingGuide from './components/OnboardingGuide';
 import WeatherWidget from './components/WeatherWidget';
 import NewsSection from './components/NewsSection';
 import MarketIndices from './components/MarketIndices';
-import AIAssistant from './components/AIAssistant';
-import AIChatPage from './components/AIChatPage';
+import MatrixChatPage from './components/MatrixChatPage';
 import PixelPet from './components/PixelPet';
 import { useI18n, type MessageKey } from './i18n';
 import './styles/global.css';
@@ -70,7 +69,6 @@ export default function App() {
   const [restartOnboardingSignal, setRestartOnboardingSignal] = useState(0);
   const [activeNav, setActiveNav] = useState('home');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const [aiCollapsed, setAiCollapsed] = useState(false);
   const userToggledSidebar = useRef(false);
 
   // Auto-collapse sidebar on narrow viewports
@@ -214,7 +212,7 @@ export default function App() {
       {/* ── Main Content ── */}
       <main className={`${styles.main} ${sidebarCollapsed ? styles.mainFull : ''}`}>
         {activeNav === 'ai' ? (
-          <AIChatPage />
+          <MatrixChatPage />
         ) : (
           <>
             {/* Header: Clock + Greeting (left) | Weather (right) */}
@@ -257,11 +255,10 @@ export default function App() {
                 />
               </div>
               <div className={styles.newsWrap}>
-                <NewsSection columns={aiCollapsed ? 3 : 2} />
+                <NewsSection columns={2} />
               </div>
-              <div className={`${styles.aiWrap} ${aiCollapsed ? styles.aiWrapCollapsed : ''}`}>
-                <AIAssistant collapsed={aiCollapsed} onToggle={() => setAiCollapsed(!aiCollapsed)} />
-                {!aiCollapsed && <PixelPet species={settings.petSpecies || 'brown'} />}
+              <div className={styles.aiWrap}>
+                <PixelPet species={settings.petSpecies || 'brown'} />
               </div>
             </div>
           </>

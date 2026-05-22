@@ -10,7 +10,16 @@
       "Bash(./node_modules/.bin/tsc --noEmit)",
       "Bash(npx vite *)",
       "WebFetch(domain:stitch.withgoogle.com)",
-      "WebSearch"
+      "WebSearch",
+      "Bash(pnpm add *)",
+      "Bash(pnpm build *)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" \"http://10.62.31.61:41005/_matrix/client/versions\")",
+      "Bash(curl -s -w \"\\\\nHTTP %{http_code}\" \"http://10.62.31.61:41005/_matrix/federation/v1/version\")",
+      "Bash(curl -s -w \"\\\\nHTTP %{http_code}\" \"http://10.62.31.61:41005/.well-known/matrix/client\")",
+      "Bash(curl -s -w \"\\\\nHTTP %{http_code}\" \"http://10.62.31.61:41005/_matrix/static/\")",
+      "Bash(curl -s -w \"\\\\nHTTP %{http_code}\" \"http://10.62.31.61:8008/_matrix/client/versions\")",
+      "Bash(curl -s -w \"\\\\nHTTP %{http_code}\" \"http://10.62.31.61/_matrix/client/versions\")",
+      "Bash(curl -s -w \"\\\\nHTTP %{http_code}\" \"http://matrix-local.hiclaw.io:8008/_matrix/client/versions\")"
     ]
   }
 }

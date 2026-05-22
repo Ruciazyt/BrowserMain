@@ -18,7 +18,9 @@
   ],
   "host_permissions": [
     "https://momoyu.cc/",
-    "https://push2.eastmoney.com/"
+    "https://push2.eastmoney.com/",
+    "http://10.62.31.61:41005/",
+    "http://matrix-local.hiclaw.io/"
   ],
   "background": {
     "service_worker": "background/background.js"
