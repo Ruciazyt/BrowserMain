@@ -32,9 +32,9 @@ export default function PixelPet({ species = 'brown' }: PixelPetProps) {
   const [state, setState] = useState<PetState>('idle');
   const [showFood, setShowFood] = useState(false);
 
-  const sleepRef = useRef<ReturnType<typeof setTimeout>>();
-  const blinkRef = useRef<ReturnType<typeof setTimeout>>();
-  const blinkOffRef = useRef<ReturnType<typeof setTimeout>>();
+  const sleepRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const blinkRef = useRef<ReturnType<typeof setTimeout>>(undefined);
+  const blinkOffRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   // Decay stats
   useEffect(() => {

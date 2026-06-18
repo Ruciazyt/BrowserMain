@@ -1,0 +1,54 @@
+.wrapper {
+  position: relative;
+  display: flex;
+  overflow: hidden;
+  box-shadow: var(--liquid-glass-shadow);
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 2.2);
+}
+
+.effect {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  backdrop-filter: blur(var(--liquid-glass-blur));
+  -webkit-backdrop-filter: blur(var(--liquid-glass-blur));
+  filter: url(#glass-distortion);
+  overflow: hidden;
+  isolation: isolate;
+  pointer-events: none;
+}
+
+.tint {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  background: var(--liquid-glass-tint);
+  pointer-events: none;
+}
+
+.shine {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  overflow: hidden;
+  box-shadow: var(--liquid-glass-shine);
+  pointer-events: none;
+}
+
+.content {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  color: var(--glass-text-primary);
+}
+
+.contentColumn {
+  flex-direction: column;
+}
+
+.contentRow {
+  flex-direction: row;
+  align-items: center;
+}

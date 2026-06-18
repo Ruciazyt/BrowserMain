@@ -4,6 +4,7 @@ import { SEARCH_ENGINES, SearchEngine, buildSearchUrl, isUrl } from '../utils/en
 import EngineIcon from './EngineIcon';
 import { isMac } from '../utils/platform';
 import { useI18n } from '../i18n';
+import Glass from './ui/Glass/Glass';
 import styles from '../styles/components/SearchBar.module.css';
 
 interface SearchBarProps {
@@ -122,8 +123,7 @@ export default function SearchBar({ defaultEngine = 'bing', onEngineChange }: Se
     dropdownOpen &&
     dropdownLayout &&
     createPortal(
-      <div
-        ref={portalRef}
+      <Glass
         className={styles.dropdown}
         style={{
           position: 'fixed',
@@ -133,6 +133,7 @@ export default function SearchBar({ defaultEngine = 'bing', onEngineChange }: Se
           zIndex: 2147483646,
         }}
       >
+        <div ref={portalRef}>
         {SEARCH_ENGINES.map((eng) => (
           <button
             key={eng.id}
@@ -149,13 +150,14 @@ export default function SearchBar({ defaultEngine = 'bing', onEngineChange }: Se
             {eng.id === engine.id && <CheckIcon />}
           </button>
         ))}
-      </div>,
+        </div>
+      </Glass>,
       document.body
     );
 
   return (
     <div className={styles.outer}>
-      <form className={styles.container} onSubmit={handleSubmit}>
+      <Glass as="form" direction="row" className={styles.container} onSubmit={handleSubmit}>
         <div className={styles.searchIcon}>
           <SearchIcon />
         </div>
@@ -219,7 +221,7 @@ export default function SearchBar({ defaultEngine = 'bing', onEngineChange }: Se
         <button type="submit" className={styles.searchBtn} aria-label={t('search')}>
           {t('search')}
         </button>
-      </form>
+      </Glass>
       {dropdownContent}
     </div>
   );

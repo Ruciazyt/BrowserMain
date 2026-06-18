@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useI18n } from '../i18n';
+import Glass from './ui/Glass/Glass';
 import styles from '../styles/components/MarketIndices.module.css';
 
 const SECIDS = '100.NDX,100.DJIA,100.SPX,1.000001,100.HSI,100.N225,100.FTSE,100.GDAXI';
@@ -95,27 +96,36 @@ export default function MarketIndices() {
     };
   }, [load]);
 
-  if ((error && indices.length === 0) || (!loading && indices.length === 0)) return null;
+  if (error && indices.length === 0) {
+    return (
+      <div className={styles.wrap}>
+        <div className={styles.empty}>
+          <span>{t('newsLoadFailed')}</span>
+          <button className={styles.retryBtn} onClick={() => load()}>{t('retry')}</button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.wrap}>
       <div className={styles.strip}>
         {loading && indices.length === 0
           ? Array.from({ length: 8 }).map((_, i) => (
-              <div key={i} className={styles.card}>
+              <Glass key={i} className={styles.card}>
                 <div className={styles.skeletonName} />
                 <div className={styles.skeletonPrice} />
                 <div className={styles.skeletonChange} />
-              </div>
+              </Glass>
             ))
           : indices.map((idx) => (
-              <div key={idx.symbol} className={styles.card}>
+              <Glass key={idx.symbol} className={styles.card}>
                 <div className={styles.name}>{idx.name}</div>
                 <div className={styles.price}>{formatPrice(idx.price)}</div>
                 <div className={`${styles.change} ${idx.changePercent >= 0 ? styles.up : styles.down}`}>
                   {formatChange(idx.change)} ({formatPercent(idx.changePercent)})
                 </div>
-              </div>
+              </Glass>
             ))}
       </div>
     </div>

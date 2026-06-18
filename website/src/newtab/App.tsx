@@ -1,72 +1,26 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { useShortcuts } from './hooks/useShortcuts';
 import { useSettings } from './hooks/useSettings';
-import SearchBar from './components/SearchBar';
-import Greeting from './components/Greeting';
-import Clock from './components/Clock';
-import ShortcutGrid from './components/ShortcutGrid';
-import SettingsPanel from './components/SettingsPanel';
-import AddShortcutDialog from './components/AddShortcutDialog';
-import OnboardingGuide from './components/OnboardingGuide';
-import WeatherWidget from './components/WeatherWidget';
-import NewsSection from './components/NewsSection';
-import MarketIndices from './components/MarketIndices';
-import MatrixChatPage from './components/MatrixChatPage';
-import PixelPet from './components/PixelPet';
-import { useI18n, type MessageKey } from './i18n';
-import './styles/global.css';
-import styles from './styles/App.module.css';
-
-const SettingsIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-    <circle cx="12" cy="12" r="3"/>
-    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-  </svg>
-);
-
-const SunIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-    <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
-  </svg>
-);
-
-const HomeIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-);
-
-const AIChatIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
-    <path d="M8 9h8"/><path d="M8 13h5"/>
-  </svg>
-);
-
-const CollapseIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-);
-
-const ExpandIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-);
-
-interface NavItem {
-  id: string;
-  icon: () => React.ReactElement;
-}
-
-const navItems: NavItem[] = [
-  { id: 'home', icon: HomeIcon },
-  { id: 'ai', icon: AIChatIcon },
-  { id: 'settings', icon: SettingsIcon },
-];
+import Sidebar from './components/layout/Sidebar/Sidebar';
+import SearchBar from './components/search/SearchBar/SearchBar';
+import WeatherWidget from './components/widgets/WeatherWidget/WeatherWidget';
+import MarketIndices from './components/widgets/MarketIndices/MarketIndices';
+import NewsSection from './components/widgets/NewsSection/NewsSection';
+import ShortcutGrid from './components/shortcuts/ShortcutGrid/ShortcutGrid';
+import AddShortcutDialog from './components/shortcuts/AddShortcutDialog/AddShortcutDialog';
+import SettingsPanel from './components/settings/SettingsPanel/SettingsPanel';
+import RssFeedManager from './components/settings/RssFeedManager/RssFeedManager';
+import PixelPet from './components/pet/PixelPet/PixelPet';
+import { resolveBackgroundImageUrl } from './utils/backgrounds';
+import { GlassDistortionFilter } from './components/ui/Glass';
+import './global.css';
+import styles from './App.module.css';
 
 export default function App() {
   const { shortcuts, loading: shortcutsLoading, addShortcut, removeShortcut, updateShortcut, reorderShortcuts, refreshShortcuts } = useShortcuts();
   const { settings, loading: settingsLoading, updateEngine } = useSettings();
-  const { t } = useI18n();
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [settingsInitialView, setSettingsInitialView] = useState<'main' | 'bookmarkImport' | 'shortcutImport'>('main');
-  const [restartOnboardingSignal, setRestartOnboardingSignal] = useState(0);
   const [activeNav, setActiveNav] = useState('home');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const userToggledSidebar = useRef(false);
@@ -92,17 +46,20 @@ export default function App() {
   const bgStyle = useMemo(() => {
     const bg = settings.background;
     if (!bg || bg.type === 'solid') return {};
-    if (bg.type === 'image' && bg.imageUrl) {
-      return {
-        backgroundImage: `url(${bg.imageUrl})`,
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
-      };
+    if (bg.type === 'image') {
+      const imageUrl = resolveBackgroundImageUrl(bg);
+      if (imageUrl) {
+        return {
+          backgroundImage: `url(${imageUrl})`,
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
+        };
+      }
     }
     if (bg.type === 'gradient') {
       return {
-        background: `linear-gradient(${bg.gradientDirection || 'to bottom right'}, ${bg.gradientFrom || '#667eea'}, ${bg.gradientTo || '#764ba2'})`,
+        background: `linear-gradient(${bg.gradientDirection || 'to bottom right'}, ${bg.gradientFrom || '#f5e6d8'}, ${bg.gradientTo || '#e8d5c4'})`,
       };
     }
     return {};
@@ -121,6 +78,12 @@ export default function App() {
   }, []);
 
   const isMountedRef = useRef(true);
+
+  // Mark unmounted on actual component unmount only — running this in the
+  // listener-effect cleanup would also fire whenever `refreshShortcuts` changes,
+  // which would leave the ref stuck at false and silently disable the handler.
+  useEffect(() => () => { isMountedRef.current = false; }, []);
+
   useEffect(() => {
     const listener = (message: { type?: string }) => {
       if (message.type === 'SHORTCUT_ADDED' && isMountedRef.current) {
@@ -129,7 +92,6 @@ export default function App() {
     };
     chrome.runtime.onMessage.addListener(listener);
     return () => {
-      isMountedRef.current = false;
       chrome.runtime.onMessage.removeListener(listener);
     };
   }, [refreshShortcuts]);
@@ -157,12 +119,8 @@ export default function App() {
 
   useEffect(() => {
     if (settingsLoading) return;
-    chrome.storage.local.get('browsermain_first_run', (result) => {
-      if (result['browsermain_first_run'] === true) {
-        setRestartOnboardingSignal(Date.now());
-        chrome.storage.local.set({ 'browsermain_first_run': false });
-      }
-    });
+    // First-run onboarding was removed — clear any stale flag set by older builds.
+    chrome.storage.local.remove('browsermain_first_run');
   }, [settingsLoading]);
 
   if (shortcutsLoading || settingsLoading) {
@@ -175,95 +133,64 @@ export default function App() {
 
   return (
     <div className={styles.page} style={bgStyle}>
-      {/* ── Sidebar ── */}
-      <aside className={`${styles.sidebar} ${sidebarCollapsed ? styles.sidebarCollapsed : ''}`}>
-        {!sidebarCollapsed && <div className={styles.sidebarLogo}>BrowserMain</div>}
-        <nav className={styles.sidebarNav}>
-          {navItems.map((item) => {
-            const Icon = item.icon;
-            const isSettings = item.id === 'settings';
-            return (
-              <button
-                key={item.id}
-                className={`${styles.sidebarItem} ${activeNav === item.id && !isSettings ? styles.active : ''}`}
-                title={isSettings ? t('settings') : t(`nav_${item.id}` as MessageKey)}
-                onClick={() => {
-                  if (isSettings) {
-                    setSettingsInitialView('main');
-                    setSettingsOpen(true);
-                  } else {
-                    setActiveNav(item.id);
-                  }
-                }}
-              >
-                <span className={styles.sidebarItemIcon}><Icon /></span>
-                {!sidebarCollapsed && (isSettings ? t('settings') : t(`nav_${item.id}` as MessageKey))}
-              </button>
-            );
-          })}
-        </nav>
-        <div className={styles.sidebarBottom}>
-          <button className={styles.sidebarIconBtn} onClick={() => { userToggledSidebar.current = true; setSidebarCollapsed(!sidebarCollapsed); }} aria-label="Toggle sidebar" title="Toggle sidebar">
-            {sidebarCollapsed ? <ExpandIcon /> : <CollapseIcon />}
-          </button>
-        </div>
-      </aside>
+      <GlassDistortionFilter />
+      <Sidebar
+        activeNav={activeNav}
+        collapsed={sidebarCollapsed}
+        onActiveNavChange={setActiveNav}
+        onOpenSettings={() => {
+          setSettingsInitialView('main');
+          setSettingsOpen(true);
+        }}
+        onToggleCollapse={() => setSidebarCollapsed((prev) => !prev)}
+      />
 
-      {/* ── Main Content ── */}
       <main className={`${styles.main} ${sidebarCollapsed ? styles.mainFull : ''}`}>
-        {activeNav === 'ai' ? (
-          <MatrixChatPage />
+        {activeNav === 'rss' ? (
+          <RssFeedManager standalone onNavigateHome={() => setActiveNav('home')} />
         ) : (
           <>
-            {/* Header: Clock + Greeting (left) | Weather (right) */}
-            <div className={styles.header}>
-              <div className={styles.heroGroup}>
-                <Clock />
-                <Greeting userName={settings.userName} />
-              </div>
-              <div className={styles.headerRight}>
-                <WeatherWidget />
-              </div>
-            </div>
-
-            {/* Search bar + Market indices row */}
-            <div className={styles.searchRow}>
+            <div className={styles.topBar}>
               <SearchBar defaultEngine={settings.defaultEngine} onEngineChange={updateEngine} />
-              <MarketIndices />
+              <WeatherWidget />
             </div>
 
-            {/* Shortcuts (left) + News (center) + AI (right) */}
-            <div className={styles.contentRow}>
-              <div className={styles.shortcutsWrap}>
-                <ShortcutGrid
-                  shortcuts={shortcuts}
-                  onDelete={removeShortcut}
-                  onUpdate={updateShortcut}
-                  onReorder={reorderShortcuts}
-                  onAdd={() => {
-                    setAddDialogData({ url: '', title: '', favicon: '' });
-                    setAddDialogOpen(true);
-                  }}
-                  onImportBookmarks={() => {
-                    setSettingsInitialView('bookmarkImport');
-                    setSettingsOpen(true);
-                  }}
-                  onImportShortcuts={() => {
-                    setSettingsInitialView('shortcutImport');
-                    setSettingsOpen(true);
-                  }}
-                />
-              </div>
-              <div className={styles.newsWrap}>
-                <NewsSection columns={2} />
-              </div>
-              <div className={styles.aiWrap}>
-                <PixelPet species={settings.petSpecies || 'brown'} />
-              </div>
-            </div>
+            <section className={styles.section}>
+              <MarketIndices />
+            </section>
+
+            <section className={styles.section}>
+              <ShortcutGrid
+                shortcuts={shortcuts}
+                onDelete={removeShortcut}
+                onUpdate={updateShortcut}
+                onReorder={reorderShortcuts}
+                onAdd={() => {
+                  setAddDialogData({ url: '', title: '', favicon: '' });
+                  setAddDialogOpen(true);
+                }}
+                onImportBookmarks={() => {
+                  setSettingsInitialView('bookmarkImport');
+                  setSettingsOpen(true);
+                }}
+                onImportShortcuts={() => {
+                  setSettingsInitialView('shortcutImport');
+                  setSettingsOpen(true);
+                }}
+              />
+            </section>
+
+            <section className={styles.section}>
+              <NewsSection columns={4} />
+            </section>
           </>
         )}
       </main>
+
+      {/* Pixel Pet — fixed bottom right */}
+      <div className={styles.petCorner}>
+        <PixelPet species={settings.petSpecies || 'brown'} />
+      </div>
 
       {/* Settings panel */}
       <SettingsPanel
@@ -271,7 +198,6 @@ export default function App() {
         onClose={() => setSettingsOpen(false)}
         initialView={settingsInitialView}
         onBookmarkImportComplete={refreshShortcuts}
-        onShowTour={() => setRestartOnboardingSignal(Date.now())}
       />
 
       {/* Add shortcut dialog */}
@@ -284,9 +210,6 @@ export default function App() {
         onAddShortcut={addShortcut}
         onClose={() => setAddDialogOpen(false)}
       />
-
-      {/* Onboarding */}
-      <OnboardingGuide restartSignal={restartOnboardingSignal} />
     </div>
   );
 }

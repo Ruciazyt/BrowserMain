@@ -67,10 +67,10 @@
   position: relative;
   border-radius: var(--radius-xs);
   touch-action: none;
-  justify-self: stretch;
+  justify-self: center;
   align-self: start;
-  width: 100%;
-  max-width: 100px;
+  width: var(--tile-size, 80px);
+  max-width: var(--tile-size, 80px);
   min-width: 0;
   overflow: visible;
   transform-origin: center center;
@@ -87,8 +87,8 @@
 
 .container {
   display: grid;
-  grid-template-columns: repeat(auto-fill, 100px);
-  gap: 12px;
+  grid-template-columns: repeat(auto-fill, 80px);
+  gap: 8px;
   width: 100%;
 }
 
@@ -124,14 +124,16 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 100px;
-  height: 100px;
+  width: var(--tile-size, 80px);
+  height: var(--tile-size, 80px);
   border-radius: var(--radius-xs);
   cursor: pointer;
   background: var(--surface-primary);
   border: 1px dashed #CCCCCC;
   transition: all 150ms ease;
   color: var(--text-tertiary);
+  box-sizing: border-box;
+  justify-self: center;
 }
 
 .addTile::before {
@@ -256,24 +258,38 @@
   border: none;
 }
 
-/* ── Group section ────────────────────────────────────────── */
+/* ── Cards row (wraps all group cards so they flow into rows) ── */
+.cardsRow {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 368px);
+  gap: 14px;
+  justify-content: start;
+}
+
+/* ── Group section (one card per group, fixed 4x4 dimensions) ─ */
 .groupSection {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
+  width: 368px;            /* 4 cols × 80 + 3 × 8 gap + 2 × 12 padding */
+  height: 392px;           /* 12 top pad + ~28 header + 4 × 80 + 3 × 8 gap + 12 bottom pad */
+  padding: 12px;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
 }
 
 .groupHeader {
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 4px 8px;
+  padding: 4px 10px;
   margin-bottom: 2px;
   border-radius: var(--radius-xs);
-  background: rgba(0, 102, 204, 0.06);
+  background: var(--glass-header-bg);
   border: 1px solid rgba(0, 102, 204, 0.12);
   cursor: pointer;
   transition: background 0.15s;
+  flex-shrink: 0;
 }
 
 .groupHeader:hover {
@@ -285,12 +301,12 @@
   font-weight: 600;
   letter-spacing: 0.5px;
   text-transform: uppercase;
-  color: var(--accent-blue);
+  color: var(--glass-text-label);
 }
 
 .groupCount {
   font-size: var(--text-md);
-  color: var(--text-tertiary);
+  color: var(--glass-text-tertiary);
 }
 
 .groupRenameInput {
@@ -298,23 +314,43 @@
   font-weight: 600;
   letter-spacing: 0.5px;
   text-transform: uppercase;
-  color: var(--accent-blue);
+  color: var(--glass-text-label);
   background: transparent;
   border: none;
   outline: none;
-  border-bottom: 1.5px solid var(--accent-blue);
+  border-bottom: 1.5px solid var(--glass-text-accent);
   padding: 0;
   margin: 0;
   width: 100%;
   min-width: 0;
 }
 
+/* Tiles area: exactly 4 columns, rows auto-flow. The flex parent gives it a
+   fixed height = 4 rows of 80px tiles + 3 gaps. If the group has more than
+   16 shortcuts, the extra rows overflow inside the card but the scrollbar is
+   visually hidden (overflow is still scrollable via mousewheel/touch).
+   If fewer than 16, the empty row(s) just stay blank — tiles keep their
+   natural 80x80 size (no compression). */
 .groupTiles {
+  --tile-size: 80px;
+  --tile-icon-size: 28px;
   display: grid;
-  grid-template-columns: repeat(auto-fill, 100px);
-  gap: 12px;
-  padding-bottom: 16px;
-  justify-items: stretch;
+  grid-template-columns: repeat(4, var(--tile-size));
+  grid-auto-rows: var(--tile-size);
+  gap: 8px;
+  padding: 0;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  justify-content: center;
+  justify-items: center;
+  scrollbar-width: none;
+}
+
+.groupTiles::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
 }
 
 .count {

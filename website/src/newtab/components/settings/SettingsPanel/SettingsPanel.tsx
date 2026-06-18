@@ -1,23 +1,20 @@
 import { useState, useRef, useEffect } from 'react';
-import pkg from '../../../package.json';
-import { useSettings } from '../hooks/useSettings';
-import { SEARCH_ENGINES } from '../utils/engines';
-import { useI18n } from '../i18n';
-import EngineIcon from './EngineIcon';
-import BookmarkImport from './BookmarkImport';
-import ShortcutImport from './ShortcutImport';
-import { useShortcuts } from '../hooks/useShortcuts';
-import { getMatrixAccessToken, saveMatrixAccessToken, getMatrixBotToken, saveMatrixBotToken } from '../utils/matrixStorage';
-import { getAIKey, saveAIKey } from '../utils/aiStorage';
-import * as sdk from 'matrix-js-sdk';
-import styles from '../styles/components/SettingsPanel.module.css';
+import pkg from '../../../../../package.json';
+import { useSettings } from '../../../hooks/useSettings';
+import { SEARCH_ENGINES } from '../../../utils/engines';
+import { useI18n } from '../../../i18n';
+import EngineIcon from '../../EngineIcon';
+import BookmarkImport from '../../BookmarkImport';
+import ShortcutImport from '../../ShortcutImport';
+import { useShortcuts } from '../../../hooks/useShortcuts';
+import { BUILTIN_BACKGROUNDS, resolveBackgroundImageUrl } from '../../../utils/backgrounds';
+import styles from './SettingsPanel.module.css';
 
 interface SettingsPanelProps {
   open: boolean;
   onClose: () => void;
   initialView?: 'main' | 'bookmarkImport' | 'shortcutImport';
   onBookmarkImportComplete?: () => void;
-  onShowTour?: () => void;
 }
 
 const CloseIcon = () => (
@@ -34,10 +31,10 @@ const CheckIcon = () => (
 );
 
 export default function SettingsPanel({ open, onClose, initialView = 'main', onBookmarkImportComplete }: SettingsPanelProps) {
-  const { settings, updateEngine, updateBackground, updateClockFormat, updateLocale, updateMatrixConfig, updateAIConfig, updatePetSpecies } = useSettings();
+  const { settings, updateEngine, updateBackground, updateClockFormat, updateLocale, updatePetSpecies } = useSettings();
   const { t } = useI18n();
   const { shortcuts, updateShortcut } = useShortcuts();
-  const [imagePreview, setImagePreview] = useState(settings.background.imageUrl || '');
+  const [imagePreview, setImagePreview] = useState(resolveBackgroundImageUrl(settings.background) || '');
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [showBookmarkImport, setShowBookmarkImport] = useState(false);
   const [showShortcutImport, setShowShortcutImport] = useState(false);
@@ -46,44 +43,26 @@ export default function SettingsPanel({ open, onClose, initialView = 'main', onB
   const [groupToDelete, setGroupToDelete] = useState<string | null>(null);
   const [groupDeleteSuccess, setGroupDeleteSuccess] = useState('');
 
-  // Matrix settings state
-  const [matrixToken, setMatrixToken] = useState('');
-  const [matrixTokenVisible, setMatrixTokenVisible] = useState(false);
-  const [matrixTesting, setMatrixTesting] = useState(false);
-  const [matrixTestResult, setMatrixTestResult] = useState<'success' | 'error' | null>(null);
-  const [matrixTestError, setMatrixTestError] = useState('');
-
-  // Matrix bot settings state
-  const [botToken, setBotToken] = useState('');
-  const [botTokenVisible, setBotTokenVisible] = useState(false);
-
-  // AI settings state
-  const [aiKey, setAiKey] = useState('');
-  const [aiKeyVisible, setAiKeyVisible] = useState(false);
-  const [aiTesting, setAiTesting] = useState(false);
-  const [aiTestResult, setAiTestResult] = useState<'success' | 'error' | null>(null);
-  const [aiTestError, setAiTestError] = useState('');
-
   const existingGroups = Array.from(
     new Set(shortcuts.map((s) => s.group).filter((g): g is string => !!g))
   ).sort();
 
   useEffect(() => {
     if (!open) return;
-    getMatrixAccessToken().then(setMatrixToken);
-    setMatrixTestResult(null);
-    setMatrixTestError('');
-    getMatrixBotToken().then(setBotToken);
-    getAIKey().then(setAiKey);
-    setAiTestResult(null);
-    setAiTestError('');
     setShowBookmarkImport(initialView === 'bookmarkImport');
     setShowShortcutImport(initialView === 'shortcutImport');
   }, [open, initialView]);
 
   useEffect(() => {
-    setImagePreview(settings.background.imageUrl || '');
-  }, [settings.background.imageUrl]);
+    setImagePreview(resolveBackgroundImageUrl(settings.background) || '');
+  }, [settings.background]);
+
+  const selectBuiltinBackground = (presetId: string) => {
+    const preset = BUILTIN_BACKGROUNDS.find((item) => item.id === presetId);
+    if (!preset) return;
+    setImagePreview(preset.path);
+    updateBackground({ type: 'image', imagePreset: presetId, imageUrl: undefined });
+  };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -92,7 +71,7 @@ export default function SettingsPanel({ open, onClose, initialView = 'main', onB
     reader.onload = (ev) => {
       const dataUrl = ev.target?.result as string;
       setImagePreview(dataUrl);
-      updateBackground({ type: 'image', imageUrl: dataUrl });
+      updateBackground({ type: 'image', imageUrl: dataUrl, imagePreset: undefined });
     };
     reader.readAsDataURL(file);
   };
@@ -141,6 +120,33 @@ export default function SettingsPanel({ open, onClose, initialView = 'main', onB
                 <div className={styles.sectionTitle}>{t('background')}</div>
                 <div className={styles.imageSection}>
                   <div className={styles.imageHelpText}>{t('backgroundDescription')}</div>
+                  <div className={styles.presetLabel}>{t('backgroundPresets')}</div>
+                  <div className={styles.presetGrid}>
+                    <button
+                      type="button"
+                      className={`${styles.presetItem} ${settings.background.type === 'solid' ? styles.presetItemSelected : ''}`}
+                      onClick={() => {
+                        setImagePreview('');
+                        updateBackground({ type: 'solid', color: '#0a0a0f' });
+                      }}
+                      title={t('backgroundDefault')}
+                    >
+                      <span className={styles.presetDefaultSwatch} />
+                      <span className={styles.presetName}>{t('backgroundDefault')}</span>
+                    </button>
+                    {BUILTIN_BACKGROUNDS.map((preset) => (
+                      <button
+                        key={preset.id}
+                        type="button"
+                        className={`${styles.presetItem} ${settings.background.imagePreset === preset.id ? styles.presetItemSelected : ''}`}
+                        onClick={() => selectBuiltinBackground(preset.id)}
+                        title={t(preset.labelKey)}
+                      >
+                        <img src={preset.path} alt={t(preset.labelKey)} className={styles.presetThumb} />
+                        <span className={styles.presetName}>{t(preset.labelKey)}</span>
+                      </button>
+                    ))}
+                  </div>
                   <div className={styles.imageActionRow}>
                     <button
                       className={styles.uploadBtn}
@@ -353,218 +359,6 @@ export default function SettingsPanel({ open, onClose, initialView = 'main', onB
                     ))}
                   </div>
                 </div>
-              </div>
-
-              <div className={styles.section}>
-                <div className={styles.sectionTitle}>{t('aiSettings')}</div>
-
-                <div className={styles.fieldRow}>
-                  <label className={styles.fieldLabel}>{t('aiEndpoint')}</label>
-                  <input
-                    className={styles.fieldInput}
-                    value={settings.matrixHomeserver || ''}
-                    onChange={(e) => updateMatrixConfig({ matrixHomeserver: e.target.value })}
-                    placeholder={t('aiEndpointPlaceholder')}
-                  />
-                </div>
-
-                <div className={styles.fieldRow}>
-                  <label className={styles.fieldLabel}>{t('aiModel')}</label>
-                  <input
-                    className={styles.fieldInput}
-                    value={settings.matrixUserId || ''}
-                    onChange={(e) => updateMatrixConfig({ matrixUserId: e.target.value })}
-                    placeholder={t('aiModelPlaceholder')}
-                  />
-                </div>
-
-                <div className={styles.fieldRow}>
-                  <label className={styles.fieldLabel}>{t('aiApiKey')}</label>
-                  <div style={{ display: 'flex', gap: 6, flex: 1 }}>
-                    <input
-                      className={styles.fieldInput}
-                      type={matrixTokenVisible ? 'text' : 'password'}
-                      value={matrixToken}
-                      onChange={(e) => { setMatrixToken(e.target.value); saveMatrixAccessToken(e.target.value); }}
-                      placeholder={t('aiApiKeyPlaceholder')}
-                      style={{ flex: 1 }}
-                    />
-                    <button
-                      className={styles.eyeBtn}
-                      onClick={() => setMatrixTokenVisible(!matrixTokenVisible)}
-                      aria-label="Toggle visibility"
-                    >
-                      {matrixTokenVisible ? '⊙' : '◉'}
-                    </button>
-                  </div>
-                </div>
-
-                <div className={styles.fieldRow}>
-                  <label className={styles.fieldLabel}>{t('aiRoomId')}</label>
-                  <input
-                    className={styles.fieldInput}
-                    value={settings.matrixRoomId || ''}
-                    onChange={(e) => updateMatrixConfig({ matrixRoomId: e.target.value })}
-                    placeholder={t('aiRoomIdPlaceholder')}
-                  />
-                </div>
-
-                <div className={styles.fieldRow}>
-                  <label className={styles.fieldLabel}>{t('aiBotUserId')}</label>
-                  <input
-                    className={styles.fieldInput}
-                    value={settings.matrixBotUserId || ''}
-                    onChange={(e) => updateMatrixConfig({ matrixBotUserId: e.target.value })}
-                    placeholder={t('aiBotUserIdPlaceholder')}
-                  />
-                </div>
-
-                <div className={styles.fieldRow}>
-                  <label className={styles.fieldLabel}>{t('aiBotToken')}</label>
-                  <div style={{ display: 'flex', gap: 6, flex: 1 }}>
-                    <input
-                      className={styles.fieldInput}
-                      type={botTokenVisible ? 'text' : 'password'}
-                      value={botToken}
-                      onChange={(e) => { setBotToken(e.target.value); saveMatrixBotToken(e.target.value); }}
-                      placeholder={t('aiBotTokenPlaceholder')}
-                      style={{ flex: 1 }}
-                    />
-                    <button
-                      className={styles.eyeBtn}
-                      onClick={() => setBotTokenVisible(!botTokenVisible)}
-                      aria-label="Toggle visibility"
-                    >
-                      {botTokenVisible ? '⊙' : '◉'}
-                    </button>
-                  </div>
-                </div>
-
-                <button
-                  className={styles.testBtn}
-                  onClick={async () => {
-                    if (!settings.matrixHomeserver || !matrixToken) return;
-                    setMatrixTesting(true);
-                    setMatrixTestResult(null);
-                    setMatrixTestError('');
-                    try {
-                      const testClient = sdk.createClient({
-                        baseUrl: settings.matrixHomeserver,
-                        accessToken: matrixToken,
-                        userId: settings.matrixUserId || '',
-                        useAuthorizationHeader: true,
-                      });
-                      await testClient.whoami();
-                      setMatrixTestResult('success');
-                    } catch (err: any) {
-                      setMatrixTestResult('error');
-                      setMatrixTestError(err.message || 'Unknown error');
-                    } finally {
-                      setMatrixTesting(false);
-                    }
-                  }}
-                  disabled={matrixTesting || !settings.matrixHomeserver || !matrixToken}
-                >
-                  {matrixTesting ? t('aiTesting') : t('aiTestConnection')}
-                </button>
-                {matrixTestResult === 'success' && (
-                  <div className={styles.successMsg}>{t('aiTestSuccess')}</div>
-                )}
-                {matrixTestResult === 'error' && (
-                  <div className={styles.errorMsg}>{t('aiTestFailed')}: {matrixTestError}</div>
-                )}
-              </div>
-
-              <div className={styles.section}>
-                <div className={styles.sectionTitle}>{t('aiSettingsAssistant')}</div>
-
-                <div className={styles.fieldRow}>
-                  <label className={styles.fieldLabel}>{t('aiApiEndpoint')}</label>
-                  <input
-                    className={styles.fieldInput}
-                    value={settings.aiEndpoint || ''}
-                    onChange={(e) => updateAIConfig({ aiEndpoint: e.target.value })}
-                    placeholder={t('aiApiEndpointPlaceholder')}
-                  />
-                </div>
-
-                <div className={styles.fieldRow}>
-                  <label className={styles.fieldLabel}>{t('aiModelLabel')}</label>
-                  <input
-                    className={styles.fieldInput}
-                    value={settings.aiModel || ''}
-                    onChange={(e) => updateAIConfig({ aiModel: e.target.value })}
-                    placeholder={t('aiModelLabelPlaceholder')}
-                  />
-                </div>
-
-                <div className={styles.fieldRow}>
-                  <label className={styles.fieldLabel}>{t('aiApiKeyLabel')}</label>
-                  <div style={{ display: 'flex', gap: 6, flex: 1 }}>
-                    <input
-                      className={styles.fieldInput}
-                      type={aiKeyVisible ? 'text' : 'password'}
-                      value={aiKey}
-                      onChange={(e) => { setAiKey(e.target.value); saveAIKey(e.target.value); }}
-                      placeholder={t('aiApiKeyLabelPlaceholder')}
-                      style={{ flex: 1 }}
-                    />
-                    <button
-                      className={styles.eyeBtn}
-                      onClick={() => setAiKeyVisible(!aiKeyVisible)}
-                      aria-label="Toggle visibility"
-                    >
-                      {aiKeyVisible ? '⊙' : '◉'}
-                    </button>
-                  </div>
-                </div>
-
-                <button
-                  className={styles.testBtn}
-                  onClick={async () => {
-                    const key = await getAIKey();
-                    if (!settings.aiEndpoint || !key) return;
-                    setAiTesting(true);
-                    setAiTestResult(null);
-                    setAiTestError('');
-                    try {
-                      const res = await fetch(settings.aiEndpoint, {
-                        method: 'POST',
-                        headers: {
-                          'Authorization': 'Bearer ' + key,
-                          'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                          model: settings.aiModel || 'gpt-4o',
-                          messages: [{ role: 'user', content: 'Hi' }],
-                          max_tokens: 5,
-                          stream: false,
-                        }),
-                      });
-                      if (res.ok) {
-                        setAiTestResult('success');
-                      } else {
-                        const text = await res.text();
-                        setAiTestResult('error');
-                        setAiTestError(`HTTP ${res.status}: ${text.slice(0, 100)}`);
-                      }
-                    } catch (err: any) {
-                      setAiTestResult('error');
-                      setAiTestError(err.message || 'Unknown error');
-                    } finally {
-                      setAiTesting(false);
-                    }
-                  }}
-                  disabled={aiTesting || !settings.aiEndpoint || !aiKey}
-                >
-                  {aiTesting ? t('aiTesting') : t('aiTestConnection')}
-                </button>
-                {aiTestResult === 'success' && (
-                  <div className={styles.successMsg}>{t('aiTestSuccess')}</div>
-                )}
-                {aiTestResult === 'error' && (
-                  <div className={styles.errorMsg}>{t('aiTestFailed')}: {aiTestError}</div>
-                )}
               </div>
 
               <div className={styles.section}>

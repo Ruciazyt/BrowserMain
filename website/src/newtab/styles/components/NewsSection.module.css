@@ -44,24 +44,16 @@
 }
 
 .card {
-  background: var(--surface-primary);
-  border: 1px solid var(--border-primary);
   border-radius: var(--radius-lg);
-  overflow: hidden;
-  transition: box-shadow var(--dur-fast);
-}
-
-.card:hover {
-  box-shadow: none;
 }
 
 .cardHeader {
   padding: 10px 14px;
-  font-size: var(--text-md);
+  font-size: var(--text-sm);
   font-weight: 600;
-  color: var(--accent-blue);
-  background: rgba(0, 102, 204, 0.04);
-  border-bottom: 1px solid var(--border-secondary);
+  color: var(--glass-text-label);
+  background: var(--glass-header-bg);
+  border-bottom: 1px solid var(--glass-header-border);
   letter-spacing: 0.02em;
   cursor: grab;
 }
@@ -85,13 +77,13 @@
 }
 
 .cardItem:hover {
-  background: var(--surface-hover);
+  background: var(--glass-item-hover);
 }
 
 .cardItemTitle {
   font-size: var(--text-md);
   font-weight: 400;
-  color: var(--text-primary);
+  color: var(--glass-text-primary);
   line-height: 1.5;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -103,7 +95,7 @@
 .index {
   font-size: 12px;
   font-weight: 700;
-  color: var(--text-tertiary);
+  color: var(--glass-text-tertiary);
   flex-shrink: 0;
   min-width: 18px;
   line-height: 1.5;

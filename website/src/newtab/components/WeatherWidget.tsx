@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import { useI18n } from '../i18n';
+import Glass from './ui/Glass/Glass';
 import styles from '../styles/components/WeatherWidget.module.css';
 
 interface WeatherData {
@@ -36,19 +38,32 @@ const WEATHER_EMOJI: Record<number, string> = {
   95: '⛈️',
 };
 
-const FALLBACK: WeatherData = {
-  temperature: 22,
-  location: '--',
-  description: '--',
-  aqi: 0,
-  aqiLevel: '--',
-  weatherCode: 2,
-};
-
 const CACHE_KEY = 'browsermain_weather_cache';
 const CACHE_DURATION = 30 * 60 * 1000;
 
-async function fetchWeather(): Promise<WeatherData> {
+const WEATHER_DESCRIPTIONS_ZH: Record<number, string> = {
+  0: '晴', 1: '晴', 2: '多云', 3: '阴',
+  45: '雾', 48: '雾', 51: '小雨', 53: '小雨', 55: '中雨',
+  61: '小雨', 63: '中雨', 65: '大雨', 71: '小雪', 73: '中雪',
+  75: '大雪', 80: '阵雨', 81: '阵雨', 82: '暴雨', 95: '雷阵雨',
+};
+
+const WEATHER_DESCRIPTIONS_EN: Record<number, string> = {
+  0: 'Clear', 1: 'Mainly clear', 2: 'Partly cloudy', 3: 'Overcast',
+  45: 'Fog', 48: 'Rime fog', 51: 'Light drizzle', 53: 'Drizzle', 55: 'Heavy drizzle',
+  61: 'Light rain', 63: 'Rain', 65: 'Heavy rain', 71: 'Light snow', 73: 'Snow',
+  75: 'Heavy snow', 80: 'Rain showers', 81: 'Heavy showers', 82: 'Violent showers', 95: 'Thunderstorm',
+};
+
+async function fetchWeather(isZh: boolean): Promise<WeatherData> {
+  const fallback: WeatherData = {
+    temperature: 22,
+    location: '--',
+    description: '--',
+    aqi: 0,
+    aqiLevel: '--',
+    weatherCode: 2,
+  };
   try {
     const position = await new Promise<GeolocationPosition>((resolve, reject) => {
       navigator.geolocation.getCurrentPosition(resolve, reject, {
@@ -58,66 +73,93 @@ async function fetchWeather(): Promise<WeatherData> {
     });
 
     const { latitude, longitude } = position.coords;
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,weather_code&timezone=auto`;
+    const params = new URLSearchParams({
+      latitude: latitude.toString(),
+      longitude: longitude.toString(),
+      current: 'temperature_2m,weather_code',
+      timezone: 'auto',
+    });
+    const url = `https://api.open-meteo.com/v1/forecast?${params.toString()}`;
 
     const res = await fetch(url);
-    if (!res.ok) return FALLBACK;
+    if (!res.ok) return fallback;
 
     const data = await res.json();
     const current = data.current;
-    if (!current) return FALLBACK;
-
-    const weatherDescriptions: Record<number, string> = {
-      0: '晴', 1: '晴', 2: '多云', 3: '阴',
-      45: '雾', 48: '雾', 51: '小雨', 53: '小雨', 55: '中雨',
-      61: '小雨', 63: '中雨', 65: '大雨', 71: '小雪', 73: '中雪',
-      75: '大雪', 80: '阵雨', 81: '阵雨', 82: '暴雨', 95: '雷阵雨',
-    };
+    if (!current) return fallback;
 
     const code = current.weather_code ?? 2;
+    const descriptions = isZh ? WEATHER_DESCRIPTIONS_ZH : WEATHER_DESCRIPTIONS_EN;
 
     return {
       temperature: Math.round(current.temperature_2m),
-      location: '当前位置',
-      description: weatherDescriptions[code] || '未知',
+      location: '--',
+      description: descriptions[code] || (isZh ? '未知' : 'Unknown'),
       aqi: 0,
       aqiLevel: '--',
       weatherCode: code,
     };
   } catch {
-    return FALLBACK;
+    return fallback;
   }
 }
 
+interface CachedWeather {
+  data: WeatherData;
+  timestamp: number;
+}
+
+async function getCachedWeather(): Promise<WeatherData | null> {
+  return new Promise((resolve) => {
+    chrome.storage.local.get(CACHE_KEY, (result: Record<string, CachedWeather | undefined>) => {
+      const cached = result[CACHE_KEY];
+      if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
+        resolve(cached.data);
+      } else {
+        resolve(null);
+      }
+    });
+  });
+}
+
+function setCachedWeather(data: WeatherData): void {
+  const payload: CachedWeather = { data, timestamp: Date.now() };
+  chrome.storage.local.set({ [CACHE_KEY]: payload });
+}
+
 export default function WeatherWidget() {
+  const { isZh } = useI18n();
   const [weather, setWeather] = useState<WeatherData | null>(null);
 
   useEffect(() => {
-    const loadWeather = async () => {
-      const cached = localStorage.getItem(CACHE_KEY);
+    let cancelled = false;
+    (async () => {
+      const cached = await getCachedWeather();
+      if (cancelled) return;
       if (cached) {
-        try {
-          const parsed = JSON.parse(cached);
-          if (Date.now() - parsed.timestamp < CACHE_DURATION) {
-            setWeather(parsed.data);
-            return;
-          }
-        } catch { /* ignore */ }
+        setWeather(cached);
+        return;
       }
-
-      const data = await fetchWeather();
+      const data = await fetchWeather(isZh);
+      if (cancelled) return;
       setWeather(data);
-      localStorage.setItem(CACHE_KEY, JSON.stringify({ data, timestamp: Date.now() }));
-    };
+      setCachedWeather(data);
+    })();
+    return () => { cancelled = true; };
+  }, [isZh]);
 
-    loadWeather();
-  }, []);
-
-  const data = weather || FALLBACK;
+  const data = weather || {
+    temperature: 0,
+    location: '--',
+    description: '--',
+    aqi: 0,
+    aqiLevel: '--',
+    weatherCode: 2,
+  };
   const emoji = WEATHER_EMOJI[data.weatherCode] || '🌤️';
 
   return (
-    <div className={styles.container}>
+    <Glass direction="row" className={styles.container}>
       <span className={styles.emoji}>{emoji}</span>
       <span className={styles.temperature}>{data.temperature}°C</span>
       <span className={styles.description}>{data.description}</span>
@@ -127,11 +169,11 @@ export default function WeatherWidget() {
         <>
           <span className={styles.divider}>·</span>
           <span className={styles.aqi}>
-            空气质量 <span className={styles.aqiValue}>{data.aqi} {data.aqiLevel}</span>
+            {isZh ? '空气质量' : 'AQI'} <span className={styles.aqiValue}>{data.aqi} {data.aqiLevel}</span>
             <span className={styles.aqiArrow}>▾</span>
           </span>
         </>
       )}
-    </div>
+    </Glass>
   );
 }

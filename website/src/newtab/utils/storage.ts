@@ -31,6 +31,7 @@ export interface BackgroundConfig {
   gradientTo?: string;
   gradientDirection?: 'to top right' | 'to bottom right' | 'to bottom left' | 'to top left';
   imageUrl?: string;
+  imagePreset?: string;
 }
 
 const SHORTCUTS_KEY = 'browsermain_shortcuts';

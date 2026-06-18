@@ -12,22 +12,16 @@
 
 .container {
   position: relative;
-  display: flex;
   align-items: center;
   gap: 0;
-  background: var(--surface-primary);
-  border: 1px solid var(--border-primary);
-  border-radius: 999px;
+  border: none;
+  border-radius: var(--radius-pill);
   padding: 0;
-  box-shadow: none;
-  transition:
-    box-shadow 0.3s ease,
-    border-color 0.3s ease;
+  transition: box-shadow 0.3s ease;
 }
 
 .container:focus-within {
-  border-color: var(--accent-blue);
-  box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.12);
+  box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.12), var(--liquid-glass-shadow);
 }
 
 .searchIcon {
@@ -37,7 +31,7 @@
   width: 44px;
   height: 44px;
   flex-shrink: 0;
-  color: var(--text-tertiary);
+  color: var(--glass-icon);
   padding-left: 6px;
 }
 
@@ -61,13 +55,13 @@
   background: transparent;
   cursor: pointer;
   transition: background 150ms;
-  color: var(--text-primary);
+  color: var(--glass-text-primary);
   flex-shrink: 0;
   border: none;
 }
 
 .engineButton:hover {
-  background: var(--surface-hover);
+  background: var(--glass-item-hover);
 }
 
 .engineButton svg:first-child {
@@ -81,19 +75,12 @@
   opacity: 0.5;
 }
 
-/* Portal dropdown — white bg */
+/* Portal dropdown — liquid glass via Glass component */
 .dropdown {
-  background-color: #ffffff !important;
-  background-image: none !important;
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-  border: 1px solid var(--border-primary);
+  border: none;
   border-radius: var(--radius-md);
-  overflow: hidden;
   max-height: 420px;
   overflow-y: auto;
-  box-shadow: var(--shadow-xl);
-  isolation: isolate;
 }
 
 .dropdownItem {
@@ -104,7 +91,7 @@
   padding: 10px 14px;
   cursor: pointer;
   transition: background 150ms;
-  color: var(--text-primary);
+  color: var(--glass-text-primary);
   font-size: var(--text-md);
   text-align: left;
   border: none;
@@ -113,12 +100,12 @@
 }
 
 .dropdownItem:hover {
-  background: var(--surface-hover);
+  background: var(--glass-item-hover);
 }
 
 .dropdownItem.selected {
   background: var(--accent-blue-light);
-  color: var(--accent-blue);
+  color: var(--glass-text-label);
 }
 
 .dropdownItem svg {
@@ -129,13 +116,13 @@
 
 .checkmark {
   margin-left: auto;
-  color: var(--accent-blue);
+  color: var(--glass-text-accent);
 }
 
 .divider {
   width: 1px;
   height: 22px;
-  background: var(--border-primary);
+  background: var(--glass-divider);
   flex-shrink: 0;
 }
 
@@ -153,7 +140,7 @@
   flex: 1;
   background: transparent;
   border: none;
-  color: var(--text-primary);
+  color: var(--glass-text-primary);
   font-size: var(--text-md);
   font-family: var(--font-ui), 'Segoe UI', system-ui, sans-serif;
   min-width: 0;
@@ -162,7 +149,7 @@
 }
 
 .input::placeholder {
-  color: var(--text-tertiary);
+  color: var(--glass-text-placeholder);
 }
 
 .shortcutHintInline {

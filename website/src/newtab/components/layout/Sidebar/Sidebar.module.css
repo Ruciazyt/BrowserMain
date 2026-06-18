@@ -1,0 +1,132 @@
+/* ── Sidebar ─────────────────────────────────── */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 180px;
+  display: flex;
+  flex-direction: column;
+  padding: 24px 12px;
+  z-index: 50;
+  overflow-y: auto;
+  transition: width 0.3s var(--ease-smooth), padding 0.3s var(--ease-smooth);
+}
+
+.sidebarCollapsed {
+  width: 56px;
+  padding: 24px 8px;
+  align-items: center;
+}
+
+.sidebarCollapsed .sidebarLogo {
+  display: none;
+}
+
+.sidebarCollapsed .sidebarItem {
+  justify-content: center;
+  padding: 10px;
+}
+
+.sidebarCollapsed .sidebarNav {
+  padding: 0;
+  align-items: center;
+}
+
+.sidebarLogo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px 28px;
+  font-size: var(--text-lg);
+  font-weight: 700;
+  color: var(--glass-text-primary);
+  letter-spacing: -0.02em;
+  font-family: var(--font-display);
+}
+
+.sidebarLogo svg {
+  color: var(--glass-text-accent);
+}
+
+.sidebarNav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 0 4px;
+  flex: 1;
+}
+
+.sidebarItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  font-size: var(--text-md);
+  font-weight: 500;
+  color: var(--glass-text-secondary);
+  cursor: pointer;
+  transition: all var(--dur-fast);
+  border: none;
+  background: transparent;
+  width: 100%;
+  text-align: left;
+  font-family: var(--font-ui);
+}
+
+.sidebarItem:hover {
+  background: var(--glass-item-hover);
+  color: var(--glass-text-primary);
+}
+
+.sidebarItem.active {
+  background: rgba(0, 102, 204, 0.08);
+  color: var(--glass-text-label);
+  font-weight: 600;
+}
+
+.sidebarItemIcon {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sidebarItemIcon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.sidebarBottom {
+  padding: 12px 4px 0;
+  border-top: 1px solid var(--divider-soft);
+  display: flex;
+  gap: 4px;
+}
+
+.sidebarIconBtn {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all var(--dur-fast);
+  color: var(--glass-icon);
+  border: none;
+  background: transparent;
+}
+
+.sidebarIconBtn:hover {
+  background: var(--glass-item-hover);
+  color: var(--glass-text-secondary);
+}
+
+.sidebarIconBtn svg {
+  width: 18px;
+  height: 18px;
+}

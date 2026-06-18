@@ -14,6 +14,8 @@ export function useShortcuts() {
 
   // All mutations read from chrome.storage.local at call time to avoid stale
   // closure bugs when multiple operations fire in rapid succession.
+  // setShortcuts uses a functional updater so concurrent mutations converge
+  // correctly in React state even when the storage writes race.
   const addShortcut = useCallback(async (title: string, url: string, favicon?: string, group?: string) => {
     const current = await getShortcuts();
     const faviconUrl = favicon || getFaviconUrl(url);
@@ -27,21 +29,21 @@ export function useShortcuts() {
     };
     const updated = [...current, newShortcut];
     await saveShortcuts(updated);
-    setShortcuts(updated);
+    setShortcuts((prev) => (prev.some((s) => s.id === newShortcut.id) ? prev : [...prev, newShortcut]));
   }, []);
 
   const removeShortcut = useCallback(async (id: string) => {
     const current = await getShortcuts();
     const updated = current.filter((s) => s.id !== id);
     await saveShortcuts(updated);
-    setShortcuts(updated);
+    setShortcuts((prev) => prev.filter((s) => s.id !== id));
   }, []);
 
   const updateShortcut = useCallback(async (id: string, updates: Partial<Shortcut>) => {
     const current = await getShortcuts();
     const updated = current.map((s) => (s.id === id ? { ...s, ...updates } : s));
     await saveShortcuts(updated);
-    setShortcuts(updated);
+    setShortcuts((prev) => prev.map((s) => (s.id === id ? { ...s, ...updates } : s)));
   }, []);
 
   const reorderShortcuts = useCallback(async (newOrder: Shortcut[]) => {

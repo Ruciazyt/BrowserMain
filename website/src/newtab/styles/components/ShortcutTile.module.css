@@ -5,20 +5,21 @@
   align-items: center;
   justify-content: center;
   gap: 6px;
-  width: 100px;
-  height: 100px;
+  width: var(--tile-size, 80px);
+  height: var(--tile-size, 80px);
   border-radius: var(--radius-xs);
   cursor: pointer;
   transition: background 150ms ease;
-  background: var(--surface-primary);
-  border: 1px solid var(--hairline);
+  background: transparent;
+  border: none;
   position: relative;
   user-select: none;
   overflow: visible;
+  box-sizing: border-box;
 }
 
 .container:hover {
-  background: var(--canvas-parchment);
+  background: var(--glass-item-hover);
 }
 
 .container.dragging {
@@ -64,8 +65,8 @@
 
 /* ── Icon ─────────────────────────────────────────────────── */
 .iconWrapper {
-  width: 32px;
-  height: 32px;
+  width: var(--tile-icon-size, 28px);
+  height: var(--tile-icon-size, 28px);
   border-radius: var(--radius-sm);
   overflow: hidden;
   display: flex;
@@ -83,8 +84,8 @@
 }
 
 .iconWrapper img {
-  width: 32px;
-  height: 32px;
+  width: var(--tile-icon-size, 28px);
+  height: var(--tile-icon-size, 28px);
   object-fit: contain;
   -webkit-user-drag: none;
   user-select: none;
@@ -92,8 +93,8 @@
 }
 
 .iconFallback {
-  width: 32px;
-  height: 32px;
+  width: var(--tile-icon-size, 28px);
+  height: var(--tile-icon-size, 28px);
   color: var(--text-tertiary);
 }
 
@@ -103,7 +104,8 @@
   font-weight: 400;
   color: var(--ink-muted-80);
   text-align: center;
-  max-width: 90px;
+  width: 100%;
+  max-width: calc(var(--tile-size, 80px) - 8px);
   overflow: hidden;
   display: -webkit-box;
   -webkit-line-clamp: 2;
@@ -111,6 +113,7 @@
   line-height: 1.3;
   word-break: break-word;
   padding: 0 4px;
+  box-sizing: border-box;
 }
 
 /* ── Domain subtitle (hidden in compact tile) ──────────────── */

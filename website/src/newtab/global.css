@@ -1,0 +1,256 @@
+/* ============================================
+   BrowserMain - Global Styles
+   Apple Design Language
+   ============================================ */
+
+/* --- CSS Variables --- */
+:root {
+  /* Background — Apple pure white/parchment system */
+  --bg-primary: #ffffff;
+  --canvas: #ffffff;
+  --canvas-parchment: #f5f5f7;
+  --surface-pearl: #fafafc;
+
+  /* Dark surfaces — Apple near-black tiles */
+  --surface-tile-1: #272729;
+  --surface-tile-2: #2a2a2c;
+  --surface-tile-3: #252527;
+  --surface-black: #000000;
+
+  /* Accent colors — Apple single blue */
+  --accent-blue: #0066cc;
+  --accent-blue-rgb: 0, 102, 204;
+  --accent-blue-focus: #0071e3;
+  --accent-blue-on-dark: #2997ff;
+  --accent-blue-light: rgba(0, 102, 204, 0.08);
+
+  /* Text Colors */
+  --text-primary: #1d1d1f;
+  --text-secondary: #6e6e73;
+  --text-tertiary: #aeaeb2;
+  --text-bright: #1d1d1f;
+  --text-on-dark: #ffffff;
+  --text-muted-on-dark: #cccccc;
+  --ink: #1d1d1f;
+  --ink-muted-80: #333333;
+  --ink-muted-48: #7a7a7a;
+
+  /* Semantic Colors */
+  --success: #34C759;
+  --danger: #FF3B30;
+  --stock-up: #34C759;
+  --stock-down: #FF3B30;
+
+  /* Status dot colors */
+  --status-valid: #34C759;
+  --status-invalid: #FF3B30;
+  --status-duplicate: #FF9500;
+
+  /* Surfaces */
+  --surface-primary: #ffffff;
+  --surface-secondary: #f5f5f7;
+  --surface-hover: rgba(0, 0, 0, 0.04);
+  --surface-active: rgba(0, 0, 0, 0.06);
+  --surface-chip-translucent: rgba(210, 210, 215, 0.64);
+
+  /* Borders */
+  --border-primary: rgba(0, 0, 0, 0.08);
+  --border-secondary: rgba(0, 0, 0, 0.04);
+  --border-focus: var(--accent-blue-focus);
+  --hairline: #e0e0e0;
+  --divider-soft: #f0f0f0;
+
+  /* Shadows — Apple minimal, only for product imagery */
+  --shadow-sm: none;
+  --shadow-md: none;
+  --shadow-lg: none;
+  --shadow-product: rgba(0, 0, 0, 0.22) 3px 5px 30px 0;
+
+  /* Liquid glass — macOS-style layered translucent surfaces */
+  --liquid-glass-blur: 3px;
+  --liquid-glass-tint: rgba(255, 255, 255, 0.25);
+  --liquid-glass-shadow: 0 6px 6px rgba(0, 0, 0, 0.2), 0 0 20px rgba(0, 0, 0, 0.1);
+  --liquid-glass-shine: inset 0 1px 0 rgba(255, 255, 255, 0.25);
+  --liquid-glass-border: rgba(255, 255, 255, 0.35);
+
+  /* Glass effect — shared tokens for surfaces without layered wrapper */
+  --glass-bg: rgba(255, 255, 255, 0.25);
+  --glass-bg-heavy: rgba(255, 255, 255, 0.32);
+  --glass-blur: var(--liquid-glass-blur);
+  --glass-blur-heavy: var(--liquid-glass-blur);
+  --glass-border: var(--liquid-glass-border);
+  --glass-border-subtle: rgba(255, 255, 255, 0.2);
+  --glass-shadow: var(--liquid-glass-shadow);
+  --glass-shadow-lg: var(--liquid-glass-shadow);
+  --glass-inset-highlight: var(--liquid-glass-shine);
+
+  /* Glass card typography — tuned for translucent surfaces */
+  --glass-text-primary: rgba(0, 0, 0, 0.82);
+  --glass-text-secondary: rgba(0, 0, 0, 0.55);
+  --glass-text-tertiary: rgba(0, 0, 0, 0.38);
+  --glass-text-label: rgba(0, 71, 163, 0.92);
+  --glass-text-accent: var(--accent-blue);
+  --glass-text-placeholder: rgba(0, 0, 0, 0.32);
+  --glass-icon: rgba(0, 0, 0, 0.36);
+  --glass-header-bg: rgba(0, 102, 204, 0.06);
+  --glass-header-border: rgba(0, 0, 0, 0.06);
+  --glass-item-hover: rgba(0, 0, 0, 0.05);
+  --glass-divider: rgba(0, 0, 0, 0.08);
+
+  /* LED Amber — warm dot-matrix glow */
+  --led-amber-rgb: 255, 149, 0;
+  --led-amber-warm: #ff9500;
+  --led-amber-soft: rgba(255, 149, 0, 0.4);
+
+  /* Typography — SF Pro family */
+  --font-ui: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Inter', system-ui, sans-serif;
+  --font-display: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Inter', system-ui, sans-serif;
+  --font-body: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Inter', system-ui, sans-serif;
+  --font-mono: 'SF Mono', 'JetBrains Mono', 'SFMono-Regular', monospace;
+  --font-led: 'SF Mono', 'JetBrains Mono', 'SFMono-Regular', monospace;
+
+  /* Type scale — Apple spec */
+  --text-hero: 56px;
+  --text-4xl: 40px;
+  --text-3xl: 34px;
+  --text-2xl: 28px;
+  --text-xl: 21px;
+  --text-lg: 17px;
+  --text-md: 14px;
+  --text-sm: 12px;
+  --text-xs: 11px;
+  --text-xxs: 10px;
+
+  /* Spacing tokens — Apple spec */
+  --space-xxs: 4px;
+  --space-xs: 8px;
+  --space-sm: 12px;
+  --space-md: 17px;
+  --space-lg: 24px;
+  --space-xl: 32px;
+  --space-xxl: 48px;
+  --space-section: 80px;
+
+  /* Transitions */
+  --dur-fast: 150ms ease-out;
+  --dur-mid: 250ms ease-out;
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Border Radius — Apple standard */
+  --radius-none: 0px;
+  --radius-xs: 5px;
+  --radius-sm: 8px;
+  --radius-md: 11px;
+  --radius-lg: 18px;
+  --radius-xl: 24px;
+  --radius-pill: 9999px;
+  --radius-full: 9999px;
+
+  /* Loading dot token */
+  --loading-dot-size: 4px;
+}
+
+/* --- Reset --- */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
+
+body {
+  font-family: var(--font-body);
+  font-size: var(--text-lg);
+  color: var(--text-primary);
+  background: var(--canvas);
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+#root { width: 100%; min-height: 100vh; letter-spacing: -0.01em; }
+
+/* --- Scrollbar — minimal --- */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.12);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+/* --- Typography --- */
+h1, h2, h3, h4 {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-family: var(--font-display);
+  letter-spacing: -0.015em;
+}
+a {
+  color: var(--accent-blue);
+  text-decoration: none;
+  transition: color var(--dur-fast), opacity var(--dur-fast);
+}
+a:hover { opacity: 0.8; }
+button {
+  font-family: var(--font-ui);
+  font-weight: 400;
+  cursor: pointer;
+  border: none;
+  outline: none;
+  background: none;
+}
+input, textarea {
+  font-family: var(--font-ui);
+  outline: none;
+}
+
+/* --- Autofill Override --- */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0 1000px var(--canvas) inset !important;
+  -webkit-text-fill-color: var(--text-primary) !important;
+  caret-color: var(--text-primary) !important;
+  background-color: var(--canvas) !important;
+}
+
+/* --- Focus --- */
+:focus { outline: none; }
+
+/* --- Selection --- */
+::selection {
+  background: rgba(var(--accent-blue-rgb), 0.15);
+  color: var(--text-primary);
+}
+
+/* --- Loading Dots --- */
+.loading-dots {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+.loading-dots span {
+  width: var(--loading-dot-size);
+  height: var(--loading-dot-size);
+  border-radius: 50%;
+  background: var(--accent-blue);
+  animation: dotPulse 1.4s ease-in-out infinite;
+}
+.loading-dots span:nth-child(2) { animation-delay: .2s; }
+.loading-dots span:nth-child(3) { animation-delay: .4s; }
+@keyframes dotPulse {
+  0%, 100% { opacity: 0.3; transform: scale(0.85); }
+  50% { opacity: 1; transform: scale(1); }
+}
+
+/* --- Shared dot animation --- */
+@keyframes ledDotPulse {
+  0%, 100% { opacity: 0.3; transform: scale(0.8); }
+  50% { opacity: 1; transform: scale(1); }
+}
+
+/* --- Shared fade-in animation --- */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}

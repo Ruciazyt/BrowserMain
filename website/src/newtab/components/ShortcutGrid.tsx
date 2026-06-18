@@ -3,6 +3,7 @@ import Sortable, { type MoveEvent, type SortableEvent } from 'sortablejs';
 import { Shortcut } from '../utils/storage';
 import ShortcutTile from './ShortcutTile';
 import { useI18n } from '../i18n';
+import Glass from './ui/Glass/Glass';
 import styles from '../styles/components/ShortcutGrid.module.css';
 
 interface ShortcutGridProps {
@@ -514,79 +515,81 @@ export default function ShortcutGrid({ shortcuts, onDelete, onUpdate, onReorder,
           </div>
         </div>
       ) : (
-        groups.map((group, groupIndex) => (
-          <div key={group.name} className={styles.groupSection}>
-            {groups.length > 1 && (
-              <div className={styles.groupHeader} onClick={() => renamingGroupName !== group.name && startRenameGroup(group.name)}>
-                {renamingGroupName === group.name ? (
-                  <input
-                    ref={renameInputRef}
-                    className={styles.groupRenameInput}
-                    value={renameInputValue}
-                    onChange={(e) => setRenameInputValue(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') { commitGroupRename(group.name, renameInputValue); }
-                      if (e.key === 'Escape') { setRenamingGroupName(null); }
-                    }}
-                    onBlur={() => commitGroupRename(group.name, renameInputValue)}
-                    onClick={(e) => e.stopPropagation()}
-                    placeholder={t('groupRenamePlaceholder')}
-                    maxLength={30}
+        <div className={styles.cardsRow}>
+          {groups.map((group, groupIndex) => (
+            <Glass key={group.name} className={styles.groupSection}>
+              {groups.length > 1 && (
+                <div className={styles.groupHeader} onClick={() => renamingGroupName !== group.name && startRenameGroup(group.name)}>
+                  {renamingGroupName === group.name ? (
+                    <input
+                      ref={renameInputRef}
+                      className={styles.groupRenameInput}
+                      value={renameInputValue}
+                      onChange={(e) => setRenameInputValue(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter') { commitGroupRename(group.name, renameInputValue); }
+                        if (e.key === 'Escape') { setRenamingGroupName(null); }
+                      }}
+                      onBlur={() => commitGroupRename(group.name, renameInputValue)}
+                      onClick={(e) => e.stopPropagation()}
+                      placeholder={t('groupRenamePlaceholder')}
+                      maxLength={30}
+                    />
+                  ) : (
+                    <>
+                      <span className={styles.groupName}>{group.name}</span>
+                      <span className={styles.groupCount}>({group.shortcuts.length})</span>
+                    </>
+                  )}
+                </div>
+              )}
+              <div
+                className={styles.groupTiles}
+                data-group-name={group.name}
+                ref={(node) => {
+                  groupContainerRefs.current[group.name] = node;
+                }}
+              >
+                {group.shortcuts.map((shortcut) => (
+                  <SortableShortcutWrap
+                    key={shortcut.id}
+                    shortcut={shortcut}
+                    index={globalIndex(shortcut.id)}
+                    onDelete={onDelete}
+                    onUpdate={onUpdate}
+                    onMoveLeft={handleMoveLeft}
+                    onMoveRight={handleMoveRight}
+                    onMoveUp={handleMoveUp}
+                    onMoveDown={handleMoveDown}
+                    onAdd={onAdd}
+                    existingGroups={existingGroups}
+                    isGroupPreviewTarget={groupPreviewTargetId === shortcut.id && activeDragId !== shortcut.id}
+                    isGlobalEditing={isGlobalEditing}
+                    onEnterEditMode={() => setIsGlobalEditing(true)}
                   />
-                ) : (
-                  <>
-                    <span className={styles.groupName}>{group.name}</span>
-                    <span className={styles.groupCount}>({group.shortcuts.length})</span>
-                  </>
+                ))}
+                {onAdd && groupIndex === groups.length - 1 && (
+                  <button
+                    className={styles.addTile}
+                    onClick={onAdd}
+                    onKeyDown={(event) => {
+                      if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault();
+                        onAdd?.();
+                      }
+                    }}
+                    tabIndex={0}
+                    aria-label={t('addShortcutAria')}
+                    title={t('addShortcut')}
+                  >
+                    <span className={styles.addTileIcon}>+</span>
+                    <span className={styles.addTileLabel}>{t('addWebsite')}</span>
+                  </button>
                 )}
               </div>
-            )}
-            <div
-              className={styles.groupTiles}
-              data-group-name={group.name}
-              ref={(node) => {
-                groupContainerRefs.current[group.name] = node;
-              }}
-            >
-              {group.shortcuts.map((shortcut) => (
-                <SortableShortcutWrap
-                  key={shortcut.id}
-                  shortcut={shortcut}
-                  index={globalIndex(shortcut.id)}
-                  onDelete={onDelete}
-                  onUpdate={onUpdate}
-                  onMoveLeft={handleMoveLeft}
-                  onMoveRight={handleMoveRight}
-                  onMoveUp={handleMoveUp}
-                  onMoveDown={handleMoveDown}
-                  onAdd={onAdd}
-                  existingGroups={existingGroups}
-                  isGroupPreviewTarget={groupPreviewTargetId === shortcut.id && activeDragId !== shortcut.id}
-                  isGlobalEditing={isGlobalEditing}
-                  onEnterEditMode={() => setIsGlobalEditing(true)}
-                />
-              ))}
-              {onAdd && groupIndex === groups.length - 1 && (
-                <button
-                  className={styles.addTile}
-                  onClick={onAdd}
-                  onKeyDown={(event) => {
-                    if (event.key === 'Enter' || event.key === ' ') {
-                      event.preventDefault();
-                      onAdd?.();
-                    }
-                  }}
-                  tabIndex={0}
-                  aria-label={t('addShortcutAria')}
-                  title={t('addShortcut')}
-                >
-                  <span className={styles.addTileIcon}>+</span>
-                  <span className={styles.addTileLabel}>{t('addWebsite')}</span>
-                </button>
-              )}
-            </div>
-          </div>
-        ))
+            </Glass>
+          ))}
+        </div>
       )}
     </div>
   );

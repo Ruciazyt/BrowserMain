@@ -197,8 +197,8 @@ async function openQuickAddWindow(addData) {
   return chrome.windows.create({
     url: targetUrl,
     type: 'popup',
-    width: 340,
-    height: 420,
+    width: 400,
+    height: 520,
     focused: true,
   });
 }
@@ -209,8 +209,8 @@ async function openQuickAddWindow(addData) {
 
 chrome.runtime.onInstalled.addListener(() => {
   console.log('[BrowserMain] Extension installed');
-  // Mark first run so the newtab page can show onboarding
-  chrome.storage.local.set({ 'browsermain_first_run': true });
+  // Onboarding was removed; just clean up any stale flag left by older builds.
+  chrome.storage.local.remove('browsermain_first_run');
 });
 
 chrome.action.onClicked.addListener(async () => {
