@@ -3,18 +3,6 @@ import { Settings, BackgroundConfig, getSettings, saveSettings } from '../utils/
 
 export type AppLocale = 'system' | 'zh-CN' | 'en';
 
-interface MatrixConfigUpdate {
-  matrixHomeserver?: string;
-  matrixUserId?: string;
-  matrixRoomId?: string;
-  matrixBotUserId?: string;
-}
-
-interface AIConfigUpdate {
-  aiEndpoint?: string;
-  aiModel?: string;
-}
-
 interface SettingsContextValue {
   settings: Settings;
   loading: boolean;
@@ -23,8 +11,6 @@ interface SettingsContextValue {
   updateUserName: (name: string) => Promise<void>;
   updateClockFormat: (clockIs24h: boolean) => Promise<void>;
   updateLocale: (locale: AppLocale) => Promise<void>;
-  updateMatrixConfig: (config: MatrixConfigUpdate) => void;
-  updateAIConfig: (config: AIConfigUpdate) => void;
   updatePetSpecies: (species: 'brown' | 'orange' | 'white' | 'gray') => void;
   updateGlassOpacity: (opacity: number) => void;
   updateGlassBlur: (blur: number) => void;
@@ -92,22 +78,6 @@ function useSettingsState(): SettingsContextValue {
     });
   }, []);
 
-  const updateMatrixConfig = useCallback((config: MatrixConfigUpdate) => {
-    setSettings((prev) => {
-      const newSettings = { ...prev, ...config };
-      saveSettings(newSettings);
-      return newSettings;
-    });
-  }, []);
-
-  const updateAIConfig = useCallback((config: AIConfigUpdate) => {
-    setSettings((prev) => {
-      const newSettings = { ...prev, ...config };
-      saveSettings(newSettings);
-      return newSettings;
-    });
-  }, []);
-
   const updatePetSpecies = useCallback((species: 'brown' | 'orange' | 'white' | 'gray') => {
     setSettings((prev) => {
       const newSettings = { ...prev, petSpecies: species };
@@ -164,8 +134,6 @@ function useSettingsState(): SettingsContextValue {
     updateUserName,
     updateClockFormat,
     updateLocale,
-    updateMatrixConfig,
-    updateAIConfig,
     updatePetSpecies,
     updateGlassOpacity,
     updateGlassBlur,

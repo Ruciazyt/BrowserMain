@@ -273,6 +273,19 @@
   border-radius: var(--radius-lg);
 }
 
+/* ── Responsive: fewer columns when space is tight ───────────── */
+@media (max-width: 900px) {
+  .cardsRow {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 520px) {
+  .cardsRow {
+    grid-template-columns: 1fr;
+  }
+}
+
 .groupHeader {
   display: flex;
   align-items: center;
@@ -330,7 +343,7 @@
   --tile-icon-size: 28px;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  grid-template-rows: repeat(4, 1fr);
+  grid-auto-rows: 1fr;
   gap: 8px;
   padding: 0;
   flex: 1;
@@ -344,6 +357,24 @@
   width: 0;
   height: 0;
   display: none;
+}
+
+@media (max-width: 900px) {
+  .groupTiles {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 520px) {
+  .groupTiles {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 400px) {
+  .groupTiles {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 .count {

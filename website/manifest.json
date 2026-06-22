@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "MyTab",
   "version": "1.0.0",
-  "description": "Replace your new tab with a customizable dashboard: search, shortcuts, news, weather, AI chat and more.",
+  "description": "Replace your new tab with a customizable dashboard: search, shortcuts, news, weather and more.",
   "icons": {
     "16": "icons/icon16.png",
     "32": "icons/icon32.png",

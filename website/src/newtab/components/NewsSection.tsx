@@ -211,7 +211,7 @@ export default function NewsSection({ columns = 2, onManageFeeds }: NewsSectionP
       </div>
 
       {loading && groups.length === 0 ? (
-        <div className={styles.grid} style={{ gridTemplateColumns: `repeat(${columns}, 1fr)` }}>
+        <div className={styles.grid} style={{ '--news-cols': columns } as React.CSSProperties}>
           {Array.from({ length: 6 }).map((_, i) => (
             <div key={i} className={`glass-card ${styles.card}`}>
               <div className={`${styles.skeleton} ${styles.skeletonGroupTitle}`} />
@@ -254,7 +254,7 @@ export default function NewsSection({ columns = 2, onManageFeeds }: NewsSectionP
           </button>
         </div>
       ) : (
-        <div className={styles.grid} ref={gridRef} style={{ gridTemplateColumns: `repeat(${columns}, 1fr)` }}>
+        <div className={styles.grid} ref={gridRef} style={{ '--news-cols': columns } as React.CSSProperties}>
           {groups.map((group) => (
             <div key={group.platform} className={`glass-card ${styles.card}`} data-platform={group.platform}>
               <div className={styles.cardHeader} data-card-header>

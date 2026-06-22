@@ -15,12 +15,6 @@ export interface Settings {
   userName?: string;
   clockIs24h?: boolean;
   locale?: 'system' | 'zh-CN' | 'en';
-  matrixHomeserver?: string;
-  matrixUserId?: string;
-  matrixRoomId?: string;
-  matrixBotUserId?: string;
-  aiEndpoint?: string;
-  aiModel?: string;
   petSpecies?: 'brown' | 'orange' | 'white' | 'gray';
   glassOpacity?: number; // 0–100, default 100
   glassBlur?: number; // 0–20, default 3 (px)

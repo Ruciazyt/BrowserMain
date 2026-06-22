@@ -332,6 +332,4 @@ chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
 
     return true;
   }
-
-  // AI_CHAT: removed — Matrix client runs in the newtab page directly
 });

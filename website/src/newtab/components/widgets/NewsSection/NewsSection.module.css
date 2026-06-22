@@ -38,9 +38,16 @@
 
 /* ── Platform card grid ───────────────────────────────────── */
 .grid {
+  --news-cols: 2;
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(var(--news-cols), 1fr);
   gap: 10px;
+}
+
+@media (max-width: 520px) {
+  .grid {
+    --news-cols: 1 !important;
+  }
 }
 
 .card {
