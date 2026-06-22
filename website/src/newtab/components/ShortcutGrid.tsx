@@ -3,8 +3,7 @@ import Sortable, { type MoveEvent, type SortableEvent } from 'sortablejs';
 import { Shortcut } from '../utils/storage';
 import ShortcutTile from './ShortcutTile';
 import { useI18n } from '../i18n';
-import Glass from './ui/Glass/Glass';
-import styles from '../styles/components/ShortcutGrid.module.css';
+import styles from './shortcuts/ShortcutGrid/ShortcutGrid.module.css';
 
 interface ShortcutGridProps {
   shortcuts: Shortcut[];
@@ -517,7 +516,7 @@ export default function ShortcutGrid({ shortcuts, onDelete, onUpdate, onReorder,
       ) : (
         <div className={styles.cardsRow}>
           {groups.map((group, groupIndex) => (
-            <Glass key={group.name} className={styles.groupSection}>
+            <div key={group.name} className={`glass-card ${styles.groupSection}`}>
               {groups.length > 1 && (
                 <div className={styles.groupHeader} onClick={() => renamingGroupName !== group.name && startRenameGroup(group.name)}>
                   {renamingGroupName === group.name ? (
@@ -587,7 +586,7 @@ export default function ShortcutGrid({ shortcuts, onDelete, onUpdate, onReorder,
                   </button>
                 )}
               </div>
-            </Glass>
+            </div>
           ))}
         </div>
       )}

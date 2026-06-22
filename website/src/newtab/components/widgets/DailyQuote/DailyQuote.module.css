@@ -19,7 +19,7 @@
 }
 
 .text {
-  font-size: 14px;
+  font-size: var(--text-md);
   font-weight: 400;
   color: var(--text-primary);
   line-height: 1.6;

@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useI18n } from '../i18n';
-import styles from '../styles/components/PixelPet.module.css';
+import styles from './pet/PixelPet/PixelPet.module.css';
 
 type PetState = 'idle' | 'blink' | 'happy' | 'sleep' | 'eating';
 type Species = 'brown' | 'orange' | 'white' | 'gray';

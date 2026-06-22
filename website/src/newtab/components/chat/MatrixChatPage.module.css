@@ -17,7 +17,7 @@
   padding: 6px 16px;
   border-radius: var(--radius-pill);
   font-size: var(--text-sm);
-  font-weight: 500;
+  font-weight: var(--weight-body);
   cursor: pointer;
   transition: all var(--dur-fast);
   border: none;
@@ -81,7 +81,7 @@
   font-size: var(--text-xs);
   padding: 3px 8px;
   border-radius: var(--radius-pill);
-  font-weight: 500;
+  font-weight: var(--weight-strong);
 }
 
 .syncOk {
@@ -154,7 +154,7 @@
 
 .roomName {
   font-size: var(--text-sm);
-  font-weight: 500;
+  font-weight: var(--weight-strong);
   color: var(--text-primary);
   white-space: nowrap;
   overflow: hidden;
@@ -252,7 +252,7 @@
   font-size: var(--text-xs);
   color: var(--text-secondary);
   margin-bottom: 3px;
-  font-weight: 500;
+  font-weight: var(--weight-strong);
 }
 
 .msgBubble {

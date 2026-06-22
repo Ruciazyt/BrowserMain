@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useI18n } from '../i18n';
 import Glass from './ui/Glass/Glass';
-import styles from '../styles/components/WeatherWidget.module.css';
+import styles from './widgets/WeatherWidget/WeatherWidget.module.css';
 
 interface WeatherData {
   temperature: number;
@@ -160,20 +160,22 @@ export default function WeatherWidget() {
 
   return (
     <Glass direction="row" className={styles.container}>
-      <span className={styles.emoji}>{emoji}</span>
-      <span className={styles.temperature}>{data.temperature}°C</span>
-      <span className={styles.description}>{data.description}</span>
-      <span className={styles.divider}>·</span>
-      <span className={styles.location}>{data.location}</span>
-      {data.aqi > 0 && (
-        <>
-          <span className={styles.divider}>·</span>
-          <span className={styles.aqi}>
-            {isZh ? '空气质量' : 'AQI'} <span className={styles.aqiValue}>{data.aqi} {data.aqiLevel}</span>
-            <span className={styles.aqiArrow}>▾</span>
-          </span>
-        </>
-      )}
+      <div className={styles.inner}>
+        <span className={styles.emoji}>{emoji}</span>
+        <span className={styles.temperature}>{data.temperature}°C</span>
+        <span className={styles.description}>{data.description}</span>
+        <span className={styles.divider}>·</span>
+        <span className={styles.location}>{data.location}</span>
+        {data.aqi > 0 && (
+          <>
+            <span className={styles.divider}>·</span>
+            <span className={styles.aqi}>
+              {isZh ? '空气质量' : 'AQI'} <span className={styles.aqiValue}>{data.aqi} {data.aqiLevel}</span>
+              <span className={styles.aqiArrow}>▾</span>
+            </span>
+          </>
+        )}
+      </div>
     </Glass>
   );
 }

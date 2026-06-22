@@ -2,12 +2,11 @@ import { useState, useEffect, useRef, useMemo } from 'react';
 import { useShortcuts } from './hooks/useShortcuts';
 import { useSettings } from './hooks/useSettings';
 import Sidebar from './components/layout/Sidebar/Sidebar';
-import SearchBar from './components/search/SearchBar/SearchBar';
-import WeatherWidget from './components/widgets/WeatherWidget/WeatherWidget';
-import MarketIndices from './components/widgets/MarketIndices/MarketIndices';
-import NewsSection from './components/widgets/NewsSection/NewsSection';
-import ShortcutGrid from './components/shortcuts/ShortcutGrid/ShortcutGrid';
-import AddShortcutDialog from './components/shortcuts/AddShortcutDialog/AddShortcutDialog';
+import SearchBar from './components/SearchBar';
+import WeatherWidget from './components/WeatherWidget';
+import NewsSection from './components/NewsSection';
+import ShortcutGrid from './components/ShortcutGrid';
+import AddShortcutDialog from './components/AddShortcutDialog';
 import SettingsPanel from './components/settings/SettingsPanel/SettingsPanel';
 import RssFeedManager from './components/settings/RssFeedManager/RssFeedManager';
 import PixelPet from './components/pet/PixelPet/PixelPet';
@@ -42,6 +41,14 @@ export default function App() {
 
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [addDialogData, setAddDialogData] = useState({ url: '', title: '', favicon: '' });
+
+  const glassStyle = useMemo(() => ({
+    '--glass-card-opacity': (settings.glassOpacity ?? 100) / 100,
+    '--glass-card-blur': `${settings.glassBlur ?? 3}px`,
+    '--glass-card-saturation': `${settings.glassSaturation ?? 140}%`,
+    '--glass-card-shadow-intensity': (settings.glassShadowIntensity ?? 100) / 100,
+    '--glass-card-tint-color': settings.glassTintColor || '#ffffff',
+  }), [settings.glassOpacity, settings.glassBlur, settings.glassSaturation, settings.glassShadowIntensity, settings.glassTintColor]);
 
   const bgStyle = useMemo(() => {
     const bg = settings.background;
@@ -132,7 +139,7 @@ export default function App() {
   }
 
   return (
-    <div className={styles.page} style={bgStyle}>
+    <div className={styles.page} style={{ ...bgStyle, ...glassStyle } as unknown as React.CSSProperties}>
       <GlassDistortionFilter />
       <Sidebar
         activeNav={activeNav}
@@ -154,10 +161,6 @@ export default function App() {
               <SearchBar defaultEngine={settings.defaultEngine} onEngineChange={updateEngine} />
               <WeatherWidget />
             </div>
-
-            <section className={styles.section}>
-              <MarketIndices />
-            </section>
 
             <section className={styles.section}>
               <ShortcutGrid

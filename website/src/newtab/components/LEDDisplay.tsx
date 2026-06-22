@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import styles from '../styles/components/LEDDisplay.module.css';
+import styles from './widgets/LEDDisplay/LEDDisplay.module.css';
 
 const COLS = 8;
 const ROWS = 8;

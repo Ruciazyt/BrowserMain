@@ -31,7 +31,7 @@ const CheckIcon = () => (
 );
 
 export default function SettingsPanel({ open, onClose, initialView = 'main', onBookmarkImportComplete }: SettingsPanelProps) {
-  const { settings, updateEngine, updateBackground, updateClockFormat, updateLocale, updatePetSpecies } = useSettings();
+  const { settings, updateEngine, updateBackground, updateClockFormat, updateLocale, updatePetSpecies, updateGlassOpacity, updateGlassBlur, updateGlassSaturation, updateGlassShadowIntensity, updateGlassTintColor } = useSettings();
   const { t } = useI18n();
   const { shortcuts, updateShortcut } = useShortcuts();
   const [imagePreview, setImagePreview] = useState(resolveBackgroundImageUrl(settings.background) || '');
@@ -82,7 +82,7 @@ export default function SettingsPanel({ open, onClose, initialView = 'main', onB
         className={`${styles.overlay} ${open ? styles.open : ''}`}
         onClick={onClose}
       />
-      <div className={`${styles.panel} ${open ? styles.open : ''}`}>
+      <div className={`glass-card ${styles.panel} ${open ? styles.open : ''}`}>
         <div className={styles.header}>
           <span className={styles.title}>{t('settings')}</span>
           <button className={styles.closeBtn} onClick={onClose} aria-label={t('close')}>
@@ -357,6 +357,80 @@ export default function SettingsPanel({ open, onClose, initialView = 'main', onB
                         {s === 'brown' ? '🐕' : s === 'orange' ? '🐱' : s === 'white' ? '🐶' : '😺'}
                       </button>
                     ))}
+                  </div>
+                </div>
+              </div>
+
+              <div className={styles.section}>
+                <div className={styles.sectionTitle}>{t('glassEffects')}</div>
+                <div className={styles.sliderRow}>
+                  <span className={styles.sliderLabel}>{t('glassOpacity')}</span>
+                  <div className={styles.sliderControl}>
+                    <input
+                      type="range"
+                      min={0}
+                      max={100}
+                      value={settings.glassOpacity ?? 100}
+                      className={styles.slider}
+                      onChange={(e) => updateGlassOpacity(Number(e.target.value))}
+                    />
+                    <span className={styles.sliderValue}>{settings.glassOpacity ?? 100}%</span>
+                  </div>
+                </div>
+                <div className={styles.sliderRow}>
+                  <span className={styles.sliderLabel}>{t('glassBlur')}</span>
+                  <div className={styles.sliderControl}>
+                    <input
+                      type="range"
+                      min={0}
+                      max={20}
+                      step={1}
+                      value={settings.glassBlur ?? 3}
+                      className={styles.slider}
+                      onChange={(e) => updateGlassBlur(Number(e.target.value))}
+                    />
+                    <span className={styles.sliderValue}>{settings.glassBlur ?? 3}px</span>
+                  </div>
+                </div>
+                <div className={styles.sliderRow}>
+                  <span className={styles.sliderLabel}>{t('glassSaturation')}</span>
+                  <div className={styles.sliderControl}>
+                    <input
+                      type="range"
+                      min={100}
+                      max={300}
+                      step={5}
+                      value={settings.glassSaturation ?? 140}
+                      className={styles.slider}
+                      onChange={(e) => updateGlassSaturation(Number(e.target.value))}
+                    />
+                    <span className={styles.sliderValue}>{settings.glassSaturation ?? 140}%</span>
+                  </div>
+                </div>
+                <div className={styles.sliderRow}>
+                  <span className={styles.sliderLabel}>{t('glassShadowIntensity')}</span>
+                  <div className={styles.sliderControl}>
+                    <input
+                      type="range"
+                      min={0}
+                      max={200}
+                      step={5}
+                      value={settings.glassShadowIntensity ?? 100}
+                      className={styles.slider}
+                      onChange={(e) => updateGlassShadowIntensity(Number(e.target.value))}
+                    />
+                    <span className={styles.sliderValue}>{settings.glassShadowIntensity ?? 100}%</span>
+                  </div>
+                </div>
+                <div className={styles.sliderRow}>
+                  <span className={styles.sliderLabel}>{t('glassTintColor')}</span>
+                  <div className={styles.sliderControl}>
+                    <input
+                      type="color"
+                      value={settings.glassTintColor || '#ffffff'}
+                      className={styles.colorInput}
+                      onChange={(e) => updateGlassTintColor(e.target.value)}
+                    />
                   </div>
                 </div>
               </div>

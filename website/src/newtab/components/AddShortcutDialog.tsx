@@ -3,7 +3,7 @@ import type { Shortcut } from '../utils/storage';
 import { getSmartFaviconUrl, getFaviconIcoUrl, getDomainFromUrl, getChromeFaviconUrl } from '../utils/storage';
 import { isUrl } from '../utils/engines';
 import { useI18n } from '../i18n';
-import styles from '../styles/components/AddShortcutDialog.module.css';
+import styles from './shortcuts/AddShortcutDialog/AddShortcutDialog.module.css';
 
 interface AddShortcutDialogProps {
   open: boolean;

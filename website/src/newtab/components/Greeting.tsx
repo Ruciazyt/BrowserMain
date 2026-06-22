@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useI18n } from '../i18n';
-import styles from '../styles/components/Greeting.module.css';
+import styles from './widgets/Greeting/Greeting.module.css';
 
 function getGreeting(hour: number, isZh: boolean): string {
   if (hour >= 0 && hour < 5) return isZh ? '凌晨' : 'GOOD NIGHT';

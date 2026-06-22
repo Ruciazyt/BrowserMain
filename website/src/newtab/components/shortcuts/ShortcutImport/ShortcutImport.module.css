@@ -1,0 +1,11 @@
+.container { composes: container from '../_shared/ImportShared.module.css'; }
+.header { composes: header from '../_shared/ImportShared.module.css'; }
+.backBtn { composes: backBtn from '../_shared/ImportShared.module.css'; }
+.headerTitle { composes: headerTitle from '../_shared/ImportShared.module.css'; }
+.resultState { composes: resultState from '../_shared/ImportShared.module.css'; }
+.resultIcon { composes: resultIcon from '../_shared/ImportShared.module.css'; }
+.resultText { composes: resultText from '../_shared/ImportShared.module.css'; }
+.resultTitle { composes: resultTitle from '../_shared/ImportShared.module.css'; }
+.resultDetail { composes: resultDetail from '../_shared/ImportShared.module.css'; }
+.doneBtn { composes: doneBtn from '../_shared/ImportShared.module.css'; }
+.importBtn { composes: importBtn from '../_shared/ImportShared.module.css'; }

@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { useBookmarkImport, BMTreeNode, countBookmarks } from '../hooks/useBookmarkImport';
 import { useI18n } from '../i18n';
-import styles from '../styles/components/BookmarkImport.module.css';
+import styles from './shortcuts/BookmarkImport/BookmarkImport.module.css';
 
 function collectFolderIds(node: BMTreeNode): string[] {
   const ids = [node.id];

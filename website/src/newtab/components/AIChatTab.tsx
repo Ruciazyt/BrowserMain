@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { useSettings } from '../hooks/useSettings';
 import { getAIKey } from '../utils/aiStorage';
 import { useI18n } from '../i18n';
-import styles from '../styles/components/AIChatTab.module.css';
+import styles from './ai/AIChatTab.module.css';
 
 interface ChatMessage {
   id: string;

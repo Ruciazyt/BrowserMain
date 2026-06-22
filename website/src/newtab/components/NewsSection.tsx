@@ -1,8 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import Sortable from 'sortablejs';
 import { useI18n } from '../i18n';
-import Glass from './ui/Glass/Glass';
-import styles from '../styles/components/NewsSection.module.css';
+import styles from './widgets/NewsSection/NewsSection.module.css';
 
 const RSS_URL = 'https://momoyu.cc/api/hot/rss?code=MSwyLDMsNjksNDcsNTAsMTgsNzIsNDYsOTUsMzYsNjIsNjE=';
 const CACHE_TTL = 10 * 60 * 1000;
@@ -210,7 +209,7 @@ export default function NewsSection({ columns = 2 }: { columns?: number }) {
       {loading && groups.length === 0 ? (
         <div className={styles.grid} style={{ gridTemplateColumns: `repeat(${columns}, 1fr)` }}>
           {Array.from({ length: 6 }).map((_, i) => (
-            <Glass key={i} className={styles.card}>
+            <div key={i} className={`glass-card ${styles.card}`}>
               <div className={`${styles.skeleton} ${styles.skeletonGroupTitle}`} />
               <div className={styles.cardList}>
                 {Array.from({ length: 3 }).map((__, j) => (
@@ -220,7 +219,7 @@ export default function NewsSection({ columns = 2 }: { columns?: number }) {
                   </div>
                 ))}
               </div>
-            </Glass>
+            </div>
           ))}
         </div>
       ) : error ? (
@@ -231,7 +230,7 @@ export default function NewsSection({ columns = 2 }: { columns?: number }) {
       ) : (
         <div className={styles.grid} ref={gridRef} style={{ gridTemplateColumns: `repeat(${columns}, 1fr)` }}>
           {groups.map((group) => (
-            <Glass key={group.platform} className={styles.card} data-platform={group.platform}>
+            <div key={group.platform} className={`glass-card ${styles.card}`} data-platform={group.platform}>
               <div className={styles.cardHeader} data-card-header>{group.platform}</div>
               <div className={styles.cardList}>
                 {group.items.slice(0, 5).map((item) => (
@@ -248,7 +247,7 @@ export default function NewsSection({ columns = 2 }: { columns?: number }) {
                   </div>
                 ))}
               </div>
-            </Glass>
+            </div>
           ))}
         </div>
       )}

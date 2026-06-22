@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import { importShortcutsFromJson } from '../hooks/useShortcuts';
 import { useI18n } from '../i18n';
-import styles from '../styles/components/ShortcutImport.module.css';
+import styles from './shortcuts/ShortcutImport/ShortcutImport.module.css';
 
 interface ShortcutImportProps {
   onBack: () => void;

@@ -22,6 +22,11 @@ export interface Settings {
   aiEndpoint?: string;
   aiModel?: string;
   petSpecies?: 'brown' | 'orange' | 'white' | 'gray';
+  glassOpacity?: number; // 0–100, default 100
+  glassBlur?: number; // 0–20, default 3 (px)
+  glassSaturation?: number; // 100–300, default 140 (%)
+  glassShadowIntensity?: number; // 0–200, default 100 (%)
+  glassTintColor?: string; // hex, default '#ffffff'
 }
 
 export interface BackgroundConfig {

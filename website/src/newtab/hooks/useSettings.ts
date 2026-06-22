@@ -26,6 +26,11 @@ interface SettingsContextValue {
   updateMatrixConfig: (config: MatrixConfigUpdate) => void;
   updateAIConfig: (config: AIConfigUpdate) => void;
   updatePetSpecies: (species: 'brown' | 'orange' | 'white' | 'gray') => void;
+  updateGlassOpacity: (opacity: number) => void;
+  updateGlassBlur: (blur: number) => void;
+  updateGlassSaturation: (saturation: number) => void;
+  updateGlassShadowIntensity: (intensity: number) => void;
+  updateGlassTintColor: (color: string) => void;
 }
 
 const SettingsContext = createContext<SettingsContextValue | null>(null);
@@ -111,6 +116,46 @@ function useSettingsState(): SettingsContextValue {
     });
   }, []);
 
+  const updateGlassOpacity = useCallback((opacity: number) => {
+    setSettings((prev) => {
+      const newSettings = { ...prev, glassOpacity: opacity };
+      saveSettings(newSettings);
+      return newSettings;
+    });
+  }, []);
+
+  const updateGlassBlur = useCallback((blur: number) => {
+    setSettings((prev) => {
+      const newSettings = { ...prev, glassBlur: blur };
+      saveSettings(newSettings);
+      return newSettings;
+    });
+  }, []);
+
+  const updateGlassSaturation = useCallback((saturation: number) => {
+    setSettings((prev) => {
+      const newSettings = { ...prev, glassSaturation: saturation };
+      saveSettings(newSettings);
+      return newSettings;
+    });
+  }, []);
+
+  const updateGlassShadowIntensity = useCallback((intensity: number) => {
+    setSettings((prev) => {
+      const newSettings = { ...prev, glassShadowIntensity: intensity };
+      saveSettings(newSettings);
+      return newSettings;
+    });
+  }, []);
+
+  const updateGlassTintColor = useCallback((color: string) => {
+    setSettings((prev) => {
+      const newSettings = { ...prev, glassTintColor: color };
+      saveSettings(newSettings);
+      return newSettings;
+    });
+  }, []);
+
   return {
     settings,
     loading,
@@ -122,6 +167,11 @@ function useSettingsState(): SettingsContextValue {
     updateMatrixConfig,
     updateAIConfig,
     updatePetSpecies,
+    updateGlassOpacity,
+    updateGlassBlur,
+    updateGlassSaturation,
+    updateGlassShadowIntensity,
+    updateGlassTintColor,
   };
 }
 

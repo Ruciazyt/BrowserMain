@@ -5,7 +5,7 @@ import { getMatrixAccessToken, getMatrixBotToken } from '../utils/matrixStorage'
 import { getAIKey } from '../utils/aiStorage';
 import { useI18n } from '../i18n';
 import AIChatTab from './AIChatTab';
-import styles from '../styles/components/MatrixChatPage.module.css';
+import styles from './chat/MatrixChatPage.module.css';
 
 interface DisplayMessage {
   id: string;

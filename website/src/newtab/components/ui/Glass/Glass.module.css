@@ -2,7 +2,14 @@
   position: relative;
   display: flex;
   overflow: hidden;
-  box-shadow: var(--liquid-glass-shadow);
+  --_blur: var(--glass-card-blur, var(--liquid-glass-blur, 3px));
+  --_sat: var(--glass-card-saturation, 140%);
+  --_si: var(--glass-card-shadow-intensity, 1);
+  --_o: var(--glass-card-opacity, 1);
+  --_tint: var(--glass-card-tint-color, #ffffff);
+  box-shadow:
+    0 calc(4px * var(--_si)) calc(8px * var(--_si)) rgba(0, 0, 0, calc(0.08 * var(--_si))),
+    0 0 calc(12px * var(--_si)) rgba(0, 0, 0, calc(0.04 * var(--_si)));
   transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 2.2);
 }
 
@@ -10,8 +17,8 @@
   position: absolute;
   z-index: 0;
   inset: 0;
-  backdrop-filter: blur(var(--liquid-glass-blur));
-  -webkit-backdrop-filter: blur(var(--liquid-glass-blur));
+  backdrop-filter: blur(var(--_blur)) saturate(var(--_sat));
+  -webkit-backdrop-filter: blur(var(--_blur)) saturate(var(--_sat));
   filter: url(#glass-distortion);
   overflow: hidden;
   isolation: isolate;
@@ -22,7 +29,7 @@
   position: absolute;
   z-index: 1;
   inset: 0;
-  background: var(--liquid-glass-tint);
+  background: color-mix(in srgb, var(--_tint) calc(25% * var(--_o)), transparent);
   pointer-events: none;
 }
 
@@ -31,7 +38,7 @@
   z-index: 2;
   inset: 0;
   overflow: hidden;
-  box-shadow: var(--liquid-glass-shine);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, calc(0.25 * var(--_o)));
   pointer-events: none;
 }
 

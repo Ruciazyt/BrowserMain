@@ -9,31 +9,22 @@
   --bg-primary: #ffffff;
   --canvas: #ffffff;
   --canvas-parchment: #f5f5f7;
-  --surface-pearl: #fafafc;
-
-  /* Dark surfaces — Apple near-black tiles */
-  --surface-tile-1: #272729;
-  --surface-tile-2: #2a2a2c;
-  --surface-tile-3: #252527;
-  --surface-black: #000000;
 
   /* Accent colors — Apple single blue */
   --accent-blue: #0066cc;
   --accent-blue-rgb: 0, 102, 204;
   --accent-blue-focus: #0071e3;
-  --accent-blue-on-dark: #2997ff;
   --accent-blue-light: rgba(0, 102, 204, 0.08);
 
   /* Text Colors */
-  --text-primary: #1d1d1f;
-  --text-secondary: #6e6e73;
-  --text-tertiary: #aeaeb2;
-  --text-bright: #1d1d1f;
+  --text-primary: rgba(255, 255, 255, 0.95);
+  --text-secondary: rgba(255, 255, 255, 0.72);
+  --text-tertiary: rgba(255, 255, 255, 0.48);
+  --text-bright: #ffffff;
   --text-on-dark: #ffffff;
-  --text-muted-on-dark: #cccccc;
-  --ink: #1d1d1f;
-  --ink-muted-80: #333333;
-  --ink-muted-48: #7a7a7a;
+  --text-muted-on-dark: rgba(255, 255, 255, 0.7);
+  --ink: #ffffff;
+  --ink-muted-80: rgba(255, 255, 255, 0.85);
 
   /* Semantic Colors */
   --success: #34C759;
@@ -51,27 +42,21 @@
   --surface-secondary: #f5f5f7;
   --surface-hover: rgba(0, 0, 0, 0.04);
   --surface-active: rgba(0, 0, 0, 0.06);
-  --surface-chip-translucent: rgba(210, 210, 215, 0.64);
 
   /* Borders */
   --border-primary: rgba(0, 0, 0, 0.08);
   --border-secondary: rgba(0, 0, 0, 0.04);
-  --border-focus: var(--accent-blue-focus);
   --hairline: #e0e0e0;
   --divider-soft: #f0f0f0;
 
   /* Shadows — Apple minimal, only for product imagery */
-  --shadow-sm: none;
-  --shadow-md: none;
-  --shadow-lg: none;
   --shadow-product: rgba(0, 0, 0, 0.22) 3px 5px 30px 0;
 
   /* Liquid glass — macOS-style layered translucent surfaces */
   --liquid-glass-blur: 3px;
   --liquid-glass-tint: rgba(255, 255, 255, 0.25);
-  --liquid-glass-shadow: 0 6px 6px rgba(0, 0, 0, 0.2), 0 0 20px rgba(0, 0, 0, 0.1);
+  --liquid-glass-shadow: 0 4px 8px rgba(0, 0, 0, 0.08), 0 0 12px rgba(0, 0, 0, 0.04);
   --liquid-glass-shine: inset 0 1px 0 rgba(255, 255, 255, 0.25);
-  --liquid-glass-border: rgba(255, 255, 255, 0.35);
 
   /* Glass effect — shared tokens for surfaces without layered wrapper */
   --glass-bg: rgba(255, 255, 255, 0.25);
@@ -84,18 +69,18 @@
   --glass-shadow-lg: var(--liquid-glass-shadow);
   --glass-inset-highlight: var(--liquid-glass-shine);
 
-  /* Glass card typography — tuned for translucent surfaces */
-  --glass-text-primary: rgba(0, 0, 0, 0.82);
-  --glass-text-secondary: rgba(0, 0, 0, 0.55);
-  --glass-text-tertiary: rgba(0, 0, 0, 0.38);
-  --glass-text-label: rgba(0, 71, 163, 0.92);
-  --glass-text-accent: var(--accent-blue);
-  --glass-text-placeholder: rgba(0, 0, 0, 0.32);
-  --glass-icon: rgba(0, 0, 0, 0.36);
-  --glass-header-bg: rgba(0, 102, 204, 0.06);
-  --glass-header-border: rgba(0, 0, 0, 0.06);
-  --glass-item-hover: rgba(0, 0, 0, 0.05);
-  --glass-divider: rgba(0, 0, 0, 0.08);
+  /* Glass card typography — white on translucent surfaces */
+  --glass-text-primary: rgba(255, 255, 255, 0.92);
+  --glass-text-secondary: rgba(255, 255, 255, 0.65);
+  --glass-text-tertiary: rgba(255, 255, 255, 0.45);
+  --glass-text-label: rgba(255, 255, 255, 0.9);
+  --glass-text-accent: rgba(255, 255, 255, 0.7);
+  --glass-text-placeholder: rgba(255, 255, 255, 0.35);
+  --glass-icon: rgba(255, 255, 255, 0.5);
+  --glass-header-bg: rgba(255, 255, 255, 0.08);
+  --glass-header-border: rgba(255, 255, 255, 0.1);
+  --glass-item-hover: rgba(255, 255, 255, 0.08);
+  --glass-divider: rgba(255, 255, 255, 0.12);
 
   /* LED Amber — warm dot-matrix glow */
   --led-amber-rgb: 255, 149, 0;
@@ -109,27 +94,44 @@
   --font-mono: 'SF Mono', 'JetBrains Mono', 'SFMono-Regular', monospace;
   --font-led: 'SF Mono', 'JetBrains Mono', 'SFMono-Regular', monospace;
 
-  /* Type scale — Apple spec */
-  --text-hero: 56px;
-  --text-4xl: 40px;
-  --text-3xl: 34px;
-  --text-2xl: 28px;
-  --text-xl: 21px;
-  --text-lg: 17px;
-  --text-md: 14px;
-  --text-sm: 12px;
-  --text-xs: 11px;
-  --text-xxs: 10px;
+  /* Type scale — semantic tokens (DESIGN.md Apple typography ladder) */
+  /* Sizes */
+  --text-hero: 56px;        /* hero-display */
+  --text-4xl: 40px;         /* display-lg */
+  --text-3xl: 34px;         /* display-md */
+  --text-2xl: 28px;         /* lead */
+  --text-xl: 21px;          /* tagline */
+  --text-lg: 17px;          /* body (default paragraph) */
+  --text-md: 14px;          /* caption */
+  --text-sm: 12px;          /* fine-print / nav-link */
+  --text-xs: 11px;          /* legacy micro variant */
+  --text-xxs: 10px;         /* micro-legal */
+  /* Weights — Apple ladder: 300 / 400 / 600 / 700 (no 500) */
+  --weight-airy: 300;
+  --weight-body: 400;
+  --weight-strong: 600;
+  --weight-emphasis: 700;
+  /* Line heights */
+  --leading-hero: 1.07;
+  --leading-display: 1.10;
+  --leading-section: 1.19;
+  --leading-tight: 1.24;
+  --leading-caption: 1.29;
+  --leading-body: 1.47;
+  --leading-fine: 1.0;
+  --leading-legal: 1.3;
+  /* Letter spacing — negative at display sizes, zero at small */
+  --tracking-hero: -0.28px;
+  --tracking-display: -0.374px;
+  --tracking-body: -0.374px;
+  --tracking-caption: -0.224px;
+  --tracking-fine: -0.12px;
+  --tracking-legal: -0.08px;
+  --tracking-tight: -0.01em;   /* global page default */
 
   /* Spacing tokens — Apple spec */
-  --space-xxs: 4px;
-  --space-xs: 8px;
-  --space-sm: 12px;
   --space-md: 17px;
   --space-lg: 24px;
-  --space-xl: 32px;
-  --space-xxl: 48px;
-  --space-section: 80px;
 
   /* Transitions */
   --dur-fast: 150ms ease-out;
@@ -137,14 +139,12 @@
   --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
 
   /* Border Radius — Apple standard */
-  --radius-none: 0px;
   --radius-xs: 5px;
   --radius-sm: 8px;
   --radius-md: 11px;
   --radius-lg: 18px;
   --radius-xl: 24px;
   --radius-pill: 9999px;
-  --radius-full: 9999px;
 
   /* Loading dot token */
   --loading-dot-size: 4px;
@@ -158,6 +158,8 @@ html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; }
 body {
   font-family: var(--font-body);
   font-size: var(--text-lg);
+  line-height: var(--leading-body);
+  letter-spacing: var(--tracking-body);
   color: var(--text-primary);
   background: var(--canvas);
   overflow-x: hidden;
@@ -253,4 +255,114 @@ input:-webkit-autofill:active {
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(-4px); }
   to   { opacity: 1; transform: translateY(0); }
+}
+
+/* --- Shared shimmer keyframe + skeleton base --- */
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.skeleton {
+  background: linear-gradient(90deg,
+    rgba(0,0,0,0.04) 0%, rgba(0,0,0,0.10) 50%, rgba(0,0,0,0.04) 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s linear infinite;
+  border-radius: 6px;
+}
+
+/* --- Reusable utility: secondary button --- */
+.btn-secondary {
+  border: 1px solid var(--border-primary);
+  background: transparent;
+  color: var(--text-primary);
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-family: var(--font-ui);
+  font-size: var(--text-md);
+  transition: background var(--dur-fast), color var(--dur-fast), border-color var(--dur-fast);
+}
+.btn-secondary:hover {
+  background: var(--accent-blue-light);
+  color: var(--accent-blue);
+  border-color: var(--accent-blue);
+}
+.btn-secondary:focus-visible {
+  outline: 2px solid var(--accent-blue);
+  outline-offset: 2px;
+}
+.btn-secondary:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* --- Reusable utility: round icon button --- */
+.icon-btn {
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: none;
+  background: transparent;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  transition: background var(--dur-fast), color var(--dur-fast);
+}
+.icon-btn:hover {
+  background: var(--surface-hover);
+  color: var(--text-secondary);
+}
+.icon-btn:focus-visible {
+  outline: 2px solid var(--accent-blue);
+  outline-offset: 1px;
+}
+
+/* --- Reusable utility: list row with hover --- */
+.list-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background var(--dur-fast);
+}
+.list-row:hover {
+  background: var(--surface-hover);
+}
+.list-row[aria-selected="true"],
+.list-row.selected {
+  background: var(--accent-blue-light);
+  color: var(--accent-blue);
+}
+
+/* --- Reusable utility: subtle inset surface (Apple-style card on bg) --- */
+.pseudo-surface {
+  background: rgba(0, 0, 0, 0.03);
+  border: 1px solid var(--divider-soft);
+  border-radius: var(--radius-md);
+}
+
+/* --- Reusable utility: glass card --- */
+.glass-card {
+  --_o: var(--glass-card-opacity, 1);
+  --_blur: var(--glass-card-blur, 3px);
+  --_sat: var(--glass-card-saturation, 140%);
+  --_si: var(--glass-card-shadow-intensity, 1);
+  --_tint: var(--glass-card-tint-color, #ffffff);
+  background: linear-gradient(135deg,
+    color-mix(in srgb, var(--_tint) 0%, transparent) 0%,
+    color-mix(in srgb, var(--_tint) calc(32% * var(--_o)), transparent) 33%,
+    color-mix(in srgb, var(--_tint) calc(60% * var(--_o)), transparent) 66%,
+    color-mix(in srgb, var(--_tint) 0%, transparent) 100%);
+  backdrop-filter: blur(var(--_blur)) saturate(var(--_sat));
+  -webkit-backdrop-filter: blur(var(--_blur)) saturate(var(--_sat));
+  border: none;
+  border-radius: var(--radius-xl);
+  box-shadow:
+    0 calc(4px * var(--_si)) calc(8px * var(--_si)) rgba(0, 0, 0, calc(0.08 * var(--_si))),
+    0 0 calc(12px * var(--_si)) rgba(0, 0, 0, calc(0.04 * var(--_si)));
+  overflow: hidden;
 }

@@ -1,51 +1,57 @@
 .container {
-  display: flex;
-  align-items: center;
-  gap: 8px;
   flex-shrink: 0;
   padding: 6px 14px;
-  background: var(--glass-bg);
-  backdrop-filter: blur(var(--glass-blur));
-  -webkit-backdrop-filter: blur(var(--glass-blur));
-  border: 1px solid var(--glass-border-subtle);
   border-radius: var(--radius-pill);
-  box-shadow: var(--glass-shadow);
+}
+
+.inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .container {
+    width: 100%;
+  }
 }
 
 .emoji {
-  font-size: 20px;
+  font-size: 22px;
   line-height: 1;
 }
 
 .temperature {
   font-family: var(--font-display);
-  font-size: 18px;
+  font-size: 22px;
   font-weight: 700;
-  color: var(--text-primary);
+  color: var(--glass-text-primary);
   line-height: 1;
 }
 
 .description {
-  font-size: var(--text-sm);
-  color: var(--text-secondary);
+  font-size: var(--text-md);
+  color: var(--glass-text-secondary);
   white-space: nowrap;
 }
 
 .divider {
-  font-size: 10px;
-  color: var(--text-tertiary);
-  opacity: 0.4;
+  font-size: var(--text-sm);
+  color: var(--glass-text-tertiary);
+  opacity: 0.85;
 }
 
 .location {
-  font-size: var(--text-sm);
-  color: var(--text-secondary);
+  font-size: var(--text-md);
+  color: var(--glass-text-secondary);
   white-space: nowrap;
 }
 
 .aqi {
-  font-size: var(--text-sm);
-  color: var(--text-tertiary);
+  font-size: var(--text-md);
+  color: var(--glass-text-tertiary);
   display: flex;
   align-items: center;
   gap: 4px;
@@ -58,6 +64,6 @@
 }
 
 .aqiArrow {
-  font-size: 10px;
+  font-size: var(--text-xxs);
   opacity: 0.4;
 }

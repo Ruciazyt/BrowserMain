@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import styles from '../styles/components/Clock.module.css';
+import styles from './widgets/Clock/Clock.module.css';
 import { useSettings } from '../hooks/useSettings';
 import { useI18n } from '../i18n';
 

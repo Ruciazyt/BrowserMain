@@ -114,7 +114,7 @@ export default function RssFeedManager({ standalone, onNavigateHome }: RssFeedMa
   };
 
   return (
-    <div className={styles.page}>
+    <div className={`glass-card ${styles.page}`}>
       <div className={styles.header}>
         <h1 className={styles.title}>{t('rssFeedsTitle')}</h1>
         {standalone && onNavigateHome && (

@@ -22,7 +22,7 @@
 }
 
 .headerTitle {
-  font-size: var(--text-xl);
+  font-size: var(--text-2xl);
   font-weight: 600;
   color: var(--ink-muted-80);
 }
@@ -30,16 +30,16 @@
 .editBtn {
   display: flex;
   align-items: center;
-  gap: 5px;
-  background: var(--canvas-parchment);
-  border: 1px solid var(--hairline);
-  border-radius: var(--radius-pill);
+  gap: 4px;
+  background: none;
+  border: none;
   color: var(--text-secondary);
-  font-size: var(--text-sm);
-  font-weight: 400;
+  font-size: var(--text-md);
+  line-height: 1;
   cursor: pointer;
-  padding: 6px 14px;
-  transition: all 150ms ease;
+  padding: 4px 8px;
+  border-radius: var(--radius-xs);
+  transition: background 150ms ease;
 }
 
 .editBtn svg {
@@ -48,18 +48,17 @@
 }
 
 .editBtn:hover {
-  background: var(--canvas);
+  background: #F0F0F0;
   color: var(--ink-muted-80);
 }
 
 .editBtnActive {
   color: var(--accent-blue);
   background: var(--accent-blue-light);
-  border-color: rgba(var(--accent-blue-rgb), 0.2);
 }
 
 .editBtnActive:hover {
-  background: rgba(var(--accent-blue-rgb), 0.12);
+  background: var(--accent-blue-hover);
   color: var(--accent-blue);
 }
 
@@ -68,10 +67,9 @@
   position: relative;
   border-radius: var(--radius-xs);
   touch-action: none;
-  justify-self: center;
+  justify-self: stretch;
   align-self: start;
-  width: 80px;
-  max-width: 80px;
+  width: 100%;
   min-width: 0;
   overflow: visible;
   transform-origin: center center;
@@ -84,15 +82,12 @@
 .wrapper {
   width: 100%;
   padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
 }
 
 .container {
   display: grid;
-  grid-template-columns: repeat(auto-fill, 100px);
-  gap: 12px;
+  grid-template-columns: repeat(auto-fill, 80px);
+  gap: 8px;
   width: 100%;
 }
 
@@ -128,14 +123,15 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 80px;
-  height: 80px;
-  border-radius: 20px;
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: var(--radius-xs);
   cursor: pointer;
-  background: rgba(0, 0, 0, 0.03);
-  border: 1.5px dashed rgba(0, 0, 0, 0.12);
+  background: transparent;
+  border: 1px dashed #CCCCCC;
   transition: all 150ms ease;
   color: var(--text-tertiary);
+  box-sizing: border-box;
 }
 
 .addTile::before {
@@ -143,10 +139,9 @@
 }
 
 .addTile:hover {
-  background: var(--canvas);
+  background: var(--glass-item-hover);
   border-color: var(--accent-blue);
   color: var(--accent-blue);
-  border-style: solid;
 }
 
 .addTile:focus-visible {
@@ -157,7 +152,7 @@
 .addTileIcon {
   font-size: 24px;
   line-height: 1;
-  opacity: 0.5;
+  opacity: 0.6;
   margin-bottom: 4px;
 }
 
@@ -172,8 +167,8 @@
   justify-content: center;
   gap: 6px;
   margin: 16px auto 0;
-  padding: 10px 28px;
-  border-radius: var(--radius-pill);
+  padding: 10px 24px;
+  border-radius: var(--radius-sm);
   background: var(--accent-blue);
   border: none;
   color: #ffffff;
@@ -184,11 +179,11 @@
 }
 
 .emptyAddBtn:hover {
-  background: var(--accent-blue-focus);
+  background: var(--accent-blue);
 }
 
 .emptyAddBtn:active {
-  transform: scale(0.96);
+  transform: scale(0.95);
 }
 
 .emptyAddBtn:focus-visible {
@@ -206,20 +201,20 @@
   align-items: center;
   justify-content: center;
   min-height: 42px;
-  padding: 10px 20px;
-  border-radius: var(--radius-pill);
-  background: var(--canvas);
-  border: 1px solid var(--accent-blue);
-  color: var(--accent-blue);
+  padding: 10px 18px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-primary);
+  border: 1px solid var(--hairline);
+  color: var(--ink-muted-80);
   font-size: var(--text-md);
-  font-weight: 400;
+  font-weight: 600;
   cursor: pointer;
   transition: all 150ms ease;
 }
 
 .emptySecondaryBtn:hover {
-  background: var(--accent-blue);
-  color: #ffffff;
+  background: var(--canvas-parchment);
+  border-color: var(--accent-blue);
 }
 
 .emptySecondaryBtn:focus-visible {
@@ -228,7 +223,7 @@
 }
 
 /* ── Drag states ──────────────────────────────────────────── */
-.dragOver {
+.draggingOver {
   outline: 2px dashed var(--accent-blue);
   outline-offset: 2px;
   border-radius: var(--radius-xs);
@@ -253,7 +248,7 @@
 .sortableDrag {
   opacity: 0.96 !important;
   transform: rotate(1deg) scale(1.06) !important;
-  box-shadow: rgba(0, 0, 0, 0.22) 3px 5px 30px 0 !important;
+  box-shadow: var(--shadow-product) !important;
   border-radius: var(--radius-xs);
 }
 
@@ -261,92 +256,93 @@
   border: none;
 }
 
-/* ── Groups wrapper ──────────────────────────────────────────── */
-.groupsWrap {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-  align-items: flex-start;
+/* ── Cards row (wraps all group cards so they flow into rows) ── */
+.cardsRow {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
 }
 
-/* ── Group section — Apple home-screen folder card ─────────── */
+/* ── Group section (one card per group, 4×4 grid of tiles) ────── */
 .groupSection {
   display: flex;
   flex-direction: column;
-  gap: 0;
-  width: 396px;
-  height: 340px;
-  padding: 14px 20px 20px;
-  background: linear-gradient(135deg, rgba(255,255,255,0.0) 0%, rgba(255,255,255,0.32) 33%, rgba(255,255,255,0.60) 66%, rgba(255,255,255,0.0) 100%);
-  backdrop-filter: blur(var(--glass-blur-heavy)) saturate(140%);
-  -webkit-backdrop-filter: blur(var(--glass-blur-heavy)) saturate(140%);
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius-xl);
-  box-shadow: inset 0 0 0 0.5px rgba(255,255,255,0.5), inset 0 1px 3px rgba(255,255,255,0.25), inset 0 1px 4px rgba(0,0,0,0.35), var(--glass-shadow-lg);
-  overflow: hidden;
-  transition: box-shadow var(--dur-fast);
+  gap: 6px;
+  min-width: 0;
+  padding: 12px;
+  border-radius: var(--radius-lg);
 }
 
 .groupHeader {
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 2px 4px;
-  margin-bottom: 10px;
-  border-radius: var(--radius-sm);
-  background: transparent;
-  border: none;
+  padding: 4px 10px;
+  margin-bottom: 2px;
+  border-radius: var(--radius-xs);
+  background: var(--glass-header-bg);
+  border: 1px solid rgba(0, 102, 204, 0.12);
   cursor: pointer;
   transition: background 0.15s;
+  flex-shrink: 0;
 }
 
 .groupHeader:hover {
-  background: rgba(0, 0, 0, 0.04);
+  background: rgba(0, 102, 204, 0.1);
 }
 
 .groupName {
-  font-size: var(--text-sm);
+  font-size: var(--text-md);
   font-weight: 600;
   letter-spacing: 0.5px;
   text-transform: uppercase;
-  color: var(--accent-blue);
+  color: var(--glass-text-label);
 }
 
 .groupCount {
-  font-size: var(--text-sm);
-  color: var(--text-tertiary);
+  font-size: var(--text-md);
+  color: var(--glass-text-tertiary);
 }
 
 .groupRenameInput {
-  font-size: var(--text-sm);
+  font-size: var(--text-md);
   font-weight: 600;
   letter-spacing: 0.5px;
   text-transform: uppercase;
-  color: var(--accent-blue);
+  color: var(--glass-text-label);
   background: transparent;
   border: none;
   outline: none;
-  border-bottom: 1.5px solid var(--accent-blue);
+  border-bottom: 1.5px solid var(--glass-text-accent);
   padding: 0;
   margin: 0;
   width: 100%;
   min-width: 0;
 }
 
+/* Tiles area: exactly 4 columns, rows auto-flow. The flex parent gives it a
+   fixed height = 4 rows of 80px tiles + 3 gaps. If the group has more than
+   16 shortcuts, the extra rows overflow inside the card but the scrollbar is
+   visually hidden (overflow is still scrollable via mousewheel/touch).
+   If fewer than 16, the empty row(s) just stay blank — tiles keep their
+   natural 80x80 size (no compression). */
 .groupTiles {
+  --tile-icon-size: 28px;
   display: grid;
-  grid-template-columns: repeat(4, 80px);
-  gap: 12px;
-  padding-bottom: 0;
-  justify-items: center;
-  align-content: start;
-  overflow-y: auto;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+  gap: 8px;
+  padding: 0;
   flex: 1;
   min-height: 0;
+  overflow-y: auto;
+  justify-items: center;
   scrollbar-width: none;
 }
 
 .groupTiles::-webkit-scrollbar {
+  width: 0;
+  height: 0;
   display: none;
 }
 

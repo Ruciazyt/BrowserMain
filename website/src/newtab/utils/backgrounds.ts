@@ -1,5 +1,11 @@
 import type { MessageKey } from '../i18n';
 import type { BackgroundConfig } from './storage';
+import forestMistImg from '../assets/backgrounds/forest-mist.webp';
+import sunsetGlowImg from '../assets/backgrounds/sunset-glow.webp';
+import oceanCalmImg from '../assets/backgrounds/ocean-calm.webp';
+import mountainCloudsImg from '../assets/backgrounds/mountain-clouds.webp';
+import lakeMistImg from '../assets/backgrounds/lake-mist.webp';
+import softBokehImg from '../assets/backgrounds/soft-bokeh.webp';
 
 export interface BuiltinBackground {
   id: string;
@@ -7,14 +13,14 @@ export interface BuiltinBackground {
   path: string;
 }
 
-const forestMistSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="400" height="300"><defs><linearGradient id="g" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#dce8dc"/><stop offset="50%" stop-color="#b8d4b8"/><stop offset="100%" stop-color="#8fb08f"/></linearGradient></defs><rect width="100%" height="100%" fill="url(#g)"/></svg>`;
-
+/** Unsplash photos — free to use under the Unsplash License. */
 export const BUILTIN_BACKGROUNDS: BuiltinBackground[] = [
-  {
-    id: 'forest-mist',
-    labelKey: 'backgroundForestMist',
-    path: `data:image/svg+xml,${encodeURIComponent(forestMistSvg)}`,
-  },
+  { id: 'forest-mist', labelKey: 'backgroundForestMist', path: forestMistImg },
+  { id: 'sunset-glow', labelKey: 'backgroundSunsetGlow', path: sunsetGlowImg },
+  { id: 'ocean-calm', labelKey: 'backgroundOceanCalm', path: oceanCalmImg },
+  { id: 'mountain-clouds', labelKey: 'backgroundMountainClouds', path: mountainCloudsImg },
+  { id: 'lake-mist', labelKey: 'backgroundLakeMist', path: lakeMistImg },
+  { id: 'soft-bokeh', labelKey: 'backgroundSoftBokeh', path: softBokehImg },
 ];
 
 export function resolveBackgroundImageUrl(bg: BackgroundConfig): string | undefined {

@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useI18n } from '../i18n';
-import styles from '../styles/components/DailyQuote.module.css';
+import styles from './widgets/DailyQuote/DailyQuote.module.css';
 
 const QUOTES_ZH = [
   { text: '生活不是等待暴风雨过去，而是学会在风雨中跳舞。', author: '未知' },

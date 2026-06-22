@@ -5,7 +5,7 @@ import { isMac } from '../utils/platform';
 import { isUrl } from '../utils/engines';
 import { Shortcut } from '../utils/storage';
 import { useI18n } from '../i18n';
-import styles from '../styles/components/ShortcutTile.module.css';
+import styles from './shortcuts/ShortcutTile/ShortcutTile.module.css';
 
 const GlobeIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={styles.iconFallback}>

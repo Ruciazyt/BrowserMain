@@ -1,11 +1,12 @@
-import { useState, useRef, useEffect, useLayoutEffect } from 'react';
+import { useState, useRef, useEffect, useLayoutEffect, useMemo, type CSSProperties } from 'react';
 import { createPortal } from 'react-dom';
 import { SEARCH_ENGINES, SearchEngine, buildSearchUrl, isUrl } from '../utils/engines';
 import EngineIcon from './EngineIcon';
 import { isMac } from '../utils/platform';
 import { useI18n } from '../i18n';
+import { useSettings } from '../hooks/useSettings';
 import Glass from './ui/Glass/Glass';
-import styles from '../styles/components/SearchBar.module.css';
+import styles from './search/SearchBar/SearchBar.module.css';
 
 interface SearchBarProps {
   defaultEngine?: string;
@@ -32,8 +33,26 @@ const CheckIcon = () => (
   </svg>
 );
 
+function buildGlassVars(settings: ReturnType<typeof useSettings>['settings']): CSSProperties {
+  return {
+    '--glass-card-opacity': (settings.glassOpacity ?? 100) / 100,
+    '--glass-card-blur': `${settings.glassBlur ?? 3}px`,
+    '--glass-card-saturation': `${settings.glassSaturation ?? 140}%`,
+    '--glass-card-shadow-intensity': (settings.glassShadowIntensity ?? 100) / 100,
+    '--glass-card-tint-color': settings.glassTintColor || '#ffffff',
+  } as CSSProperties;
+}
+
 export default function SearchBar({ defaultEngine = 'bing', onEngineChange }: SearchBarProps) {
   const { t } = useI18n();
+  const { settings } = useSettings();
+  const portalGlassStyle = useMemo(() => buildGlassVars(settings), [
+    settings.glassOpacity,
+    settings.glassBlur,
+    settings.glassSaturation,
+    settings.glassShadowIntensity,
+    settings.glassTintColor,
+  ]);
   const [query, setQuery] = useState('');
   const [focused, setFocused] = useState(false);
   const [engine, setEngine] = useState<SearchEngine>(
@@ -126,6 +145,7 @@ export default function SearchBar({ defaultEngine = 'bing', onEngineChange }: Se
       <Glass
         className={styles.dropdown}
         style={{
+          ...portalGlassStyle,
           position: 'fixed',
           top: dropdownLayout.top,
           left: dropdownLayout.left,
