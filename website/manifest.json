@@ -14,9 +14,6 @@
     "tabs",
     "bookmarks"
   ],
-  "host_permissions": [
-    "https://momoyu.cc/"
-  ],
   "optional_host_permissions": [
     "http://*/*",
     "https://*/*"

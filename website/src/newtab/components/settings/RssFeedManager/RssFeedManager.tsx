@@ -71,7 +71,7 @@ export default function RssFeedManager({ standalone, onNavigateHome }: RssFeedMa
 
   const toggleFeed = async (feed: RssFeed) => {
     const enabling = !feed.enabled;
-    if (enabling && !feed.builtin) {
+    if (enabling) {
       const granted = await requestFeedPermission(feed.url);
       if (!granted) showToast(t('rssPermissionDenied'));
     }
@@ -84,9 +84,7 @@ export default function RssFeedManager({ standalone, onNavigateHome }: RssFeedMa
 
   const removeFeed = async (feed: RssFeed) => {
     if (!window.confirm(t('rssDeleteConfirm', { name: feed.name }))) return;
-    if (!feed.builtin) {
-      void removeFeedPermission(feed.url);
-    }
+    void removeFeedPermission(feed.url);
     const next = feeds.filter((item) => item.id !== feed.id);
     await saveFeeds(next);
     setFeeds(next);
@@ -138,7 +136,6 @@ export default function RssFeedManager({ standalone, onNavigateHome }: RssFeedMa
                 <div className={styles.feedName}>{feed.name}</div>
                 <div className={styles.feedUrl}>{feed.url}</div>
               </div>
-              {feed.builtin && <span className={styles.feedBadge}>{t('rssBuiltIn')}</span>}
               <div className={styles.feedActions}>
                 <button
                   type="button"
@@ -147,15 +144,13 @@ export default function RssFeedManager({ standalone, onNavigateHome }: RssFeedMa
                 >
                   {feed.enabled ? t('rssDisable') : t('rssEnable')}
                 </button>
-                {!feed.builtin && (
-                  <button
-                    type="button"
-                    className={`${styles.actionBtn} ${styles.actionBtnDanger}`}
-                    onClick={() => removeFeed(feed)}
-                  >
-                    {t('delete')}
-                  </button>
-                )}
+                <button
+                  type="button"
+                  className={`${styles.actionBtn} ${styles.actionBtnDanger}`}
+                  onClick={() => removeFeed(feed)}
+                >
+                  {t('delete')}
+                </button>
               </div>
             </div>
           ))}

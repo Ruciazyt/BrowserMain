@@ -9,7 +9,6 @@ export interface RssFeed {
   name: string;
   url: string;
   enabled: boolean;
-  builtin?: boolean;
 }
 
 export interface NewsItem {
@@ -26,8 +25,6 @@ export interface NewsGroup {
   error?: boolean;
 }
 
-const DEFAULT_FEED_URL = 'https://momoyu.cc/api/hot/rss?code=MSwyLDMsNjksNDcsNTAsMTgsNzIsNDYsOTUsMzYsNjIsNjE=';
-
 // ---------------------------------------------------------------------------
 // Storage
 // ---------------------------------------------------------------------------
@@ -40,9 +37,7 @@ export function loadFeeds(): Promise<RssFeed[]> {
         resolve(feeds);
         return;
       }
-      resolve([
-        { id: 'builtin-momoyu', name: 'Momoyu Hot', url: DEFAULT_FEED_URL, enabled: true, builtin: true },
-      ]);
+      resolve([]);
     });
   });
 }
@@ -91,59 +86,10 @@ export function removeFeedPermission(url: string): Promise<void> {
 // ---------------------------------------------------------------------------
 
 /**
- * Parse the built-in Momoyu aggregator feed. Its single <description> holds HTML
- * with multiple <h2> platform headings and ranked <p><a> items — one card per platform.
- */
-function parseMomoyuDescription(html: string): NewsGroup[] {
-  const doc = new DOMParser().parseFromString(html, 'text/html');
-  const groups: NewsGroup[] = [];
-  let currentPlatform = '';
-  let currentItems: NewsItem[] = [];
-
-  const walk = doc.body.childNodes;
-  for (let i = 0; i < walk.length; i++) {
-    const node = walk[i] as HTMLElement;
-    if (node.nodeName === 'H2') {
-      if (currentPlatform && currentItems.length > 0) {
-        groups.push({ platform: currentPlatform, items: currentItems });
-      }
-      currentPlatform = node.textContent?.trim() || '';
-      currentItems = [];
-    } else if (node.nodeName === 'P' && currentPlatform) {
-      const anchor = node.querySelector('a');
-      if (anchor) {
-        const raw = anchor.textContent?.trim() || '';
-        const match = raw.match(/^(\d+)\.\s*(.*)/);
-        if (match) {
-          currentItems.push({
-            id: `${currentPlatform}-${match[1]}`,
-            title: match[2],
-            url: anchor.getAttribute('href') || '#',
-            rank: parseInt(match[1], 10),
-          });
-        }
-      }
-    }
-  }
-  if (currentPlatform && currentItems.length > 0) {
-    groups.push({ platform: currentPlatform, items: currentItems });
-  }
-  return groups;
-}
-
-export function parseMomoyuAggregator(xml: string): NewsGroup[] {
-  const doc = new DOMParser().parseFromString(xml, 'text/xml');
-  const items = doc.querySelectorAll('item');
-  if (items.length === 0) throw new Error('No RSS items found');
-  const description = items[0].querySelector('description')?.textContent || '';
-  return parseMomoyuDescription(description);
-}
-
-/**
- * Parse a standard RSS 2.0 (<item>) or Atom (<entry>) feed into a single card.
+ * Parse an RSS 2.0 (<item>) or Atom (<entry>) feed into a single card.
  * Display count is capped by the renderer, not here.
  */
-export function parseStandardFeed(xml: string, name: string): NewsGroup {
+export function parseFeed(xml: string, name: string): NewsGroup {
   const doc = new DOMParser().parseFromString(xml, 'text/xml');
 
   let entries: { title: string; url: string }[] = [];
@@ -176,8 +122,7 @@ export function parseStandardFeed(xml: string, name: string): NewsGroup {
 
 /**
  * Fetch one feed via the background FETCH_RSS bridge and parse it.
- * Built-in feeds use the Momoyu aggregator parser (multiple cards); all others use
- * the standard parser (one card). Throws on fetch or parse failure.
+ * Throws on fetch or parse failure.
  */
 export async function fetchFeedGroups(feed: RssFeed): Promise<NewsGroup[]> {
   const response: { success: boolean; xml?: string; error?: string } = await chrome.runtime.sendMessage({
@@ -187,5 +132,5 @@ export async function fetchFeedGroups(feed: RssFeed): Promise<NewsGroup[]> {
   if (!response.success || !response.xml) {
     throw new Error(response.error || 'RSS fetch failed');
   }
-  return feed.builtin ? parseMomoyuAggregator(response.xml) : [parseStandardFeed(response.xml, feed.name)];
+  return [parseFeed(response.xml, feed.name)];
 }
