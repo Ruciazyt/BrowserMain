@@ -48,6 +48,9 @@
 }
 
 .cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   padding: 10px 14px;
   font-size: var(--text-sm);
   font-weight: 600;
@@ -58,8 +61,40 @@
   cursor: grab;
 }
 
+.deleteBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: var(--radius-sm);
+  background: none;
+  border: none;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity var(--dur-fast), background var(--dur-fast), color var(--dur-fast);
+  flex-shrink: 0;
+}
+
+.card:hover .deleteBtn {
+  opacity: 1;
+}
+
+.deleteBtn:hover {
+  background: var(--surface-hover);
+  color: var(--text-error, #e74c3c);
+}
+
 .cardHeader:active {
   cursor: grabbing;
+}
+
+.cardError {
+  padding: 14px;
+  font-size: var(--text-sm);
+  color: var(--text-tertiary);
+  line-height: 1.5;
 }
 
 .cardList {

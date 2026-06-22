@@ -1,48 +1,17 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useI18n } from '../../../i18n';
+import {
+  loadFeeds,
+  saveFeeds,
+  requestFeedPermission,
+  removeFeedPermission,
+  type RssFeed,
+} from '../../../utils/rssFeeds';
 import styles from './RssFeedManager.module.css';
-
-const FEEDS_KEY = 'browsermain_rss_feeds';
-const DEFAULT_FEED_URL = 'https://momoyu.cc/api/hot/rss?code=MSwyLDMsNjksNDcsNTAsMTgsNzIsNDYsOTUsMzYsNjIsNjE=';
-
-export interface RssFeed {
-  id: string;
-  name: string;
-  url: string;
-  enabled: boolean;
-  builtin?: boolean;
-}
 
 interface RssFeedManagerProps {
   standalone?: boolean;
   onNavigateHome?: () => void;
-}
-
-function loadFeeds(): Promise<RssFeed[]> {
-  return new Promise((resolve) => {
-    chrome.storage.local.get(FEEDS_KEY, (result) => {
-      const feeds = result[FEEDS_KEY] as RssFeed[] | undefined;
-      if (Array.isArray(feeds) && feeds.length > 0) {
-        resolve(feeds);
-        return;
-      }
-      resolve([
-        {
-          id: 'builtin-momoyu',
-          name: 'Momoyu Hot',
-          url: DEFAULT_FEED_URL,
-          enabled: true,
-          builtin: true,
-        },
-      ]);
-    });
-  });
-}
-
-function saveFeeds(feeds: RssFeed[]): Promise<void> {
-  return new Promise((resolve) => {
-    chrome.storage.local.set({ [FEEDS_KEY]: feeds }, resolve);
-  });
 }
 
 export default function RssFeedManager({ standalone, onNavigateHome }: RssFeedManagerProps) {
@@ -86,7 +55,10 @@ export default function RssFeedManager({ standalone, onNavigateHome }: RssFeedMa
       showToast(t('rssDuplicateUrl'));
       return;
     }
-    const next = [
+    // Request cross-origin host permission while still in the click gesture (first await).
+    // The feed is saved either way; without permission it will surface as a load-failed card.
+    const granted = await requestFeedPermission(trimmedUrl);
+    const next: RssFeed[] = [
       ...feeds,
       { id: `feed-${Date.now()}`, name: trimmedName, url: trimmedUrl, enabled: true },
     ];
@@ -94,12 +66,17 @@ export default function RssFeedManager({ standalone, onNavigateHome }: RssFeedMa
     setFeeds(next);
     setName('');
     setUrl('');
-    showToast(t('rssAdded'));
+    showToast(granted ? t('rssAdded') : t('rssPermissionDenied'));
   };
 
-  const toggleFeed = async (id: string) => {
-    const next = feeds.map((feed) =>
-      feed.id === id ? { ...feed, enabled: !feed.enabled } : feed,
+  const toggleFeed = async (feed: RssFeed) => {
+    const enabling = !feed.enabled;
+    if (enabling && !feed.builtin) {
+      const granted = await requestFeedPermission(feed.url);
+      if (!granted) showToast(t('rssPermissionDenied'));
+    }
+    const next = feeds.map((f) =>
+      f.id === feed.id ? { ...f, enabled: !f.enabled } : f,
     );
     await saveFeeds(next);
     setFeeds(next);
@@ -107,6 +84,9 @@ export default function RssFeedManager({ standalone, onNavigateHome }: RssFeedMa
 
   const removeFeed = async (feed: RssFeed) => {
     if (!window.confirm(t('rssDeleteConfirm', { name: feed.name }))) return;
+    if (!feed.builtin) {
+      void removeFeedPermission(feed.url);
+    }
     const next = feeds.filter((item) => item.id !== feed.id);
     await saveFeeds(next);
     setFeeds(next);
@@ -163,7 +143,7 @@ export default function RssFeedManager({ standalone, onNavigateHome }: RssFeedMa
                 <button
                   type="button"
                   className={styles.actionBtn}
-                  onClick={() => toggleFeed(feed.id)}
+                  onClick={() => toggleFeed(feed)}
                 >
                   {feed.enabled ? t('rssDisable') : t('rssEnable')}
                 </button>

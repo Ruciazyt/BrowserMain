@@ -1,86 +1,45 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import Sortable from 'sortablejs';
 import { useI18n } from '../i18n';
+import { FEEDS_KEY, loadFeeds, fetchFeedGroups, type NewsGroup } from '../utils/rssFeeds';
 import styles from './widgets/NewsSection/NewsSection.module.css';
 
-const RSS_URL = 'https://momoyu.cc/api/hot/rss?code=MSwyLDMsNjksNDcsNTAsMTgsNzIsNDYsOTUsMzYsNjIsNjE=';
 const CACHE_TTL = 10 * 60 * 1000;
 const ORDER_KEY = 'browsermain_news_order';
+const HIDDEN_KEY = 'browsermain_news_hidden';
 
-interface NewsItem {
-  id: string;
-  title: string;
-  url: string;
-  rank: number;
-}
-
-interface NewsGroup {
-  platform: string;
-  items: NewsItem[];
+interface NewsResult {
+  groups: NewsGroup[];
+  enabledCount: number;
 }
 
 interface CachedData {
-  groups: NewsGroup[];
+  result: NewsResult;
   updatedAt: number;
 }
 
 let memoryCache: CachedData | null = null;
 
-function parseRssDescription(html: string): NewsGroup[] {
-  const doc = new DOMParser().parseFromString(html, 'text/html');
-  const groups: NewsGroup[] = [];
-  let currentPlatform = '';
-  let currentItems: NewsItem[] = [];
-
-  const walk = doc.body.childNodes;
-  for (let i = 0; i < walk.length; i++) {
-    const node = walk[i] as HTMLElement;
-    if (node.nodeName === 'H2') {
-      if (currentPlatform && currentItems.length > 0) {
-        groups.push({ platform: currentPlatform, items: currentItems });
-      }
-      currentPlatform = node.textContent?.trim() || '';
-      currentItems = [];
-    } else if (node.nodeName === 'P' && currentPlatform) {
-      const anchor = node.querySelector('a');
-      if (anchor) {
-        const raw = anchor.textContent?.trim() || '';
-        const match = raw.match(/^(\d+)\.\s*(.*)/);
-        if (match) {
-          currentItems.push({
-            id: `${currentPlatform}-${match[1]}`,
-            title: match[2],
-            url: anchor.getAttribute('href') || '#',
-            rank: parseInt(match[1], 10),
-          });
-        }
-      }
-    }
-  }
-  if (currentPlatform && currentItems.length > 0) {
-    groups.push({ platform: currentPlatform, items: currentItems });
-  }
-  return groups;
-}
-
-async function fetchNews(): Promise<NewsGroup[]> {
+async function fetchNews(): Promise<NewsResult> {
   if (memoryCache && Date.now() - memoryCache.updatedAt < CACHE_TTL) {
-    return memoryCache.groups;
+    return memoryCache.result;
   }
-  const response: { success: boolean; xml?: string; error?: string } = await chrome.runtime.sendMessage({
-    type: 'FETCH_RSS',
-    url: RSS_URL,
+  const enabled = (await loadFeeds()).filter((f) => f.enabled);
+  const results = await Promise.allSettled(enabled.map(fetchFeedGroups));
+  const groups: NewsGroup[] = [];
+  enabled.forEach((feed, i) => {
+    const r = results[i];
+    if (r.status === 'fulfilled') {
+      groups.push(...r.value);
+    } else {
+      // Per-feed failure (CORS-denied, offline, invalid XML) → error card so the user
+      // sees which feed broke instead of a silently missing card.
+      groups.push({ platform: feed.name, items: [], error: true });
+    }
   });
-  if (!response.success || !response.xml) {
-    throw new Error(response.error || 'RSS fetch failed');
-  }
-  const doc = new DOMParser().parseFromString(response.xml, 'text/xml');
-  const items = doc.querySelectorAll('item');
-  if (items.length === 0) throw new Error('No RSS items found');
-  const description = items[0].querySelector('description')?.textContent || '';
-  const groups = parseRssDescription(description);
-  memoryCache = { groups, updatedAt: Date.now() };
-  return groups;
+  const result: NewsResult = { groups, enabledCount: enabled.length };
+  memoryCache = { result, updatedAt: Date.now() };
+  return result;
 }
 
 function loadOrder(): Promise<string[]> {
@@ -95,6 +54,18 @@ function saveOrder(order: string[]) {
   chrome.storage.local.set({ [ORDER_KEY]: order });
 }
 
+function loadHidden(): Promise<string[]> {
+  return new Promise((resolve) => {
+    chrome.storage.local.get(HIDDEN_KEY, (r) => {
+      resolve(Array.isArray(r[HIDDEN_KEY]) ? r[HIDDEN_KEY] : []);
+    });
+  });
+}
+
+function saveHidden(hidden: string[]) {
+  chrome.storage.local.set({ [HIDDEN_KEY]: hidden });
+}
+
 function sortByOrder(groups: NewsGroup[], order: string[]): NewsGroup[] {
   if (order.length === 0) return groups;
   const indexed = new Map(groups.map((g) => [g.platform, g]));
@@ -103,18 +74,25 @@ function sortByOrder(groups: NewsGroup[], order: string[]): NewsGroup[] {
     const g = indexed.get(name);
     if (g) {
       sorted.push(g);
-      indexed.delete(name);
+      indexed.delete(g.platform);
     }
   }
   for (const g of indexed.values()) sorted.push(g);
   return sorted;
 }
 
-export default function NewsSection({ columns = 2 }: { columns?: number }) {
+interface NewsSectionProps {
+  columns?: number;
+  onManageFeeds?: () => void;
+}
+
+export default function NewsSection({ columns = 2, onManageFeeds }: NewsSectionProps) {
   const { t } = useI18n();
   const [groups, setGroups] = useState<NewsGroup[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+  const [empty, setEmpty] = useState(false);
+  const [hiddenPlatforms, setHiddenPlatforms] = useState<string[]>([]);
   const timerRef = useRef<number | null>(null);
   const gridRef = useRef<HTMLDivElement | null>(null);
   const sortableRef = useRef<Sortable | null>(null);
@@ -122,9 +100,12 @@ export default function NewsSection({ columns = 2 }: { columns?: number }) {
   const load = useCallback(async () => {
     setLoading(true);
     setError(false);
+    setEmpty(false);
     try {
-      const [data, order] = await Promise.all([fetchNews(), loadOrder()]);
-      setGroups(sortByOrder(data, order));
+      const [news, order, hidden] = await Promise.all([fetchNews(), loadOrder(), loadHidden()]);
+      setHiddenPlatforms(hidden);
+      setEmpty(news.enabledCount === 0);
+      setGroups(sortByOrder(news.groups, order).filter((g) => !hidden.includes(g.platform)));
     } catch {
       setError(true);
     } finally {
@@ -138,6 +119,22 @@ export default function NewsSection({ columns = 2 }: { columns?: number }) {
     return () => {
       if (timerRef.current !== null) window.clearInterval(timerRef.current);
     };
+  }, [load]);
+
+  // Live-refresh when the feed list changes (add / toggle / remove) so the home
+  // dashboard reflects changes immediately, not only on the next poll or remount.
+  useEffect(() => {
+    const handler = (
+      changes: { [key: string]: chrome.storage.StorageChange },
+      area: chrome.storage.AreaName,
+    ) => {
+      if (area === 'local' && changes[FEEDS_KEY]) {
+        memoryCache = null;
+        load();
+      }
+    };
+    chrome.storage.onChanged.addListener(handler);
+    return () => chrome.storage.onChanged.removeListener(handler);
   }, [load]);
 
   // Create Sortable instance after groups are rendered
@@ -189,6 +186,13 @@ export default function NewsSection({ columns = 2 }: { columns?: number }) {
     });
   };
 
+  const deleteCard = (platform: string) => {
+    const updated = [...hiddenPlatforms, platform];
+    setHiddenPlatforms(updated);
+    saveHidden(updated);
+    setGroups((prev) => prev.filter((g) => g.platform !== platform));
+  };
+
   return (
     <section className={styles.section}>
       <div className={styles.header}>
@@ -222,31 +226,70 @@ export default function NewsSection({ columns = 2 }: { columns?: number }) {
             </div>
           ))}
         </div>
+      ) : empty ? (
+        <div className={styles.empty}>
+          <span>{t('rssEmptyAll')}</span>
+          {onManageFeeds && (
+            <button className={styles.retryBtn} onClick={onManageFeeds}>{t('rssManageFeeds')}</button>
+          )}
+        </div>
       ) : error ? (
         <div className={styles.empty}>
           <span>{t('newsLoadFailed')}</span>
           <button className={styles.retryBtn} onClick={() => { memoryCache = null; load(); }}>{t('retry')}</button>
         </div>
+      ) : groups.length === 0 ? (
+        <div className={styles.empty}>
+          <span>{t('newsAllHidden')}</span>
+          <button
+            className={styles.retryBtn}
+            onClick={() => {
+              setHiddenPlatforms([]);
+              saveHidden([]);
+              memoryCache = null;
+              load();
+            }}
+          >
+            {t('newsRestoreAll')}
+          </button>
+        </div>
       ) : (
         <div className={styles.grid} ref={gridRef} style={{ gridTemplateColumns: `repeat(${columns}, 1fr)` }}>
           {groups.map((group) => (
             <div key={group.platform} className={`glass-card ${styles.card}`} data-platform={group.platform}>
-              <div className={styles.cardHeader} data-card-header>{group.platform}</div>
-              <div className={styles.cardList}>
-                {group.items.slice(0, 5).map((item) => (
-                  <div
-                    key={item.id}
-                    className={styles.cardItem}
-                    onClick={() => openUrl(item.url)}
-                    role="button"
-                    tabIndex={0}
-                    onKeyDown={(e) => { if (e.key === 'Enter') openUrl(item.url); }}
-                  >
-                    <span className={styles.index}>{item.rank}</span>
-                    <span className={styles.cardItemTitle}>{item.title}</span>
-                  </div>
-                ))}
+              <div className={styles.cardHeader} data-card-header>
+                <span>{group.platform}</span>
+                <button
+                  className={styles.deleteBtn}
+                  onClick={(e) => { e.stopPropagation(); deleteCard(group.platform); }}
+                  title={t('delete')}
+                  aria-label={`${t('delete')} ${group.platform}`}
+                >
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                  </svg>
+                </button>
               </div>
+              {group.error ? (
+                <div className={styles.cardError}>{t('rssFeedLoadFailed')}</div>
+              ) : (
+                <div className={styles.cardList}>
+                  {group.items.slice(0, 5).map((item) => (
+                    <div
+                      key={item.id}
+                      className={styles.cardItem}
+                      onClick={() => openUrl(item.url)}
+                      role="button"
+                      tabIndex={0}
+                      onKeyDown={(e) => { if (e.key === 'Enter') openUrl(item.url); }}
+                    >
+                      <span className={styles.index}>{item.rank}</span>
+                      <span className={styles.cardItemTitle}>{item.title}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           ))}
         </div>

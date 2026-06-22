@@ -340,7 +340,7 @@ export default function ShortcutGrid({ shortcuts, onDelete, onUpdate, onReorder,
       if (!container) return;
 
       const instance = Sortable.create(container, {
-        group: 'browsermain-shortcuts',
+        group: 'mytab-shortcuts',
         draggable: '[data-shortcut-id]',
         handle: '[data-drag-handle="true"]',
         filter: 'input, textarea',

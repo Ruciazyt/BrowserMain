@@ -78,7 +78,7 @@ export async function exportShortcutsAsJson() {
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `browsermain-shortcuts-${new Date().toISOString().slice(0, 10)}.json`;
+  a.download = `mytab-shortcuts-${new Date().toISOString().slice(0, 10)}.json`;
   a.click();
   URL.revokeObjectURL(url);
 }

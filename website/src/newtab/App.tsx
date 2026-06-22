@@ -184,7 +184,7 @@ export default function App() {
             </section>
 
             <section className={styles.section}>
-              <NewsSection columns={4} />
+              <NewsSection columns={4} onManageFeeds={() => setActiveNav('rss')} />
             </section>
           </>
         )}

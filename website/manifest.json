@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "BrowserMain",
-  "version": "0.1.0",
-  "description": "A retro-futuristic new tab page with LED-matrix aesthetics",
+  "name": "MyTab",
+  "version": "1.0.0",
+  "description": "Replace your new tab with a customizable dashboard: search, shortcuts, news, weather, AI chat and more.",
   "icons": {
     "16": "icons/icon16.png",
     "32": "icons/icon32.png",
@@ -12,21 +12,20 @@
   "permissions": [
     "storage",
     "tabs",
-    "bookmarks",
-    "activeTab",
-    "identity"
+    "bookmarks"
   ],
   "host_permissions": [
-    "https://momoyu.cc/",
-    "https://push2.eastmoney.com/",
-    "http://10.62.31.61:41005/",
-    "http://matrix-local.hiclaw.io/"
+    "https://momoyu.cc/"
+  ],
+  "optional_host_permissions": [
+    "http://*/*",
+    "https://*/*"
   ],
   "background": {
     "service_worker": "background/background.js"
   },
   "action": {
-    "default_title": "Add to BrowserMain",
+    "default_title": "Add to MyTab",
     "default_icon": {
       "16": "icons/icon16.png",
       "32": "icons/icon32.png"
@@ -38,7 +37,7 @@
         "default": "Ctrl+Shift+B",
         "mac": "Command+Shift+B"
       },
-      "description": "Add current page to BrowserMain"
+      "description": "Add current page to MyTab"
     },
     "add-shortcut": {
       "suggested_key": {
@@ -54,7 +53,7 @@
         "mac": "Command+Shift+A",
         "linux": "Alt+Shift+A"
       },
-      "description": "Quick add current page to BrowserMain"
+      "description": "Quick add current page to MyTab"
     }
   },
   "chrome_url_overrides": {

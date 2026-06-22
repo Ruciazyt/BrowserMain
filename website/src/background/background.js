@@ -1,4 +1,4 @@
-// BrowserMain - Background Service Worker (MV3)
+// MyTab - Background Service Worker (MV3)
 // Self-contained classic script — no ES module imports/exports allowed in MV3 service workers.
 
 const SHORTCUTS_KEY = 'browsermain_shortcuts';
@@ -178,7 +178,7 @@ async function buildExtensionUrl(addData, targetPage) {
         webpageFavicon = chromeFavicon || activeTab.favIconUrl || '';
       }
     } catch (err) {
-      console.error('[BrowserMain] Tab query error:', err);
+      console.error('[MyTab] Tab query error:', err);
     }
   }
 
@@ -208,7 +208,6 @@ async function openQuickAddWindow(addData) {
 // ---------------------------------------------------------------------------
 
 chrome.runtime.onInstalled.addListener(() => {
-  console.log('[BrowserMain] Extension installed');
   // Onboarding was removed; just clean up any stale flag left by older builds.
   chrome.storage.local.remove('browsermain_first_run');
 });
@@ -218,7 +217,7 @@ chrome.action.onClicked.addListener(async () => {
     const draft = await buildActiveTabDraft();
     await openQuickAddWindow(draft);
   } catch (err) {
-    console.error('[BrowserMain] Tab create error:', err);
+    console.error('[MyTab] Tab create error:', err);
   }
 });
 
@@ -237,7 +236,7 @@ chrome.commands.onCommand.addListener(async (command) => {
       return;
     }
   } catch (err) {
-    console.error('[BrowserMain] commands.onCommand error:', err);
+    console.error('[MyTab] commands.onCommand error:', err);
   }
 });
 
@@ -264,7 +263,6 @@ chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
     addShortcutFromDraft({ url, title, favicon }, { group })
       .then((result) => {
         if (result.success) {
-          console.log('[BrowserMain] Shortcut added:', result.entry.title);
           sendResponse({ success: true });
           return;
         }
@@ -296,40 +294,41 @@ chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
     return true; // async response
   }
 
-  // FETCH_RSS: fetch an RSS feed URL and return the raw text (bypasses CORS)
+  // FETCH_RSS: fetch an RSS feed URL from the background (bypasses CORS for
+  // origins listed in host_permissions / granted optional_host_permissions).
   if (msg.type === 'FETCH_RSS') {
-    const { url } = msg;
-    if (!url) {
+    var rssUrl = msg.url;
+    if (!rssUrl) {
       sendResponse({ success: false, error: 'NO_URL' });
       return;
     }
 
-    fetch(url, { mode: 'cors' })
-      .then((res) => {
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    fetch(rssUrl)
+      .then(function (res) {
+        if (!res.ok) throw new Error('HTTP ' + res.status);
         return res.text();
       })
-      .then((xml) => sendResponse({ success: true, xml }))
-      .catch((err) => sendResponse({ success: false, error: err.message }));
+      .then(function (xml) { sendResponse({ success: true, xml: xml }); })
+      .catch(function (err) { sendResponse({ success: false, error: err.message }); });
 
     return true; // async response
   }
 
   // FETCH_URL: generic fetch from background (bypasses CORS)
   if (msg.type === 'FETCH_URL') {
-    const { url } = msg;
-    if (!url) {
+    var fetchUrl = msg.url;
+    if (!fetchUrl) {
       sendResponse({ success: false, error: 'NO_URL' });
       return;
     }
 
-    fetch(url, { mode: 'cors' })
-      .then((res) => {
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    fetch(fetchUrl)
+      .then(function (res) {
+        if (!res.ok) throw new Error('HTTP ' + res.status);
         return res.text();
       })
-      .then((text) => sendResponse({ success: true, text }))
-      .catch((err) => sendResponse({ success: false, error: err.message }));
+      .then(function (text) { sendResponse({ success: true, text: text }); })
+      .catch(function (err) { sendResponse({ success: false, error: err.message }); });
 
     return true;
   }

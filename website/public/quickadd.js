@@ -1,4 +1,4 @@
-// quickadd.js — BrowserMain quick-add popup logic
+// quickadd.js — MyTab quick-add popup logic
 
 (function () {
   'use strict';
