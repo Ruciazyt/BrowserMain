@@ -1,12 +1,12 @@
 import { useState, useRef, useEffect, useLayoutEffect, useMemo, type CSSProperties } from 'react';
 import { createPortal } from 'react-dom';
-import { SEARCH_ENGINES, SearchEngine, buildSearchUrl, isUrl } from '../utils/engines';
-import EngineIcon from './EngineIcon';
-import { isMac } from '../utils/platform';
-import { useI18n } from '../i18n';
-import { useSettings } from '../hooks/useSettings';
-import Glass from './ui/Glass/Glass';
-import styles from './search/SearchBar/SearchBar.module.css';
+import { SEARCH_ENGINES, SearchEngine, buildSearchUrl, isUrl } from '../../../utils/engines';
+import EngineIcon from '../../EngineIcon';
+import { isMac } from '../../../utils/platform';
+import { useI18n } from '../../../i18n';
+import { useSettings } from '../../../hooks/useSettings';
+import Glass from '../../ui/Glass/Glass';
+import styles from './SearchBar.module.css';
 
 interface SearchBarProps {
   defaultEngine?: string;

@@ -2,11 +2,11 @@ import { useState, useEffect, useRef, useMemo } from 'react';
 import { useShortcuts } from './hooks/useShortcuts';
 import { useSettings } from './hooks/useSettings';
 import Sidebar from './components/layout/Sidebar/Sidebar';
-import SearchBar from './components/SearchBar';
+import SearchBar from './components/search/SearchBar/SearchBar';
 import WeatherWidget from './components/WeatherWidget';
 import NewsSection from './components/NewsSection';
-import ShortcutGrid from './components/ShortcutGrid';
-import AddShortcutDialog from './components/AddShortcutDialog';
+import ShortcutGrid from './components/shortcuts/ShortcutGrid/ShortcutGrid';
+import AddShortcutDialog from './components/shortcuts/AddShortcutDialog/AddShortcutDialog';
 import SettingsPanel from './components/settings/SettingsPanel/SettingsPanel';
 import RssFeedManager from './components/settings/RssFeedManager/RssFeedManager';
 import PixelPet from './components/pet/PixelPet/PixelPet';
@@ -40,7 +40,7 @@ export default function App() {
   }, []);
 
   const [addDialogOpen, setAddDialogOpen] = useState(false);
-  const [addDialogData, setAddDialogData] = useState({ url: '', title: '', favicon: '' });
+  const [addDialogData, setAddDialogData] = useState<{ url: string; title: string; favicon: string; group?: string }>({ url: '', title: '', favicon: '' });
 
   const glassStyle = useMemo(() => ({
     '--glass-card-opacity': (settings.glassOpacity ?? 100) / 100,
@@ -168,8 +168,8 @@ export default function App() {
                 onDelete={removeShortcut}
                 onUpdate={updateShortcut}
                 onReorder={reorderShortcuts}
-                onAdd={() => {
-                  setAddDialogData({ url: '', title: '', favicon: '' });
+                onAdd={(group) => {
+                  setAddDialogData({ url: '', title: '', favicon: '', group });
                   setAddDialogOpen(true);
                 }}
                 onImportBookmarks={() => {
@@ -210,6 +210,7 @@ export default function App() {
         url={addDialogData.url}
         title={addDialogData.title}
         favicon={addDialogData.favicon}
+        group={addDialogData.group}
         onAddShortcut={addShortcut}
         onClose={() => setAddDialogOpen(false)}
       />

@@ -12,8 +12,3 @@ export function isMac(): boolean {
       uaData.platform.toLowerCase().includes('mac'))
   );
 }
-
-// Returns the display label for the primary modifier key
-export function modKey(): string {
-  return isMac() ? '⌘' : 'Ctrl';
-}

@@ -11,7 +11,7 @@ export interface RssFeed {
   enabled: boolean;
 }
 
-export interface NewsItem {
+interface NewsItem {
   id: string;
   title: string;
   url: string;
@@ -54,7 +54,7 @@ export function saveFeeds(feeds: RssFeed[]): Promise<void> {
 // background FETCH_RSS can read the response. Only http/https origins are requested.
 // ---------------------------------------------------------------------------
 
-export function feedOriginPattern(url: string): string {
+function feedOriginPattern(url: string): string {
   try {
     return new URL(url).origin + '/*';
   } catch {
@@ -89,7 +89,7 @@ export function removeFeedPermission(url: string): Promise<void> {
  * Parse an RSS 2.0 (<item>) or Atom (<entry>) feed into a single card.
  * Display count is capped by the renderer, not here.
  */
-export function parseFeed(xml: string, name: string): NewsGroup {
+function parseFeed(xml: string, name: string): NewsGroup {
   const doc = new DOMParser().parseFromString(xml, 'text/xml');
 
   let entries: { title: string; url: string }[] = [];

@@ -1,11 +1,11 @@
 import { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import { createPortal } from 'react-dom';
-import { getSmartFaviconUrl, getFaviconIcoUrl, getDomainFromUrl, getChromeFaviconUrl } from '../utils/storage';
-import { isMac } from '../utils/platform';
-import { isUrl } from '../utils/engines';
-import { Shortcut } from '../utils/storage';
-import { useI18n } from '../i18n';
-import styles from './shortcuts/ShortcutTile/ShortcutTile.module.css';
+import { getSmartFaviconUrl, getFaviconIcoUrl, getDomainFromUrl, getChromeFaviconUrl } from '../../../utils/storage';
+import { isMac } from '../../../utils/platform';
+import { isUrl } from '../../../utils/engines';
+import { Shortcut } from '../../../utils/storage';
+import { useI18n } from '../../../i18n';
+import styles from './ShortcutTile.module.css';
 
 const GlobeIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" className={styles.iconFallback}>
@@ -24,12 +24,13 @@ interface ShortcutTileProps {
   onMoveRight?: (index: number) => void;
   onMoveUp?: (index: number) => void;
   onMoveDown?: (index: number) => void;
-  onAdd?: () => void;
   existingGroups?: string[];
   isGroupPreviewTarget?: boolean;
   isGlobalEditing?: boolean;
   onEnterEditMode?: () => void;
 }
+
+const MAX_GROUP_NAME_LENGTH = 30;
 
 export default function ShortcutTile({
   shortcut,
@@ -40,7 +41,6 @@ export default function ShortcutTile({
   onMoveRight,
   onMoveUp,
   onMoveDown,
-  onAdd,
   existingGroups,
   isGroupPreviewTarget,
   isGlobalEditing,
@@ -132,7 +132,7 @@ export default function ShortcutTile({
       onMoveDown?.(index);
     } else if (e.key === 'Enter' || e.key === ' ') {
       e.preventDefault();
-      navigateToShortcut();
+      triggerNavigation();
     } else if (e.key === 'Escape') {
       setIsNavigating(false);
       setKeyboardFocus(false);
@@ -162,12 +162,42 @@ export default function ShortcutTile({
     };
   }, [showContextMenu, editMode]);
 
-  const navigateToShortcut = () => {
-    if (editMode || showContextMenu || isGlobalEditing) return;
-    if (longPressTriggeredRef.current) {
-      longPressTriggeredRef.current = false;
-      return;
-    }
+  // Refs synced to edit-mode props. The pointerup handler below reads them
+  // synchronously without waiting for a re-render, so the navigation
+  // decision is always based on the latest state.
+  const isGlobalEditingRef = useRef(isGlobalEditing);
+  const editModeRef = useRef(editMode);
+  useEffect(() => { isGlobalEditingRef.current = isGlobalEditing; }, [isGlobalEditing]);
+  useEffect(() => { editModeRef.current = editMode; }, [editMode]);
+
+  // Single navigation entry point. Called from both pointerup (click
+  // candidate) and keydown (Enter/Space). The earlier inline function
+  // mixed in long-press / just-dragged guards that this refactor no
+  // longer needs — pointer events already disambiguate click vs drag,
+  // and long-press flips us into edit mode before this is reached.
+  //
+  // The `isDragInProgressRef` guard is the last line of defense against
+  // the white-screen bug. SortableJS uses native HTML5 drag (forceFallback:
+  // false), which means the browser hijacks pointer events during the
+  // drag — pointermove does not fire, so the click-vs-drag detection in
+  // handlePointerMove is bypassed. The native `dragstart` / `dragend`
+  // events still fire reliably though, so we use them as the source of
+  // truth: if a drag is in progress, no navigation, period.
+  const isDragInProgressRef = useRef(false);
+
+  useEffect(() => {
+    const handleDragStart = () => { isDragInProgressRef.current = true; };
+    const handleDragEnd = () => { isDragInProgressRef.current = false; };
+    document.addEventListener('dragstart', handleDragStart);
+    document.addEventListener('dragend', handleDragEnd);
+    return () => {
+      document.removeEventListener('dragstart', handleDragStart);
+      document.removeEventListener('dragend', handleDragEnd);
+    };
+  }, []);
+
+  const triggerNavigation = () => {
+    if (isDragInProgressRef.current) return;
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       if (tabs[0]?.id) {
         chrome.tabs.update(tabs[0].id, { url: shortcut.url });
@@ -193,9 +223,38 @@ export default function ShortcutTile({
     }
   }, [isGlobalEditing]);
 
+  // ── Click vs drag detection ─────────────────────────────────
+  // We use pointer events (not the synthetic click) so the navigation
+  // decision is made from the actual gesture, not from the click the
+  // browser synthesizes AFTER mouseup. That synthesized click was the
+  // root cause of the white-screen-on-drag bug: defending against it
+  // required a 600ms timer to suppress, which was fragile (the click
+  // could land after the timer).
+  //
+  // Now we record where the pointer went down and only navigate on
+  // pointerup if the pointer never moved more than CLICK_THRESHOLD_PX
+  // from that point. A real drag will exceed that and is therefore
+  // never a navigation candidate, regardless of what events the browser
+  // fires afterward.
+  const pointerDownPosRef = useRef<{ x: number; y: number } | null>(null);
+  const isClickCandidateRef = useRef(false);
+  const CLICK_THRESHOLD_PX = 5;
+
   const handlePointerDown = (e: React.PointerEvent) => {
-    if (editMode || isGlobalEditing) return;
+    if (editModeRef.current || isGlobalEditingRef.current) return;
     if (e.button !== 0) return;
+
+    // Mark this gesture as a click candidate. Will be cleared by
+    // pointermove (if it travels far) or pointerup (when we either
+    // navigate or reset state).
+    pointerDownPosRef.current = { x: e.clientX, y: e.clientY };
+    isClickCandidateRef.current = true;
+
+    // Long-press → enter global edit mode. The 500ms timer is independent
+    // of the click-vs-drag tracking above: a long, still press is still a
+    // click candidate and would still navigate on release, but the
+    // `editModeRef.current` check in handlePointerUp (which we also write
+    // to via onEnterEditMode → setIsGlobalEditing) drops it.
     longPressMovedRef.current = false;
     longPressTriggeredRef.current = false;
     clearLongPress();
@@ -205,24 +264,57 @@ export default function ShortcutTile({
     }, LONG_PRESS_MS);
   };
 
-  const handlePointerMove = () => {
+  const handlePointerMove = (e: React.PointerEvent) => {
+    // Cancel long press as soon as the pointer moves
     if (longPressTimerRef.current !== null) {
       longPressMovedRef.current = true;
       clearLongPress();
+    }
+    // Promote this gesture to a drag once the pointer has moved further
+    // than the click threshold. After this, isClickCandidateRef stays
+    // false through pointerup and the tile won't navigate.
+    if (isClickCandidateRef.current && pointerDownPosRef.current) {
+      const dx = Math.abs(e.clientX - pointerDownPosRef.current.x);
+      const dy = Math.abs(e.clientY - pointerDownPosRef.current.y);
+      if (dx > CLICK_THRESHOLD_PX || dy > CLICK_THRESHOLD_PX) {
+        isClickCandidateRef.current = false;
+      }
     }
   };
 
   const handlePointerUp = () => {
     clearLongPress();
+    if (
+      isClickCandidateRef.current &&
+      !editModeRef.current &&
+      !isGlobalEditingRef.current &&
+      !showContextMenu &&
+      !longPressTriggeredRef.current
+    ) {
+      triggerNavigation();
+    }
+    isClickCandidateRef.current = false;
+    pointerDownPosRef.current = null;
   };
 
   const handlePointerCancel = () => {
     clearLongPress();
+    isClickCandidateRef.current = false;
+    pointerDownPosRef.current = null;
   };
 
   const handleDelete = (e: React.MouseEvent) => {
     e.stopPropagation();
     onDelete(shortcut.id);
+  };
+
+  // Stop pointer events from bubbling to the container's onPointerDown /
+  // onPointerUp, which would otherwise mark this gesture as a click
+  // candidate and navigate to the shortcut URL on release. The onClick
+  // stopPropagation alone is not enough — onClick fires after pointerup,
+  // and pointerup is what the container's click-vs-drag detection reads.
+  const stopPointerPropagation = (e: React.PointerEvent) => {
+    e.stopPropagation();
   };
 
   const handleContextMenu = (e: React.MouseEvent) => {
@@ -354,8 +446,18 @@ export default function ShortcutTile({
           ref={groupInputRef}
           value={editGroup}
           onChange={(e) => setEditGroup(e.target.value)}
+          onBeforeInput={(e) => {
+            // Hard-cap the group name length to match the display truncation
+            // in ShortcutGrid. Some IMEs and paste paths can otherwise
+            // exceed maxLength's expectations.
+            const next = (e.nativeEvent as InputEvent).data;
+            if (next && editGroup.length >= MAX_GROUP_NAME_LENGTH) {
+              e.preventDefault();
+            }
+          }}
           placeholder={t('groupOptionalPlaceholder')}
           list={existingGroups && existingGroups.length > 0 ? "edit-shortcut-group-suggestions" : undefined}
+          maxLength={MAX_GROUP_NAME_LENGTH}
         />
         {existingGroups && existingGroups.length > 0 && (
           <datalist id="edit-shortcut-group-suggestions">
@@ -379,7 +481,6 @@ export default function ShortcutTile({
         ref={containerRef}
         onContextMenu={handleContextMenu}
         title={isGlobalEditing ? t('editModeHint') : t('dragClickEnter')}
-        onClick={navigateToShortcut}
         onKeyDown={handleKeyDown}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
@@ -414,7 +515,8 @@ export default function ShortcutTile({
           type="button"
           className={styles.deleteBtn}
           data-no-drag="true"
-          onMouseDown={(e) => e.stopPropagation()}
+          onPointerDown={stopPointerPropagation}
+          onPointerUp={stopPointerPropagation}
           onClick={handleDelete}
           aria-label={t('deleteShortcut')}
         >
@@ -430,7 +532,7 @@ export default function ShortcutTile({
       {showContextMenu && createPortal(
         <div
           ref={contextMenuRef}
-          className={styles.contextMenu}
+          className={`glass-card ${styles.contextMenu}`}
           style={{ left: contextMenuPos.x, top: contextMenuPos.y }}
         >
           {(() => {

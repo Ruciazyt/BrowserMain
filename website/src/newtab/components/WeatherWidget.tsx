@@ -12,22 +12,6 @@ interface WeatherData {
   weatherCode: number;
 }
 
-const AQI_LEVELS = [
-  { max: 50, label: '优' },
-  { max: 100, label: '良' },
-  { max: 150, label: '轻度' },
-  { max: 200, label: '中度' },
-  { max: 300, label: '重度' },
-  { max: 500, label: '严重' },
-];
-
-function getAqiLevel(aqi: number): string {
-  for (const level of AQI_LEVELS) {
-    if (aqi <= level.max) return level.label;
-  }
-  return '严重';
-}
-
 const WEATHER_EMOJI: Record<number, string> = {
   0: '☀️', 1: '🌤️', 2: '⛅', 3: '☁️',
   45: '🌫️', 48: '🌫️',

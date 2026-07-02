@@ -1,16 +1,16 @@
 import { useMemo, useRef, useState, useEffect } from 'react';
 import Sortable, { type MoveEvent, type SortableEvent } from 'sortablejs';
-import { Shortcut } from '../utils/storage';
-import ShortcutTile from './ShortcutTile';
-import { useI18n } from '../i18n';
-import styles from './shortcuts/ShortcutGrid/ShortcutGrid.module.css';
+import { Shortcut } from '../../../utils/storage';
+import ShortcutTile from '../ShortcutTile/ShortcutTile';
+import { useI18n } from '../../../i18n';
+import styles from './ShortcutGrid.module.css';
 
 interface ShortcutGridProps {
   shortcuts: Shortcut[];
   onDelete: (id: string) => void;
   onUpdate: (id: string, updates: Partial<Shortcut>) => void;
   onReorder: (newOrder: Shortcut[]) => void;
-  onAdd?: () => void;
+  onAdd?: (group?: string) => void;
   onImportBookmarks?: () => void;
   onImportShortcuts?: () => void;
 }
@@ -75,7 +75,6 @@ function SortableShortcutWrap({
   onMoveRight,
   onMoveUp,
   onMoveDown,
-  onAdd,
   existingGroups,
   isGroupPreviewTarget,
   isGlobalEditing,
@@ -89,7 +88,6 @@ function SortableShortcutWrap({
   onMoveRight?: (index: number) => void;
   onMoveUp?: (index: number) => void;
   onMoveDown?: (index: number) => void;
-  onAdd?: () => void;
   existingGroups: string[];
   isGroupPreviewTarget?: boolean;
   isGlobalEditing?: boolean;
@@ -110,7 +108,6 @@ function SortableShortcutWrap({
         onMoveRight={onMoveRight}
         onMoveUp={onMoveUp}
         onMoveDown={onMoveDown}
-        onAdd={onAdd}
         existingGroups={existingGroups}
         isGroupPreviewTarget={isGroupPreviewTarget}
         isGlobalEditing={isGlobalEditing}
@@ -165,6 +162,16 @@ export default function ShortcutGrid({ shortcuts, onDelete, onUpdate, onReorder,
 
   const existingGroups = useMemo(
     () => Array.from(new Set(shortcuts.map((shortcut) => shortcut.group).filter((group): group is string => !!group))).sort(),
+    [shortcuts]
+  );
+
+  // Stable key derived from group structure only (not individual shortcut order
+  // or content). The Sortable-create effect depends on this so it only re-runs
+  // when groups are added/removed/renamed — never on every reorder or update,
+  // which would tear down a live Sortable instance mid-drag and leave a stale
+  // tile in the DOM.
+  const groupStructureKey = useMemo(
+    () => Array.from(new Set(shortcuts.map((s) => s.group?.trim() || 'Default'))).sort().join(''),
     [shortcuts]
   );
 
@@ -332,8 +339,23 @@ export default function ShortcutGrid({ shortcuts, onDelete, onUpdate, onReorder,
   }, [isGlobalEditing]);
 
   useEffect(() => {
-    sortableInstancesRef.current.forEach((instance) => instance.destroy());
-    sortableInstancesRef.current = [];
+    // Initialise Sortable instances ONCE per group-structure change. Earlier
+    // versions recreated on every `shortcuts` mutation, which could tear down
+    // an instance mid-drag and produce phantom tiles. Edit-mode enable/disable
+    // is handled by the dedicated effect below so the instances don't need to
+    // be rebuilt when the user toggles edit mode.
+    const cleanup = () => {
+      sortableInstancesRef.current.forEach((instance) => {
+        instance.el.querySelectorAll(`.${styles.sortableGhost}, .${styles.sortableChosen}, .${styles.sortableDrag}`).forEach((el) => {
+          el.classList.remove(styles.sortableGhost, styles.sortableChosen, styles.sortableDrag);
+        });
+        instance.destroy();
+      });
+      sortableInstancesRef.current = [];
+      clearGroupIntent();
+    };
+
+    cleanup();
 
     groupsRef.current.forEach((group) => {
       const container = groupContainerRefs.current[group.name];
@@ -354,6 +376,9 @@ export default function ShortcutGrid({ shortcuts, onDelete, onUpdate, onReorder,
         chosenClass: styles.sortableChosen,
         dragClass: styles.sortableDrag,
         forceFallback: false,
+        // Create in the same state as the current edit-mode toggle so the
+        // dedicated disabled-toggle effect doesn't have to fight a stale
+        // initial value on first mount.
         disabled: !isGlobalEditing,
         onStart: (event: SortableEvent) => {
           const dragged = event.item as HTMLElement;
@@ -404,56 +429,32 @@ export default function ShortcutGrid({ shortcuts, onDelete, onUpdate, onReorder,
             el.classList.remove(styles.sortableGhost, styles.sortableChosen, styles.sortableDrag);
           });
 
-          // Browsers synthesize a click event after native drag-and-drop.
-          // SortableJS cannot reliably suppress it in fallback-less mode,
-          // and React reconciliation after onReorder can race with that click.
-          // Block the next click on ANY shortcut tile (except action buttons)
-          // at the document level — the drop may have shifted tiles under the
-          // cursor, so the click target is not necessarily the dragged item.
-          const blockClick = (e: MouseEvent) => {
-            const target = e.target as HTMLElement;
-            const tile = target.closest('[data-shortcut-id]');
-            if (tile && !target.closest('button, a, input, textarea')) {
-              e.preventDefault();
-              e.stopPropagation();
-              e.stopImmediatePropagation();
-            }
-            document.removeEventListener('click', blockClick, true);
-          };
-          document.addEventListener('click', blockClick, true);
-          window.setTimeout(() => document.removeEventListener('click', blockClick, true), 300);
-
           const activeId = (event.item as HTMLElement).dataset.shortcutId || null;
           const overId = dropTargetIdRef.current;
-          if (activeId && groupPreviewTargetIdRef.current && overId === groupPreviewTargetIdRef.current && activeId !== overId) {
-            applyGroupMerge(activeId, overId);
-            resetDragState();
-            return;
-          }
 
-          const orderedIds = buildOrderFromDom();
-          if (orderedIds.length === flatRef.current.length) {
-            applyOrderedIds(orderedIds);
-          }
-          resetDragState();
+          // Defer DOM read until Sortable has finished its internal DOM
+          // mutation for this drop. Reading on the same tick as onEnd
+          // occasionally observed the pre-drop order, causing a phantom
+          // revert and a duplicate-looking tile until the next render.
+          window.requestAnimationFrame(() => {
+            if (activeId && groupPreviewTargetIdRef.current && overId === groupPreviewTargetIdRef.current && activeId !== overId) {
+              applyGroupMerge(activeId, overId);
+            } else {
+              const orderedIds = buildOrderFromDom();
+              if (orderedIds.length === flatRef.current.length) {
+                applyOrderedIds(orderedIds);
+              }
+            }
+            resetDragState();
+          });
         },
       });
 
       sortableInstancesRef.current.push(instance);
     });
 
-    return () => {
-      // Clean up ghost/chosen/drag classes before destroying instances
-      sortableInstancesRef.current.forEach((instance) => {
-        instance.el.querySelectorAll(`.${styles.sortableGhost}, .${styles.sortableChosen}, .${styles.sortableDrag}`).forEach((el) => {
-          el.classList.remove(styles.sortableGhost, styles.sortableChosen, styles.sortableDrag);
-        });
-        instance.destroy();
-      });
-      sortableInstancesRef.current = [];
-      clearGroupIntent();
-    };
-  }, [existingGroups, t]);
+    return cleanup;
+  }, [groupStructureKey]);
 
   // Toggle sortable enabled/disabled when edit mode changes — no destroy/recreate
   useEffect(() => {
@@ -477,7 +478,7 @@ export default function ShortcutGrid({ shortcuts, onDelete, onUpdate, onReorder,
                 <polyline points="20 6 9 17 4 12"/>
               </svg>
             ) : (
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
                 <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
               </svg>
@@ -495,7 +496,7 @@ export default function ShortcutGrid({ shortcuts, onDelete, onUpdate, onReorder,
             </div>
             <div className={styles.emptyActions}>
               {onAdd && (
-                <button className={styles.emptyAddBtn} onClick={onAdd} tabIndex={0}>
+                <button className={styles.emptyAddBtn} onClick={() => onAdd()} tabIndex={0}>
                   <span className={styles.emptyAddBtnIcon}>+</span>
                   {t('addShortcut')}
                 </button>
@@ -515,7 +516,7 @@ export default function ShortcutGrid({ shortcuts, onDelete, onUpdate, onReorder,
         </div>
       ) : (
         <div className={styles.cardsRow}>
-          {groups.map((group, groupIndex) => (
+          {groups.map((group) => (
             <div key={group.name} className={`glass-card ${styles.groupSection}`}>
               {groups.length > 1 && (
                 <div className={styles.groupHeader} onClick={() => renamingGroupName !== group.name && startRenameGroup(group.name)}>
@@ -536,7 +537,7 @@ export default function ShortcutGrid({ shortcuts, onDelete, onUpdate, onReorder,
                     />
                   ) : (
                     <>
-                      <span className={styles.groupName}>{group.name}</span>
+                      <span className={styles.groupName} title={group.name}>{group.name}</span>
                       <span className={styles.groupCount}>({group.shortcuts.length})</span>
                     </>
                   )}
@@ -560,21 +561,20 @@ export default function ShortcutGrid({ shortcuts, onDelete, onUpdate, onReorder,
                     onMoveRight={handleMoveRight}
                     onMoveUp={handleMoveUp}
                     onMoveDown={handleMoveDown}
-                    onAdd={onAdd}
                     existingGroups={existingGroups}
                     isGroupPreviewTarget={groupPreviewTargetId === shortcut.id && activeDragId !== shortcut.id}
                     isGlobalEditing={isGlobalEditing}
                     onEnterEditMode={() => setIsGlobalEditing(true)}
                   />
                 ))}
-                {onAdd && groupIndex === groups.length - 1 && (
+                {onAdd && (
                   <button
                     className={styles.addTile}
-                    onClick={onAdd}
+                    onClick={() => onAdd(group.name === 'Default' ? undefined : group.name)}
                     onKeyDown={(event) => {
                       if (event.key === 'Enter' || event.key === ' ') {
                         event.preventDefault();
-                        onAdd?.();
+                        onAdd(group.name === 'Default' ? undefined : group.name);
                       }
                     }}
                     tabIndex={0}

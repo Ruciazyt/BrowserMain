@@ -4,8 +4,8 @@ import { useSettings } from '../../../hooks/useSettings';
 import { SEARCH_ENGINES } from '../../../utils/engines';
 import { useI18n } from '../../../i18n';
 import EngineIcon from '../../EngineIcon';
-import BookmarkImport from '../../BookmarkImport';
-import ShortcutImport from '../../ShortcutImport';
+import BookmarkImport from '../../shortcuts/BookmarkImport/BookmarkImport';
+import ShortcutImport from '../../shortcuts/ShortcutImport/ShortcutImport';
 import { useShortcuts } from '../../../hooks/useShortcuts';
 import { BUILTIN_BACKGROUNDS, resolveBackgroundImageUrl } from '../../../utils/backgrounds';
 import styles from './SettingsPanel.module.css';
@@ -83,6 +83,9 @@ export default function SettingsPanel({ open, onClose, initialView = 'main', onB
         onClick={onClose}
       />
       <div className={`glass-card ${styles.panel} ${open ? styles.open : ''}`}>
+        {/* Top accent bar — child div, NOT ::before, so it doesn't conflict
+           with the .glass-card color-correction ::before layer. */}
+        <div className={styles.topAccent} aria-hidden="true" />
         <div className={styles.header}>
           <span className={styles.title}>{t('settings')}</span>
           <button className={styles.closeBtn} onClick={onClose} aria-label={t('close')}>

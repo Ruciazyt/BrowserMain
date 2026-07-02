@@ -67,22 +67,6 @@ export function useShortcuts() {
   };
 }
 
-export async function exportShortcutsAsJson() {
-  const data = await getShortcuts();
-  const payload = {
-    version: '1.0',
-    exportedAt: new Date().toISOString(),
-    shortcuts: data,
-  };
-  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `mytab-shortcuts-${new Date().toISOString().slice(0, 10)}.json`;
-  a.click();
-  URL.revokeObjectURL(url);
-}
-
 export async function importShortcutsFromJson(file: File): Promise<{ imported: number; error?: string }> {
   return new Promise((resolve) => {
     const reader = new FileReader();

@@ -132,6 +132,8 @@
   transition: all 150ms ease;
   color: var(--text-tertiary);
   box-sizing: border-box;
+  align-self: start;
+  justify-self: stretch;
 }
 
 .addTile::before {
@@ -150,10 +152,10 @@
 }
 
 .addTileIcon {
-  font-size: 24px;
+  font-size: 22px;
   line-height: 1;
   opacity: 0.6;
-  margin-bottom: 4px;
+  margin-bottom: 2px;
 }
 
 .addTileLabel {
@@ -267,10 +269,11 @@
 .groupSection {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 0;
   min-width: 0;
-  padding: 12px;
+  padding: 0;
   border-radius: var(--radius-lg);
+  overflow: hidden;
 }
 
 /* ── Responsive: fewer columns when space is tight ───────────── */
@@ -290,18 +293,18 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 4px 10px;
-  margin-bottom: 2px;
-  border-radius: var(--radius-xs);
+  padding: 10px 14px;
+  margin-bottom: 0;
   background: var(--glass-header-bg);
-  border: 1px solid rgba(0, 102, 204, 0.12);
+  border-bottom: 1px solid var(--glass-header-border);
   cursor: pointer;
   transition: background 0.15s;
   flex-shrink: 0;
+  letter-spacing: 0.02em;
 }
 
 .groupHeader:hover {
-  background: rgba(0, 102, 204, 0.1);
+  background: rgba(255, 255, 255, 0.12);
 }
 
 .groupName {
@@ -310,11 +313,17 @@
   letter-spacing: 0.5px;
   text-transform: uppercase;
   color: var(--glass-text-label);
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .groupCount {
   font-size: var(--text-md);
   color: var(--glass-text-tertiary);
+  flex-shrink: 0;
 }
 
 .groupRenameInput {
@@ -331,6 +340,9 @@
   margin: 0;
   width: 100%;
   min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* Tiles area: exactly 4 columns, rows auto-flow. The flex parent gives it a
@@ -345,7 +357,7 @@
   grid-template-columns: repeat(4, 1fr);
   grid-auto-rows: 1fr;
   gap: 8px;
-  padding: 0;
+  padding: 12px;
   flex: 1;
   min-height: 0;
   overflow-y: auto;

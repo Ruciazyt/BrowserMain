@@ -158,12 +158,21 @@
 
 /* ── Context menu ─────────────────────────────────────────── */
 .contextMenu {
+  /* Inherits the global .glass-card treatment. Local tokens re-skin the
+     text colors since --text-* tokens are white-on-dark for the rest of
+     the app and would be invisible over a light card. */
+  --ctx-text-primary: #1d1d1f;
+  --ctx-text-secondary: #6e6e73;
+  --ctx-border: rgba(0, 0, 0, 0.08);
+  --ctx-hover-bg: rgba(0, 0, 0, 0.05);
+  /* Higher opacity than default glass-card — context menus need to stay
+     readable when the user is mid-action. */
+  --glass-card-opacity: 0.82;
+  --glass-card-shadow-intensity: 1.2;
+
   position: fixed;
   z-index: 9999;
-  background: var(--surface-primary);
-  border: 1px solid var(--hairline);
   border-radius: var(--radius-sm);
-  box-shadow: var(--shadow-xl);
   padding: 4px;
   min-width: 140px;
 }
@@ -176,7 +185,7 @@
   padding: 8px 12px;
   background: transparent;
   border: none;
-  color: var(--ink-muted-80);
+  color: var(--ctx-text-primary);
   font-size: var(--text-md);
   cursor: pointer;
   border-radius: var(--radius-xs);
@@ -185,8 +194,8 @@
 }
 
 .contextMenuItem:hover {
-  background: var(--canvas-parchment);
-  color: var(--text-primary);
+  background: var(--ctx-hover-bg);
+  color: var(--ctx-text-primary);
 }
 
 .contextMenuItemWrapper {
@@ -197,6 +206,7 @@
   margin-left: auto;
   font-size: var(--text-xxs);
   opacity: 0.4;
+  color: var(--ctx-text-secondary);
 }
 
 /* ── Submenu ──────────────────────────────────────────────── */
@@ -206,7 +216,7 @@
   top: 0;
   min-width: 140px;
   background: var(--surface-primary);
-  border: 1px solid var(--hairline);
+  border: 1px solid var(--ctx-border);
   border-radius: var(--radius-sm);
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.03);
   padding: 4px;
@@ -231,7 +241,7 @@
 
 .contextMenuItemDisabled:hover {
   background: transparent !important;
-  color: var(--ink-muted-80) !important;
+  color: var(--ctx-text-primary) !important;
 }
 
 /* ── Edit mode ────────────────────────────────────────────── */

@@ -11,6 +11,18 @@
 
 /* ── Panel — glass (template for .glass-card utility) ─────── */
 .panel {
+  /* Locally soften the global --divider-soft (#f0f0f0 is too bright on a
+     glass surface over a colorful background). Children inherit this. */
+  --divider-soft: rgba(0, 0, 0, 0.05);
+  /* Destructive actions no longer use red — the user finds red hard to read
+     on the glass surface. Use a neutral dark grey that matches the rest of
+     the panel's text so destructive actions are identified by icon/label
+     rather than color. */
+  --danger: #3a3a3c;
+  --danger-rgb: 58, 58, 60;
+  /* Subtle elevation shadow that replaces the heavy hairline borders. */
+  --panel-shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 0 0 1px rgba(0, 0, 0, 0.03);
+
   position: fixed; top: 16px; right: 16px; bottom: 16px;
   width: 360px; max-width: calc(100vw - 32px);
   z-index: 201;
@@ -18,12 +30,15 @@
   transition: transform var(--dur-mid) var(--ease-smooth);
   display: flex; flex-direction: column;
   border-radius: var(--radius-xl);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12), 0 2px 6px rgba(0, 0, 0, 0.06);
 }
 .panel.open { transform: translateX(0); }
-.panel::before {
-  content: ''; position: absolute; top: 0; left: 20px; right: 20px;
+/* Top accent bar — uses a child element via .topAccent so the .glass-card
+   color-correction ::before layer is preserved. */
+.topAccent {
+  position: absolute; top: 0; left: 20px; right: 20px;
   height: 2px; background: var(--accent-blue); border-radius: 1px;
-  z-index: 10; pointer-events: none;
+  z-index: 5; pointer-events: none;
 }
 
 /* ── Header ────────────────────────────────────────────────── */
@@ -242,22 +257,22 @@
   padding: 4px 8px; border-radius: var(--radius-md);
   font-size: var(--text-xxs); font-weight: 600;
   color: var(--danger);
-  border: 1px solid rgba(255, 59, 48, 0.3);
-  background: rgba(255, 59, 48, 0.08);
+  border: 1px solid rgba(var(--danger-rgb), 0.3);
+  background: rgba(var(--danger-rgb), 0.08);
   cursor: pointer; transition: all var(--dur-fast);
 }
-.removeImageBtn:hover { background: rgba(255, 59, 48, 0.16); border-color: rgba(255, 59, 48, 0.5); }
+.removeImageBtn:hover { background: rgba(var(--danger-rgb), 0.16); border-color: rgba(var(--danger-rgb), 0.5); }
 .removeImageBtnInline {
   padding: 7px 12px; border-radius: var(--radius-md);
   font-size: var(--text-md); font-weight: 600;
   color: var(--danger);
-  border: 1px solid rgba(255, 59, 48, 0.3);
-  background: rgba(255, 59, 48, 0.08);
+  border: 1px solid rgba(var(--danger-rgb), 0.3);
+  background: rgba(var(--danger-rgb), 0.08);
   cursor: pointer; transition: all var(--dur-fast); white-space: nowrap;
 }
 .removeImageBtnInline:hover {
-  background: rgba(255, 59, 48, 0.16);
-  border-color: rgba(255, 59, 48, 0.5);
+  background: rgba(var(--danger-rgb), 0.16);
+  border-color: rgba(var(--danger-rgb), 0.5);
 }
 .colorInput {
   width: 36px; height: 28px; border: none; border-radius: var(--radius-sm);
@@ -353,13 +368,13 @@
   border-radius: var(--radius-md);
   font-size: var(--text-md); font-weight: 600;
   color: var(--danger);
-  border: 1px solid rgba(255, 59, 48, 0.3);
-  background: rgba(255, 59, 48, 0.06);
+  border: 1px solid rgba(var(--danger-rgb), 0.3);
+  background: rgba(var(--danger-rgb), 0.06);
   cursor: pointer; transition: all var(--dur-fast);
 }
 .clearAllBtn:hover {
-  background: rgba(255, 59, 48, 0.12);
-  border-color: rgba(255, 59, 48, 0.5);
+  background: rgba(var(--danger-rgb), 0.12);
+  border-color: rgba(var(--danger-rgb), 0.5);
 }
 
 /* ── Confirm state ────────────────────────────────────────── */
@@ -367,8 +382,8 @@
   margin-top: 10px;
   padding: 12px;
   border-radius: var(--radius-md);
-  background: rgba(255, 59, 48, 0.06);
-  border: 1px solid rgba(255, 59, 48, 0.2);
+  background: rgba(var(--danger-rgb), 0.06);
+  border: 1px solid rgba(var(--danger-rgb), 0.2);
   display: flex; flex-direction: column; gap: 10px;
 }
 .confirmText {
@@ -634,7 +649,7 @@
   height: 20px;
   border-radius: 50%;
   border: none;
-  background: rgba(255, 59, 48, 0.08);
+  background: rgba(var(--danger-rgb), 0.08);
   color: var(--danger);
   cursor: pointer;
   display: flex;
@@ -646,7 +661,7 @@
   flex-shrink: 0;
 }
 .groupDeleteBtn:hover {
-  background: rgba(255, 59, 48, 0.16);
+  background: rgba(var(--danger-rgb), 0.16);
   color: var(--danger);
 }
 
@@ -654,8 +669,8 @@
   margin-top: 6px;
   padding: 10px 12px;
   border-radius: var(--radius-md);
-  background: rgba(255, 59, 48, 0.06);
-  border: 1px solid rgba(255, 59, 48, 0.2);
+  background: rgba(var(--danger-rgb), 0.06);
+  border: 1px solid rgba(var(--danger-rgb), 0.2);
   display: flex; flex-direction: column; gap: 8px;
 }
 

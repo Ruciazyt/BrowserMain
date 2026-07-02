@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
-import type { Shortcut } from '../utils/storage';
-import { getSmartFaviconUrl, getFaviconIcoUrl, getDomainFromUrl, getChromeFaviconUrl } from '../utils/storage';
-import { isUrl } from '../utils/engines';
-import { useI18n } from '../i18n';
-import styles from './shortcuts/AddShortcutDialog/AddShortcutDialog.module.css';
+import type { Shortcut } from '../../../utils/storage';
+import { getSmartFaviconUrl, getFaviconIcoUrl, getDomainFromUrl, getChromeFaviconUrl } from '../../../utils/storage';
+import { isUrl } from '../../../utils/engines';
+import { useI18n } from '../../../i18n';
+import styles from './AddShortcutDialog.module.css';
 
 interface AddShortcutDialogProps {
   open: boolean;
@@ -161,7 +161,10 @@ export default function AddShortcutDialog({ open, shortcuts, url, title, favicon
 
   return (
     <div className={styles.overlay} onClick={onClose}>
-      <div className={styles.modal} onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" aria-label={t('addShortcutDialog')}>
+      <div className={`glass-card ${styles.modal}`} onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" aria-label={t('addShortcutDialog')}>
+        {/* Top accent bar — child div, NOT ::before, so it doesn't conflict
+           with the .glass-card color-correction ::before layer. */}
+        <div className={styles.topAccent} aria-hidden="true" />
         {/* Header */}
         <div className={styles.header}>
           <span className={styles.headerTitle}>{t('addShortcutDialog')}</span>
@@ -264,6 +267,7 @@ export default function AddShortcutDialog({ open, shortcuts, url, title, favicon
               onChange={(e) => setInputGroup(e.target.value)}
               placeholder={t('groupPlaceholder')}
               list="add-shortcut-group-suggestions"
+              maxLength={30}
             />
             <datalist id="add-shortcut-group-suggestions">
               {existingGroups.map((g) => (
