@@ -3,12 +3,13 @@ import { useShortcuts } from './hooks/useShortcuts';
 import { useSettings } from './hooks/useSettings';
 import Sidebar from './components/layout/Sidebar/Sidebar';
 import SearchBar from './components/search/SearchBar/SearchBar';
-import WeatherWidget from './components/WeatherWidget';
-import NewsSection from './components/NewsSection';
+import WeatherWidget from './components/widgets/WeatherWidget/WeatherWidget';
+import NewsSection from './components/widgets/NewsSection/NewsSection';
 import ShortcutGrid from './components/shortcuts/ShortcutGrid/ShortcutGrid';
 import AddShortcutDialog from './components/shortcuts/AddShortcutDialog/AddShortcutDialog';
 import SettingsPanel from './components/settings/SettingsPanel/SettingsPanel';
 import RssFeedManager from './components/settings/RssFeedManager/RssFeedManager';
+import VideoMonitor from './components/widgets/VideoMonitor/VideoMonitor';
 import PixelPet from './components/pet/PixelPet/PixelPet';
 import { resolveBackgroundImageUrl } from './utils/backgrounds';
 import { GlassDistortionFilter } from './components/ui/Glass';
@@ -155,6 +156,8 @@ export default function App() {
       <main className={`${styles.main} ${sidebarCollapsed ? styles.mainFull : ''}`}>
         {activeNav === 'rss' ? (
           <RssFeedManager standalone onNavigateHome={() => setActiveNav('home')} />
+        ) : activeNav === 'video' ? (
+          <VideoMonitor standalone onNavigateHome={() => setActiveNav('home')} />
         ) : (
           <>
             <div className={styles.topBar}>

@@ -1,7 +1,10 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npx tsc *)"
+      "Bash(npx tsc *)",
+      "Bash(node -e ' *)",
+      "Bash(curl -s -o /tmp/bili_resp.json -w 'HTTP %{http_code} | size %{size_download} bytes\\\\n' -H 'User-Agent: Mozilla/5.0 \\(Windows NT 10.0; Win64; x64\\) AppleWebKit/537.36 \\(KHTML, like Gecko\\) Chrome/126.0.0.0 Safari/537.36' -H 'Referer: https://www.bilibili.com' 'https://api.bilibili.com/x/web-interface/search/type?search_type=video&keyword=%E7%BC%96%E7%A8%8B&page=1&page_size=3')",
+      "Bash(node -e \"const d=require\\('/tmp/bili_resp.json'\\); console.log\\('code:', d.code, '| message:', d.message, '| has data:', !!d.data, '| result count:', \\(d.data?.result||[]\\).length\\)\")"
     ]
   }
 }

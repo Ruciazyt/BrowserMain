@@ -1,8 +1,8 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import Sortable from 'sortablejs';
-import { useI18n } from '../i18n';
-import { FEEDS_KEY, loadFeeds, fetchFeedGroups, type NewsGroup } from '../utils/rssFeeds';
-import styles from './widgets/NewsSection/NewsSection.module.css';
+import { useI18n } from '../../../i18n';
+import { FEEDS_KEY, loadFeeds, fetchFeedGroups, type NewsGroup } from '../../../utils/rssFeeds';
+import styles from './NewsSection.module.css';
 
 const CACHE_TTL = 10 * 60 * 1000;
 const ORDER_KEY = 'browsermain_news_order';

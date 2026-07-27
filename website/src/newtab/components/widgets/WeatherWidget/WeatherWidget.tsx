@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { useI18n } from '../i18n';
-import Glass from './ui/Glass/Glass';
-import styles from './widgets/WeatherWidget/WeatherWidget.module.css';
+import { useI18n } from '../../../i18n';
+import Glass from '../../ui/Glass/Glass';
+import styles from './WeatherWidget.module.css';
 
 interface WeatherData {
   temperature: number;
