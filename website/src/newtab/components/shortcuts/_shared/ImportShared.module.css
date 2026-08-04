@@ -18,16 +18,20 @@
 }
 
 .backBtn {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 8px 10px;
-  border-radius: var(--radius-sm);
+  min-height: 32px;
+  padding: 6px 12px;
+  border-radius: var(--radius-md);
   font-size: var(--text-md);
+  font-weight: 500;
+  font-family: var(--font-ui);
   color: var(--text-secondary);
   border: 1px solid var(--border-primary);
-  transition: all var(--dur-fast);
   background: var(--surface-secondary);
+  cursor: pointer;
+  transition: background var(--dur-fast), border-color var(--dur-fast), color var(--dur-fast), transform 100ms var(--ease-spring);
 }
 
 .backBtn:hover {
@@ -36,10 +40,18 @@
   background: var(--accent-blue-light);
 }
 
+.backBtn:active { transform: scale(0.97); }
+.backBtn:focus-visible {
+  outline: 2px solid var(--accent-blue);
+  outline-offset: 2px;
+}
+
 .headerTitle {
-  font-size: var(--text-2xl);
+  font-size: var(--text-xl);
   font-weight: 600;
+  letter-spacing: -0.012em;
   color: var(--text-primary);
+  font-family: var(--font-display);
 }
 
 /* Loading / Empty / Error / Result states */
@@ -118,23 +130,21 @@
 
 .doneBtn {
   margin-top: 8px;
-  padding: 10px 28px;
-  border-radius: var(--radius-sm);
+  min-height: 38px;
+  padding: 8px 24px;
+  border-radius: var(--radius-md);
   font-size: var(--text-md);
   font-weight: 600;
+  font-family: var(--font-ui);
   color: #ffffff;
   border: none;
   background: var(--accent-blue);
-  transition: all var(--dur-fast);
+  cursor: pointer;
+  transition: background var(--dur-fast), transform 100ms var(--ease-spring);
 }
 
-.doneBtn:hover {
-  background: var(--accent-blue);
-}
-
-.doneBtn:active {
-  transform: scale(0.95);
-}
+.doneBtn:hover { background: var(--accent-blue-focus); }
+.doneBtn:active { transform: scale(0.97); }
 
 /* Footer */
 .footer {
@@ -157,32 +167,29 @@
 }
 
 .importBtn {
-  min-height: 40px;
+  min-height: 38px;
   padding: 8px 18px;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
   font-size: var(--text-md);
   font-weight: 600;
+  font-family: var(--font-ui);
   color: #ffffff;
   border: none;
   background: var(--accent-blue);
-  transition: all var(--dur-fast);
-  display: flex;
+  transition: background var(--dur-fast), transform 100ms var(--ease-spring);
+  display: inline-flex;
   align-items: center;
   gap: 8px;
   white-space: nowrap;
+  cursor: pointer;
 }
 
-.importBtn:hover:not(:disabled) {
-  background: var(--accent-blue);
-}
-
-.importBtn:active:not(:disabled) {
-  transform: scale(0.95);
-}
-
+.importBtn:hover:not(:disabled) { background: var(--accent-blue-focus); }
+.importBtn:active:not(:disabled) { transform: scale(0.97); }
 .importBtn:disabled {
   opacity: 0.4;
   cursor: not-allowed;
+  pointer-events: none;
 }
 
 /* Tree (BookmarkImport) */
@@ -204,7 +211,7 @@
   padding: 6px 8px;
   border-radius: var(--radius-sm);
   transition: background var(--dur-fast);
-  min-height: 36px;
+  min-height: 38px;
 }
 
 .folderRow:hover {
@@ -212,16 +219,18 @@
 }
 
 .expandBtn {
-  width: 20px;
-  height: 20px;
-  border-radius: 4px;
+  width: 22px;
+  height: 22px;
+  border-radius: 5px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: var(--text-tertiary);
-  transition: all var(--dur-fast);
+  transition: background var(--dur-fast), color var(--dur-fast), transform 100ms var(--ease-spring);
   background: transparent;
   flex-shrink: 0;
+  border: none;
+  cursor: pointer;
 }
 
 .expandBtn:hover {
@@ -229,18 +238,21 @@
   color: var(--accent-blue);
 }
 
+.expandBtn:active { transform: scale(0.9); }
+
 .expandPlaceholder {
-  width: 20px;
+  width: 22px;
   flex-shrink: 0;
 }
 
 .checkboxLabel {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 10px;
   flex: 1;
   cursor: pointer;
   min-width: 0;
+  font-family: var(--font-ui);
 }
 
 .checkbox {
@@ -254,7 +266,8 @@
   appearance: none;
   -webkit-appearance: none;
   position: relative;
-  transition: all var(--dur-fast);
+  transition: background var(--dur-fast), border-color var(--dur-fast);
+  margin: 0;
 }
 
 .checkbox:checked {
@@ -294,6 +307,7 @@
 .folderTitle {
   font-size: var(--text-md);
   color: var(--text-primary);
+  font-weight: 500;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -302,13 +316,16 @@
 
 .bookmarkCount {
   font-family: var(--font-mono);
-  font-size: var(--text-xs);
+  font-size: 11px;
+  font-weight: 500;
   color: var(--accent-blue);
   background: var(--accent-blue-light);
   border: 1px solid rgba(0, 102, 204, 0.15);
   border-radius: var(--radius-pill);
   padding: 2px 8px;
   flex-shrink: 0;
+  letter-spacing: 0.02em;
+  font-variant-numeric: tabular-nums;
 }
 
 .children {

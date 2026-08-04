@@ -1,7 +1,9 @@
 /* ── Modal overlay ──────────────────────────────────────────── */
 .overlay {
   position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.35);
+  background: rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
   /* Sit above the entire app — including the group cards (which use
      backdrop-filter and create their own stacking context) and the
      video monitor (z-index 1000). Only the right-click context menu
@@ -10,7 +12,14 @@
   z-index: 2000;
   display: flex; align-items: center; justify-content: center;
   padding: 20px;
-  animation: fadeIn 200ms ease-out;
+  /* Apple: cross-fade in (interruptible, unlike @keyframes). */
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--dur-spring) var(--ease-spring);
+}
+.overlay.open {
+  opacity: 1;
+  pointer-events: all;
 }
 
 /* ── Modal card ────────────────────────────────────────────── */
@@ -37,16 +46,25 @@
   --glass-card-shadow-intensity: 1.1;
 
   position: relative;
-  width: 100%; max-width: 360px;
+  width: 100%;
+  max-width: 360px;
   border-radius: var(--radius-lg);
   overflow: hidden;
-  animation: slideUp 280ms var(--ease-smooth);
+  /* Apple spring scale + fade in (interruptible; can be reversed mid-flight
+     by toggling .open off — the transition runs from the current value). */
+  transform: scale(0.94) translateY(8px);
+  opacity: 0;
+  transition:
+    transform var(--dur-spring) var(--ease-spring-out),
+    opacity var(--dur-spring) var(--ease-spring-out);
   /* Default text color for the modal scope. Descendants inherit this
      unless they override it locally. */
   color: var(--text-primary);
 }
-@keyframes slideUp { from { opacity: 0; transform: translateY(20px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.overlay.open .modal {
+  transform: scale(1) translateY(0);
+  opacity: 1;
+}
 
 /* Top accent bar — child element so it doesn't collide with the
    .glass-card::before / ::after color-correction and noise layers. */
@@ -66,17 +84,27 @@
   border-bottom: 1px solid var(--modal-border-soft);
 }
 .headerTitle {
-  font-size: 15px; font-weight: 600;
+  font-size: var(--text-lg);
+  font-weight: 600;
   color: var(--modal-text-primary);
+  letter-spacing: -0.012em;
+  font-family: var(--font-display);
 }
 .closeBtn {
-  width: 26px; height: 26px; border-radius: var(--radius-sm);
+  width: 28px; height: 28px; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
   background: transparent;
   color: var(--modal-text-secondary);
-  cursor: pointer; transition: all var(--dur-fast); border: none;
+  cursor: pointer;
+  transition: background var(--dur-fast), color var(--dur-fast), transform 100ms var(--ease-spring);
+  border: none;
 }
-.closeBtn:hover { background: rgba(0, 0, 0, 0.05); color: var(--modal-text-primary); }
+.closeBtn:hover { background: rgba(0, 0, 0, 0.06); color: var(--modal-text-primary); }
+.closeBtn:active { transform: scale(0.92); }
+.closeBtn:focus-visible {
+  outline: 2px solid var(--accent-blue);
+  outline-offset: 2px;
+}
 
 /* ── Body ────────────────────────────────────────────────────── */
 .body {
@@ -109,12 +137,17 @@
 /* ── Form fields ─────────────────────────────────────────────── */
 .field { display: flex; flex-direction: column; gap: 4px; }
 .label {
-  font-size: 12px; font-weight: 600;
+  font-size: var(--text-sm);
+  font-weight: 600;
   color: var(--modal-text-primary);
+  font-family: var(--font-ui);
+  letter-spacing: 0;
 }
 .input {
-  padding: 7px 12px; border-radius: var(--radius-sm);
-  font-size: 13px;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  font-size: var(--text-md);
+  font-family: var(--font-ui);
   background: var(--surface-secondary);
   border: 1px solid var(--modal-border);
   /* `color` inherits from .modal which sets it to the light --text-primary
@@ -129,6 +162,7 @@
   outline: none;
   transition: border-color var(--dur-fast), box-shadow var(--dur-fast);
   width: 100%;
+  min-height: 34px;
 }
 .input::placeholder { color: var(--modal-placeholder); opacity: 1; }
 .input:focus { border-color: var(--accent-blue); box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.12); }
@@ -178,33 +212,57 @@
   border-top: 1px solid var(--modal-border-soft);
 }
 .cancelBtn {
-  padding: 6px 14px; border-radius: var(--radius-sm);
-  font-size: 13px; font-weight: 400;
+  min-height: 32px;
+  padding: 6px 14px;
+  border-radius: var(--radius-md);
+  font-size: var(--text-md);
+  font-weight: 500;
   color: var(--modal-text-secondary);
   border: 1px solid var(--modal-border);
-  background: transparent; cursor: pointer; transition: all var(--dur-fast);
+  background: transparent;
+  cursor: pointer;
+  transition: background var(--dur-fast), border-color var(--dur-fast), color var(--dur-fast), transform 100ms var(--ease-spring);
 }
-.cancelBtn:hover { background: rgba(0, 0, 0, 0.04); color: var(--modal-text-primary); }
-.cancelBtn:disabled { opacity: 0.4; cursor: not-allowed; }
+.cancelBtn:hover { background: rgba(0, 0, 0, 0.04); color: var(--modal-text-primary); border-color: var(--accent-blue); }
+.cancelBtn:active { transform: scale(0.97); }
+.cancelBtn:disabled { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
 
 .saveBtn {
-  padding: 6px 16px; border-radius: var(--radius-sm);
-  font-size: 13px; font-weight: 600;
+  min-height: 32px;
+  padding: 6px 16px;
+  border-radius: var(--radius-md);
+  font-size: var(--text-md);
+  font-weight: 600;
   color: #ffffff;
   background: var(--accent-blue);
-  border: none; cursor: pointer;
-  transition: all var(--dur-fast);
+  border: none;
+  cursor: pointer;
+  transition: background var(--dur-fast), transform 100ms var(--ease-spring);
 }
 .saveBtn:hover:not(:disabled) {
   background: var(--accent-blue-focus);
 }
 .saveBtn:active:not(:disabled) {
-  transform: scale(0.95);
+  transform: scale(0.97);
 }
-.saveBtn:disabled { opacity: 0.42; cursor: not-allowed; }
+.saveBtn:disabled { opacity: 0.42; cursor: not-allowed; pointer-events: none; }
 
 /* ── Success / paste hint ───────────────────────────────────── */
-.successMsg { font-size: 13px; color: var(--success); animation: fadeIn 200ms ease; }
-.pasteHint { font-size: 11px; color: var(--accent-blue); margin-top: 1px; animation: fadeIn 200ms ease; }
+.successMsg {
+  font-size: var(--text-md);
+  color: var(--success);
+  font-weight: 500;
+  animation: fadeIn 200ms ease;
+}
+.pasteHint {
+  font-size: var(--text-xs);
+  color: var(--accent-blue);
+  margin-top: 1px;
+  animation: fadeIn 200ms ease;
+}
 
-.duplicateWarning { font-size: 11px; color: var(--danger); margin-top: 1px; }
+.duplicateWarning {
+  font-size: var(--text-xs);
+  color: var(--danger);
+  margin-top: 1px;
+}

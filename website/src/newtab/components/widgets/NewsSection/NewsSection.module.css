@@ -11,29 +11,37 @@
 }
 
 .title {
-  font-size: var(--text-2xl);
+  font-size: var(--text-xl);
   font-weight: 600;
+  letter-spacing: -0.012em;
   color: var(--text-primary);
   margin: 0;
+  font-family: var(--font-display);
 }
 
 .refreshBtn {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
-  border-radius: var(--radius-md);
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
   background: none;
   border: none;
   color: var(--text-tertiary);
   cursor: pointer;
-  transition: background var(--dur-fast), color var(--dur-fast);
+  transition: background var(--dur-fast), color var(--dur-fast), transform 100ms var(--ease-spring);
 }
 
 .refreshBtn:hover {
   background: var(--surface-hover);
   color: var(--text-secondary);
+}
+
+.refreshBtn:active { transform: scale(0.9) rotate(-30deg); }
+.refreshBtn:focus-visible {
+  outline: 2px solid var(--accent-blue);
+  outline-offset: 2px;
 }
 
 /* ── Platform card grid ───────────────────────────────────── */
@@ -64,23 +72,25 @@
   color: var(--glass-text-label);
   background: var(--glass-header-bg);
   border-bottom: 1px solid var(--glass-header-border);
-  letter-spacing: 0.02em;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
   cursor: grab;
+  font-family: var(--font-ui);
 }
 
 .deleteBtn {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 20px;
-  height: 20px;
-  border-radius: var(--radius-sm);
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
   background: none;
   border: none;
   color: var(--text-tertiary);
   cursor: pointer;
   opacity: 0;
-  transition: opacity var(--dur-fast), background var(--dur-fast), color var(--dur-fast);
+  transition: opacity var(--dur-fast), background var(--dur-fast), color var(--dur-fast), transform 100ms var(--ease-spring);
   flex-shrink: 0;
 }
 
@@ -89,9 +99,11 @@
 }
 
 .deleteBtn:hover {
-  background: var(--surface-hover);
-  color: var(--text-error, #e74c3c);
+  background: rgba(231, 76, 60, 0.12);
+  color: #e74c3c;
 }
+
+.deleteBtn:active { transform: scale(0.88); }
 
 .cardHeader:active {
   cursor: grabbing;
@@ -196,19 +208,28 @@
 }
 
 .retryBtn {
+  min-height: 32px;
   padding: 6px 16px;
   border-radius: var(--radius-md);
   border: 1px solid var(--border-primary);
   background: var(--surface-primary);
   color: var(--text-secondary);
   font-size: var(--text-md);
+  font-weight: 500;
+  font-family: var(--font-ui);
   cursor: pointer;
-  transition: all var(--dur-fast);
+  transition: background var(--dur-fast), border-color var(--dur-fast), color var(--dur-fast), transform 100ms var(--ease-spring);
 }
 
 .retryBtn:hover {
   border-color: var(--accent-blue);
   color: var(--accent-blue);
+}
+
+.retryBtn:active { transform: scale(0.97); }
+.retryBtn:focus-visible {
+  outline: 2px solid var(--accent-blue);
+  outline-offset: 2px;
 }
 
 /* ── Drag states ────────────────────────────────────────────── */

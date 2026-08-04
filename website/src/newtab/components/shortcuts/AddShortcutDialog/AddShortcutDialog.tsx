@@ -171,7 +171,7 @@ export default function AddShortcutDialog({ open, shortcuts, url, title, favicon
   // ambiguity: the dialog lives at the document root, the group cards
   // live in the App's tree, and the layer order is unambiguous.
   return createPortal(
-    <div className={styles.overlay} onClick={onClose}>
+    <div className={`${styles.overlay} ${styles.open}`} onClick={onClose}>
       <div className={`glass-card ${styles.modal}`} onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" aria-label={t('addShortcutDialog')}>
         {/* Top accent bar — child div, NOT ::before, so it doesn't conflict
            with the .glass-card color-correction ::before layer. */}

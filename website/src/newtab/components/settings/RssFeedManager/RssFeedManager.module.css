@@ -1,4 +1,5 @@
 .page {
+  --danger-rgb: 255, 107, 99;
   max-width: 720px;
   margin: 0 auto;
   padding: 20px 24px 32px;
@@ -12,25 +13,43 @@
 }
 
 .title {
-  font-size: var(--text-2xl);
+  font-size: var(--text-xl);
   font-weight: 600;
+  letter-spacing: -0.012em;
   color: var(--glass-text-primary);
+  font-family: var(--font-display);
 }
 
 .backBtn {
-  padding: 8px 14px;
+  min-height: 32px;
+  padding: 6px 14px;
   border-radius: var(--radius-md);
   font-size: var(--text-md);
+  font-weight: 500;
+  font-family: var(--font-ui);
   color: var(--glass-text-accent);
   border: 1px solid var(--glass-divider);
   background: transparent;
   cursor: pointer;
+  transition: background var(--dur-fast), border-color var(--dur-fast), color var(--dur-fast), transform 100ms var(--ease-spring);
+}
+
+.backBtn:hover {
+  background: var(--glass-item-hover);
+  border-color: var(--accent-blue);
+  color: var(--accent-blue);
+}
+
+.backBtn:active { transform: scale(0.97); }
+.backBtn:focus-visible {
+  outline: 2px solid var(--accent-blue);
+  outline-offset: 2px;
 }
 
 .description {
   font-size: var(--text-md);
   color: var(--glass-text-secondary);
-  line-height: 1.6;
+  line-height: 1.55;
   margin-bottom: 20px;
 }
 
@@ -47,17 +66,22 @@
 
 .fieldLabel {
   font-size: var(--text-sm);
+  font-weight: 500;
   color: var(--glass-text-secondary);
+  font-family: var(--font-ui);
 }
 
 .fieldInput {
   padding: 8px 12px;
+  min-height: 34px;
   border-radius: var(--radius-md);
   border: 1px solid var(--glass-divider);
   background: transparent;
   font-size: var(--text-md);
+  font-family: var(--font-ui);
   color: var(--glass-text-primary);
   outline: none;
+  transition: border-color var(--dur-fast), box-shadow var(--dur-fast);
 }
 
 .fieldInput::placeholder {
@@ -66,25 +90,38 @@
 
 .fieldInput:focus {
   border-color: rgba(255, 255, 255, 0.45);
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.08);
 }
 
 .addBtn {
   align-self: flex-start;
-  padding: 8px 16px;
-  border-radius: var(--radius-pill);
+  min-height: 34px;
+  padding: 7px 18px;
+  border-radius: var(--radius-md);
   font-size: var(--text-md);
   font-weight: 600;
+  font-family: var(--font-ui);
   color: #fff;
   background: var(--accent-blue);
   border: none;
   cursor: pointer;
+  transition: background var(--dur-fast), transform 100ms var(--ease-spring);
+}
+
+.addBtn:hover { background: var(--accent-blue-focus); }
+.addBtn:active { transform: scale(0.97); }
+.addBtn:focus-visible {
+  outline: 2px solid var(--accent-blue);
+  outline-offset: 2px;
 }
 
 .feedListTitle {
   font-size: var(--text-lg);
   font-weight: 600;
+  letter-spacing: -0.005em;
   color: var(--glass-text-primary);
   margin-bottom: 6px;
+  font-family: var(--font-display);
 }
 
 .feedListHint {
@@ -134,11 +171,13 @@
 }
 
 .feedBadge {
-  font-size: var(--text-xxs);
-  padding: 2px 6px;
-  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 2px 8px;
+  border-radius: var(--radius-pill);
   background: rgba(255, 255, 255, 0.12);
   color: var(--glass-text-accent);
+  letter-spacing: 0.02em;
 }
 
 .feedActions {
@@ -147,23 +186,38 @@
 }
 
 .actionBtn {
-  padding: 6px 10px;
+  min-height: 30px;
+  padding: 5px 12px;
   border-radius: var(--radius-md);
   font-size: var(--text-sm);
+  font-weight: 500;
+  font-family: var(--font-ui);
   border: 1px solid var(--glass-divider);
   background: transparent;
   color: var(--glass-text-secondary);
   cursor: pointer;
-  transition: background var(--dur-fast);
+  transition: background var(--dur-fast), border-color var(--dur-fast), color var(--dur-fast), transform 100ms var(--ease-spring);
 }
 
 .actionBtn:hover {
   background: var(--glass-item-hover);
+  color: var(--glass-text-primary);
+}
+
+.actionBtn:active { transform: scale(0.97); }
+.actionBtn:focus-visible {
+  outline: 2px solid var(--accent-blue);
+  outline-offset: 2px;
 }
 
 .actionBtnDanger {
-  color: #ff6b63;
-  border-color: rgba(255, 107, 99, 0.35);
+  color: var(--danger);
+  border-color: rgba(var(--danger-rgb), 0.3);
+}
+
+.actionBtnDanger:hover {
+  background: rgba(var(--danger-rgb), 0.1);
+  border-color: rgba(var(--danger-rgb), 0.5);
 }
 
 .empty {
@@ -178,10 +232,12 @@
 
 .toast {
   margin-top: 12px;
-  padding: 10px 12px;
+  padding: 10px 14px;
   border-radius: var(--radius-md);
   font-size: var(--text-md);
+  font-weight: 500;
   color: var(--success);
   background: rgba(52, 199, 89, 0.08);
   border: 1px solid rgba(52, 199, 89, 0.2);
+  animation: fadeIn var(--dur-fast) ease;
 }

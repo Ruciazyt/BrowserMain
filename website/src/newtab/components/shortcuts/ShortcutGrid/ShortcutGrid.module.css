@@ -22,24 +22,28 @@
 }
 
 .headerTitle {
-  font-size: var(--text-2xl);
+  font-size: var(--text-xl);
   font-weight: 600;
   color: var(--ink-muted-80);
+  letter-spacing: -0.012em;
+  font-family: var(--font-display);
 }
 
 .editBtn {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 4px;
+  min-height: 28px;
+  padding: 4px 10px;
   background: none;
   border: none;
   color: var(--text-secondary);
   font-size: var(--text-md);
+  font-weight: 500;
   line-height: 1;
   cursor: pointer;
-  padding: 4px 8px;
-  border-radius: var(--radius-xs);
-  transition: background 150ms ease;
+  border-radius: var(--radius-sm);
+  transition: background var(--dur-fast), color var(--dur-fast), transform 100ms var(--ease-spring);
 }
 
 .editBtn svg {
@@ -48,9 +52,11 @@
 }
 
 .editBtn:hover {
-  background: #F0F0F0;
-  color: var(--ink-muted-80);
+  background: var(--surface-hover);
+  color: var(--text-primary);
 }
+
+.editBtn:active { transform: scale(0.96); }
 
 .editBtnActive {
   color: var(--accent-blue);
@@ -58,7 +64,7 @@
 }
 
 .editBtnActive:hover {
-  background: var(--accent-blue-hover);
+  background: rgba(0, 102, 204, 0.14);
   color: var(--accent-blue);
 }
 
@@ -130,15 +136,16 @@
   justify-content: center;
   width: 100%;
   aspect-ratio: 1;
-  border-radius: var(--radius-xs);
+  border-radius: var(--radius-sm);
   cursor: pointer;
   background: transparent;
-  border: 1px dashed #CCCCCC;
-  transition: all 150ms ease;
+  border: 1px dashed var(--border-primary);
+  transition: background var(--dur-fast), border-color var(--dur-fast), color var(--dur-fast), transform 100ms var(--ease-spring);
   color: var(--text-tertiary);
   box-sizing: border-box;
   align-self: start;
   justify-self: stretch;
+  font-family: var(--font-ui);
 }
 
 .addTile::before {
@@ -150,6 +157,8 @@
   border-color: var(--accent-blue);
   color: var(--accent-blue);
 }
+
+.addTile:active { transform: scale(0.97); }
 
 .addTile:focus-visible {
   outline: 2px solid var(--accent-blue);
@@ -164,33 +173,36 @@
 }
 
 .addTileLabel {
-  font-size: var(--text-xxs);
-  letter-spacing: 0.3px;
+  font-size: var(--text-xs);
+  letter-spacing: 0.2px;
+  font-weight: 500;
 }
 
 .emptyAddBtn {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 6px;
   margin: 16px auto 0;
-  padding: 10px 24px;
-  border-radius: var(--radius-sm);
+  min-height: 38px;
+  padding: 8px 22px;
+  border-radius: var(--radius-md);
   background: var(--accent-blue);
   border: none;
   color: #ffffff;
   font-size: var(--text-md);
   font-weight: 600;
+  font-family: var(--font-ui);
   cursor: pointer;
-  transition: all 150ms ease;
+  transition: background var(--dur-fast), transform 100ms var(--ease-spring);
 }
 
 .emptyAddBtn:hover {
-  background: var(--accent-blue);
+  background: var(--accent-blue-focus);
 }
 
 .emptyAddBtn:active {
-  transform: scale(0.95);
+  transform: scale(0.97);
 }
 
 .emptyAddBtn:focus-visible {
@@ -207,21 +219,27 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 42px;
-  padding: 10px 18px;
-  border-radius: var(--radius-sm);
+  min-height: 38px;
+  padding: 8px 18px;
+  border-radius: var(--radius-md);
   background: var(--surface-primary);
-  border: 1px solid var(--hairline);
+  border: 1px solid var(--border-primary);
   color: var(--ink-muted-80);
   font-size: var(--text-md);
-  font-weight: 600;
+  font-weight: 500;
+  font-family: var(--font-ui);
   cursor: pointer;
-  transition: all 150ms ease;
+  transition: background var(--dur-fast), border-color var(--dur-fast), color var(--dur-fast), transform 100ms var(--ease-spring);
 }
 
 .emptySecondaryBtn:hover {
   background: var(--canvas-parchment);
   border-color: var(--accent-blue);
+  color: var(--accent-blue);
+}
+
+.emptySecondaryBtn:active {
+  transform: scale(0.97);
 }
 
 .emptySecondaryBtn:focus-visible {
@@ -457,7 +475,7 @@
   background: var(--glass-header-bg);
   border-bottom: 1px solid var(--glass-header-border);
   cursor: pointer;
-  transition: background 0.15s;
+  transition: background var(--dur-fast);
   flex-shrink: 0;
   letter-spacing: 0.02em;
 }
@@ -467,9 +485,9 @@
 }
 
 .groupName {
-  font-size: var(--text-md);
+  font-size: var(--text-sm);
   font-weight: 600;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--glass-text-label);
   flex: 1;
@@ -477,20 +495,23 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  font-family: var(--font-ui);
 }
 
 .groupCount {
-  font-size: var(--text-md);
+  font-size: var(--text-sm);
   color: var(--glass-text-tertiary);
   flex-shrink: 0;
+  font-variant-numeric: tabular-nums;
 }
 
 .groupRenameInput {
-  font-size: var(--text-md);
+  font-size: var(--text-sm);
   font-weight: 600;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--glass-text-label);
+  font-family: var(--font-ui);
   /* Same autofill guard as the dialog input — when Chrome flags the
      value as "auto-fillable" (any short word like "Work" or "默认"),
      it would otherwise paint it in --text-primary (a light value

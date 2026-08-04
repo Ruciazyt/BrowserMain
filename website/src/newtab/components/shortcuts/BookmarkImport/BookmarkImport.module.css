@@ -62,16 +62,18 @@
 
 .summaryTitle {
   margin-top: 8px;
-  font-size: var(--text-2xl);
-  line-height: 1.35;
+  font-size: var(--text-xl);
+  line-height: 1.3;
+  letter-spacing: -0.012em;
   color: var(--text-primary);
   font-weight: 600;
+  font-family: var(--font-display);
 }
 
 .summaryText {
   margin-top: 6px;
   font-size: var(--text-md);
-  line-height: 1.6;
+  line-height: 1.55;
   color: var(--text-secondary);
 }
 
@@ -83,14 +85,16 @@
 }
 
 .statChip {
-  padding: 5px 10px;
+  padding: 4px 10px;
   border-radius: var(--radius-pill);
   border: 1px solid rgba(0, 102, 204, 0.15);
   background: var(--accent-blue-light);
   color: var(--accent-blue);
   font-family: var(--font-mono);
-  font-size: var(--text-xxs);
-  letter-spacing: 0.08em;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
 }
 
 .toolbarCard {
@@ -106,9 +110,11 @@
 .searchInput {
   width: 100%;
   min-width: 0;
-  padding: 11px 14px;
+  min-height: 38px;
+  padding: 10px 14px;
   border-radius: var(--radius-sm);
   font-size: var(--text-md);
+  font-family: var(--font-ui);
   background: var(--surface-primary);
   border: 1px solid var(--border-primary);
   color: var(--text-primary);
@@ -122,31 +128,39 @@
 
 .searchInput:focus {
   border-color: var(--accent-blue);
-  box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+  box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.12);
 }
 
 .clearSearchBtn,
 .secondaryBtn {
-  height: 38px;
-  padding: 0 12px;
-  border-radius: var(--radius-sm);
+  min-height: 38px;
+  padding: 0 14px;
+  border-radius: var(--radius-md);
   border: 1px solid var(--border-primary);
   background: var(--surface-secondary);
   color: var(--text-primary);
   font-size: var(--text-md);
-  transition: all var(--dur-fast);
+  font-weight: 500;
+  font-family: var(--font-ui);
+  cursor: pointer;
+  transition: background var(--dur-fast), border-color var(--dur-fast), color var(--dur-fast), transform 100ms var(--ease-spring);
 }
 
 .clearSearchBtn:hover,
 .secondaryBtn:hover:not(:disabled) {
   background: var(--surface-hover);
   border-color: var(--accent-blue);
+  color: var(--accent-blue);
 }
+
+.clearSearchBtn:active,
+.secondaryBtn:active:not(:disabled) { transform: scale(0.97); }
 
 .clearSearchBtn:disabled,
 .secondaryBtn:disabled {
   opacity: 0.4;
   cursor: not-allowed;
+  pointer-events: none;
 }
 
 .toolbarMetaRow {
@@ -185,9 +199,12 @@
 }
 
 .treeHeaderTitle {
-  font-size: var(--text-md);
+  font-size: var(--text-sm);
   font-weight: 600;
   color: var(--text-primary);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-family: var(--font-ui);
 }
 
 .treeHeaderHint {

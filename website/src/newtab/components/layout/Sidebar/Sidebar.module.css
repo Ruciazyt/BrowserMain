@@ -10,7 +10,7 @@
   padding: 24px 12px;
   z-index: 50;
   overflow-y: auto;
-  transition: width 0.3s var(--ease-smooth), padding 0.3s var(--ease-smooth);
+  transition: width var(--dur-spring) var(--ease-spring-out), padding var(--dur-spring) var(--ease-spring-out);
 }
 
 .sidebarCollapsed {
@@ -39,9 +39,9 @@
   gap: 8px;
   padding: 0 12px 28px;
   font-size: var(--text-lg);
-  font-weight: 700;
+  font-weight: 600;
   color: var(--glass-text-primary);
-  letter-spacing: -0.02em;
+  letter-spacing: -0.018em;
   font-family: var(--font-display);
 }
 
@@ -61,18 +61,20 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 10px 14px;
+  padding: 9px 14px;
+  min-height: 36px;
   border-radius: var(--radius-md);
   font-size: var(--text-md);
-  font-weight: var(--weight-strong);
+  font-weight: 500;
   color: var(--glass-text-secondary);
   cursor: pointer;
-  transition: all var(--dur-fast);
+  transition: background var(--dur-fast), color var(--dur-fast), transform 100ms var(--ease-spring);
   border: none;
   background: transparent;
   width: 100%;
   text-align: left;
   font-family: var(--font-ui);
+  letter-spacing: -0.005em;
 }
 
 .sidebarItem:hover {
@@ -80,8 +82,14 @@
   color: var(--glass-text-primary);
 }
 
+.sidebarItem:active { transform: scale(0.98); }
+.sidebarItem:focus-visible {
+  outline: 2px solid var(--accent-blue);
+  outline-offset: -2px;
+}
+
 .sidebarItem.active {
-  background: rgba(0, 102, 204, 0.08);
+  background: rgba(0, 102, 204, 0.1);
   color: var(--glass-text-label);
   font-weight: 600;
 }
@@ -93,8 +101,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 16px;
+  font-size: 15px;
   line-height: 1;
+  font-weight: 400;
 }
 
 .sidebarItemIcon svg {
