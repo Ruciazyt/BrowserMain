@@ -13,7 +13,6 @@ interface SidebarProps {
 const NAV_ITEMS: { id: string; labelKey: MessageKey; icon: string }[] = [
   { id: 'home', labelKey: 'nav_home', icon: '⌂' },
   { id: 'rss', labelKey: 'nav_rss', icon: '◉' },
-  { id: 'video', labelKey: 'nav_video', icon: '▶' },
 ];
 
 export default function Sidebar({

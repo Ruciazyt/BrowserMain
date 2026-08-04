@@ -87,7 +87,6 @@ export function removeFeedPermission(url: string): Promise<void> {
 
 /**
  * Parse an RSS 2.0 (<item>) or Atom (<entry>) feed into a single card.
- * Display count is capped by the renderer, not here.
  */
 function parseFeed(xml: string, name: string): NewsGroup {
   const doc = new DOMParser().parseFromString(xml, 'text/xml');

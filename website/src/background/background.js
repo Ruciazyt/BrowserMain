@@ -118,8 +118,14 @@ async function addShortcutFromDraft(draft, extras) {
     return { success: false, duplicate: !!url };
   }
 
+  // Canonical id — kept in sync with `createShortcutId` in
+  // src/newtab/utils/shortcuts.ts. The background script is a classic MV3
+  // service worker so it cannot import the TS module; this is the literal
+  // body of that helper.
   const entry = {
-    id: Date.now().toString(36) + Math.random().toString(36).slice(2, 6),
+    id: (typeof crypto !== 'undefined' && crypto.randomUUID)
+      ? crypto.randomUUID()
+      : Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 7),
     url,
     title: draft.title || url,
     favicon: draft.favicon || getSmartFaviconUrl(url),
@@ -129,6 +135,14 @@ async function addShortcutFromDraft(draft, extras) {
 
   shortcuts.unshift(entry);
   await saveShortcuts(shortcuts);
+  // Tell any open newtab to refresh — previously this was only emitted by
+  // the popup, so a toolbar / keyboard quick-add left a mounted newtab
+  // showing stale data until reload.
+  try {
+    chrome.runtime.sendMessage({ type: 'SHORTCUT_ADDED' });
+  } catch (err) {
+    // No open newtab page; that's fine.
+  }
   return { success: true, entry };
 }
 

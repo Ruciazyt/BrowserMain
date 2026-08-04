@@ -76,7 +76,8 @@
       "Bash(curl -s http://localhost:5173/src/newtab/index.tsx)",
       "Bash(curl -s \"http://localhost:5173/src/newtab/components/common/GlassCard/GlassCard.tsx\")",
       "Bash(curl -s \"http://localhost:5173/src/newtab/components/common/GlassCard/GlassCard.module.css\")",
-      "Bash(pnpm remove *)"
+      "Bash(pnpm remove *)",
+      "Bash(node -e \"console.log\\(require\\('esbuild/package.json'\\).version\\)\")"
     ]
   }
 }

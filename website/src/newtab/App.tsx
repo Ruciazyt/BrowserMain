@@ -9,7 +9,6 @@ import ShortcutGrid from './components/shortcuts/ShortcutGrid/ShortcutGrid';
 import AddShortcutDialog from './components/shortcuts/AddShortcutDialog/AddShortcutDialog';
 import SettingsPanel from './components/settings/SettingsPanel/SettingsPanel';
 import RssFeedManager from './components/settings/RssFeedManager/RssFeedManager';
-import VideoMonitor from './components/widgets/VideoMonitor/VideoMonitor';
 import PixelPet from './components/pet/PixelPet/PixelPet';
 import { resolveBackgroundImageUrl } from './utils/backgrounds';
 import { GlassDistortionFilter } from './components/ui/Glass';
@@ -156,8 +155,6 @@ export default function App() {
       <main className={`${styles.main} ${sidebarCollapsed ? styles.mainFull : ''}`}>
         {activeNav === 'rss' ? (
           <RssFeedManager standalone onNavigateHome={() => setActiveNav('home')} />
-        ) : activeNav === 'video' ? (
-          <VideoMonitor standalone onNavigateHome={() => setActiveNav('home')} />
         ) : (
           <>
             <div className={styles.topBar}>

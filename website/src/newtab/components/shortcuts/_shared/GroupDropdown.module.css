@@ -1,0 +1,171 @@
+/* ── Root ─────────────────────────────────────────────────────── */
+.root {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+/* ── Input row (text field + chevron button) ─────────────────── */
+.inputRow {
+  position: relative;
+  display: flex;
+  align-items: stretch;
+  width: 100%;
+}
+
+.input {
+  flex: 1;
+  min-width: 0;
+  padding: 7px 36px 7px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  background: var(--gd-surface);
+  border: 1px solid var(--gd-border);
+  color: var(--gd-text-primary);
+  /* -webkit-text-fill-color is the one place !important is truly
+     unavoidable: Chrome's UA stylesheet paints autofilled values with
+     !important, and short strings (group names, titles) trip it. */
+  -webkit-text-fill-color: var(--gd-text-primary) !important;
+  outline: none;
+  transition: border-color var(--dur-fast), box-shadow var(--dur-fast);
+}
+.input::placeholder { color: var(--gd-placeholder); opacity: 1; }
+.input:focus {
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.12);
+}
+/* Neutralise Chrome's yellow autofill background by painting over it
+   with a same-color inset shadow. */
+.input:-webkit-autofill,
+.input:-webkit-autofill:hover,
+.input:-webkit-autofill:focus,
+.input:-internal-autofill-selected {
+  -webkit-text-fill-color: var(--gd-text-primary) !important;
+  caret-color: var(--gd-text-primary);
+  background: var(--gd-surface);
+  box-shadow: 0 0 0px 1000px var(--gd-surface) inset;
+}
+
+/* Chevron trigger — sits inside the input row, on the right edge.
+   `pointer-events` keeps the field editable everywhere except the
+   chevron's hit area, so clicking the rest of the row focuses the input. */
+.trigger {
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 28px;
+  height: calc(100% - 8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--gd-text-secondary);
+  cursor: pointer;
+  transition: background var(--dur-fast), color var(--dur-fast);
+}
+.trigger:hover {
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--gd-text-primary);
+}
+.trigger:focus-visible {
+  outline: 2px solid var(--accent-blue);
+  outline-offset: 1px;
+}
+.chevron {
+  transition: transform var(--dur-fast);
+}
+.chevronOpen {
+  transform: rotate(180deg);
+}
+
+/* ── Popover (portaled to <body>) ─────────────────────────────── */
+.popoverWrapper {
+  /* Wrapper is just a positioning shell; the Glass component provides
+     the visual surface. */
+  pointer-events: none;
+}
+.popover {
+  pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 4px;
+  border-radius: var(--radius-md);
+  max-height: 280px;
+  overflow-y: auto;
+  border: 1px solid var(--gd-border);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.18);
+}
+
+/* Variant text colors — bind to the CSS vars we hoisted via inline style
+   so both variants read from the same property names. */
+.modalVariant,
+.editPanelVariant {
+  color: var(--gd-text-primary);
+}
+
+/* ── Items ────────────────────────────────────────────────────── */
+.item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 7px 10px;
+  background: none;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--gd-text-primary);
+  font-size: 13px;
+  text-align: left;
+  cursor: pointer;
+  transition: background var(--dur-fast);
+  font-family: inherit;
+}
+.item:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+.itemCurrent {
+  background: rgba(0, 102, 204, 0.1);
+  color: var(--gd-text-primary);
+  font-weight: 600;
+}
+.itemCurrent:hover {
+  background: rgba(0, 102, 204, 0.15);
+}
+.clearItem {
+  border-bottom: 1px solid var(--gd-border-soft);
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  margin-bottom: 2px;
+  color: var(--gd-text-secondary);
+}
+.itemIcon {
+  font-size: 13px;
+  width: 18px;
+  flex-shrink: 0;
+  text-align: center;
+}
+.itemLabel {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.itemCheck {
+  color: var(--accent-blue);
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+/* ── Empty hint ───────────────────────────────────────────────── */
+.emptyHint {
+  padding: 12px 10px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--gd-text-secondary);
+  opacity: 0.8;
+}

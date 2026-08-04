@@ -2,7 +2,12 @@
 .overlay {
   position: fixed; top: 0; left: 0; right: 0; bottom: 0;
   background: rgba(0,0,0,0.35);
-  z-index: 300;
+  /* Sit above the entire app — including the group cards (which use
+     backdrop-filter and create their own stacking context) and the
+     video monitor (z-index 1000). Only the right-click context menu
+     (z-index 9999) is higher, which is fine since the two never
+     overlap (the dialog is opened from a different gesture). */
+  z-index: 2000;
   display: flex; align-items: center; justify-content: center;
   padding: 20px;
   animation: fadeIn 200ms ease-out;
@@ -10,10 +15,16 @@
 
 /* ── Modal card ────────────────────────────────────────────── */
 /* Inherits the global .glass-card treatment (backdrop blur + color-correction
-   overlay + noise + white hairline + ambient shadow). Local tokens below
-   re-skin the form text since the project-wide --text-* tokens are tuned
-   for dark glass surfaces and would render invisible over the light card. */
+   overlay + noise + white hairline + ambient shadow). We override the
+   project's --text-* tokens (which are tuned for dark glass surfaces
+   and would render invisible over the light card) at this scope.
+   CSS custom properties cascade, so every descendant that reads
+   --text-primary inherits the light value automatically — no need to
+   override color on every child. */
 .modal {
+  --text-primary: #1d1d1f;
+  --text-secondary: #6e6e73;
+  --text-tertiary: #86868b;
   --modal-text-primary: #1d1d1f;
   --modal-text-secondary: #6e6e73;
   --modal-text-tertiary: #86868b;
@@ -30,6 +41,9 @@
   border-radius: var(--radius-lg);
   overflow: hidden;
   animation: slideUp 280ms var(--ease-smooth);
+  /* Default text color for the modal scope. Descendants inherit this
+     unless they override it locally. */
+  color: var(--text-primary);
 }
 @keyframes slideUp { from { opacity: 0; transform: translateY(20px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
@@ -65,7 +79,14 @@
 .closeBtn:hover { background: rgba(0, 0, 0, 0.05); color: var(--modal-text-primary); }
 
 /* ── Body ────────────────────────────────────────────────────── */
-.body { padding: 12px 16px; display: flex; flex-direction: column; gap: 10px; }
+.body {
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  /* `color` is intentionally not set here — it cascades from .modal
+     which overrides --text-primary to the light value. */
+}
 
 /* ── Favicon row ─────────────────────────────────────────────── */
 .faviconRow {
@@ -75,11 +96,15 @@
   border: 1px solid var(--modal-border-soft);
   border-radius: var(--radius-sm);
 }
-.faviconImg { width: 18px; height: 18px; object-fit: contain; border-radius: 4px; flex-shrink: 0; }
+.faviconImg { width: 18px; height: 18px; object-fit: contain; border-radius: 4px; flex-shrink: 0; color: var(--modal-text-primary); }
+/* ShortcutIcon's avatar fallback renders a <div>; size it to the
+   favicon slot. */
+.faviconImg:global(div) { font-size: 11px; }
 .faviconGlobe { width: 18px; height: 18px; color: var(--modal-text-tertiary); flex-shrink: 0; }
 .faviconHint { font-size: 11px; color: var(--modal-text-secondary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .faviconDomain { font-size: 13px; color: var(--modal-text-primary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; display: block; }
 .faviconTextCol { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+.faviconTextCol > * { color: inherit; }
 
 /* ── Form fields ─────────────────────────────────────────────── */
 .field { display: flex; flex-direction: column; gap: 4px; }
@@ -92,13 +117,34 @@
   font-size: 13px;
   background: var(--surface-secondary);
   border: 1px solid var(--modal-border);
+  /* `color` inherits from .modal which sets it to the light --text-primary
+     above. No !important needed — the modal scope wins via the cascade. */
   color: var(--modal-text-primary);
+  /* -webkit-text-fill-color is the one place !important is truly
+     unavoidable: Chrome's UA stylesheet paints autofilled values
+     with !important, and we need !important to beat it. The trigger
+     is any short string Chrome recognises as a "form fill candidate"
+     (group names "Work" / "默认", titles, etc.). */
+  -webkit-text-fill-color: var(--modal-text-primary) !important;
   outline: none;
   transition: border-color var(--dur-fast), box-shadow var(--dur-fast);
   width: 100%;
 }
-.input::placeholder { color: var(--modal-placeholder); }
+.input::placeholder { color: var(--modal-placeholder); opacity: 1; }
 .input:focus { border-color: var(--accent-blue); box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.12); }
+/* Autofill state — explicitly neutralise Chrome's yellow autofill
+   background by painting over it with a same-color inset shadow. The
+   box-shadow trick doesn't need !important (the autofill background
+   isn't !important itself). */
+.input:-webkit-autofill,
+.input:-webkit-autofill:hover,
+.input:-webkit-autofill:focus,
+.input:-internal-autofill-selected {
+  -webkit-text-fill-color: var(--modal-text-primary) !important;
+  caret-color: var(--modal-text-primary);
+  background: var(--surface-secondary);
+  box-shadow: 0 0 0px 1000px var(--surface-secondary) inset;
+}
 
 /* URL input wrapper — positions the status dot inside the field */
 .inputWrapper {

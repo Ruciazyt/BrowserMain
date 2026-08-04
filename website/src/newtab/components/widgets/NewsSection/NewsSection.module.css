@@ -107,6 +107,10 @@
 .cardList {
   display: flex;
   flex-direction: column;
+  height: 185px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
 }
 
 .cardItem {
@@ -114,6 +118,9 @@
   align-items: flex-start;
   gap: 10px;
   padding: 8px 14px;
+  min-height: 37px;
+  box-sizing: border-box;
+  flex-shrink: 0;
   cursor: pointer;
   transition: background var(--dur-fast);
 }

@@ -92,6 +92,13 @@
   pointer-events: none;
 }
 
+/* ShortcutIcon's avatar fallback renders a <div>, not an <img>. Style
+   the wrapper to let the div fill the icon area. */
+.iconWrapper > div {
+  width: var(--tile-icon-size, 28px);
+  height: var(--tile-icon-size, 28px);
+}
+
 .iconFallback {
   width: var(--tile-icon-size, 28px);
   height: var(--tile-icon-size, 28px);
@@ -246,20 +253,23 @@
 
 /* ── Edit mode ────────────────────────────────────────────── */
 .editMode {
-  position: absolute;
+  --edit-text-primary: #1d1d1f;
+  --edit-text-secondary: #6e6e73;
+
+  position: fixed;
   top: 0;
-  left: 50%;
+  left: 0;
   transform: translateX(-50%);
-  z-index: 50;
+  z-index: 10001;
   display: flex;
   flex-direction: column;
-  gap: 5px;
-  padding: 10px;
-  background: var(--surface-primary);
-  border: 1px solid var(--hairline);
+  gap: 7px;
+  padding: 12px;
+  color: var(--edit-text-primary);
+  border: 1px solid rgba(255, 255, 255, 0.42);
   border-radius: var(--radius-sm);
-  width: 220px;
-  box-shadow: var(--shadow-xl);
+  width: 240px;
+  box-shadow: 0 18px 46px rgba(0, 0, 0, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.35);
 }
 
 .editIconRow {
@@ -279,14 +289,19 @@
 .editFaviconGlobe {
   width: 24px;
   height: 24px;
-  color: var(--text-tertiary);
+  color: var(--edit-text-secondary);
 }
 
 .editInput {
-  background: var(--canvas-parchment);
-  border: 1px solid var(--hairline);
+  background: rgba(255, 255, 255, 0.58);
+  border: 1px solid rgba(0, 0, 0, 0.11);
   border-radius: var(--radius-xs);
-  color: var(--ink-muted-80);
+  color: var(--edit-text-primary);
+  /* -webkit-text-fill-color is the only place !important is truly
+     unavoidable: Chrome's UA stylesheet paints autofilled values
+     with !important, and any short string (group name, title) trips
+     it. */
+  -webkit-text-fill-color: var(--edit-text-primary) !important;
   font-size: var(--text-sm);
   padding: 6px 8px;
   outline: none;
@@ -296,6 +311,16 @@
 
 .editInput:focus {
   border-color: var(--accent-blue);
+  box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.12);
+}
+.editInput:-webkit-autofill,
+.editInput:-webkit-autofill:hover,
+.editInput:-webkit-autofill:focus,
+.editInput:-internal-autofill-selected {
+  -webkit-text-fill-color: var(--edit-text-primary) !important;
+  caret-color: var(--edit-text-primary);
+  background: rgba(255, 255, 255, 0.72);
+  box-shadow: 0 0 0px 1000px rgba(255, 255, 255, 0.72) inset;
 }
 
 .editInputError {
@@ -328,8 +353,8 @@
   flex: 1;
   padding: 5px 8px;
   background: transparent;
-  color: var(--text-secondary);
-  border: 1px solid var(--hairline);
+  color: var(--edit-text-secondary);
+  border: 1px solid rgba(0, 0, 0, 0.11);
   border-radius: var(--radius-xs);
   font-size: var(--text-md);
   cursor: pointer;
@@ -337,18 +362,16 @@
 }
 
 .cancelBtn:hover {
-  background: var(--canvas-parchment);
-  color: var(--ink-muted-80);
+  background: rgba(255, 255, 255, 0.42);
+  color: var(--edit-text-primary);
 }
 
-.editGroupInput {
+/* Wrapper around the GroupDropdown in the edit-mode panel. The dropdown
+   styles itself; we only need a small top margin so it doesn't crowd the
+   URL input above. */
+.editGroupWrapper {
   width: 100%;
-  margin-top: 4px;
-  opacity: 0.8;
-}
-
-.editGroupInput::placeholder {
-  opacity: 0.5;
+  margin-top: 2px;
 }
 
 /* ── Focus / navigate ─────────────────────────────────────── */

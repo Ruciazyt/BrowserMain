@@ -31,7 +31,7 @@ const CheckIcon = () => (
 );
 
 export default function SettingsPanel({ open, onClose, initialView = 'main', onBookmarkImportComplete }: SettingsPanelProps) {
-  const { settings, updateEngine, updateBackground, updateClockFormat, updateLocale, updatePetSpecies, updateGlassOpacity, updateGlassBlur, updateGlassSaturation, updateGlassShadowIntensity, updateGlassTintColor, updateVideoRefreshInterval } = useSettings();
+  const { settings, updateEngine, updateBackground, updateClockFormat, updateLocale, updatePetSpecies, updateGlassOpacity, updateGlassBlur, updateGlassSaturation, updateGlassShadowIntensity, updateGlassTintColor } = useSettings();
   const { t } = useI18n();
   const { shortcuts, updateShortcut } = useShortcuts();
   const [imagePreview, setImagePreview] = useState(resolveBackgroundImageUrl(settings.background) || '');
@@ -358,32 +358,6 @@ export default function SettingsPanel({ open, onClose, initialView = 'main', onB
                         title={t(`petSpecies_${s}`)}
                       >
                         {s === 'brown' ? '🐕' : s === 'orange' ? '🐱' : s === 'white' ? '🐶' : '😺'}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              <div className={styles.section}>
-                <div className={styles.sectionTitle}>{t('videoRefreshInterval')}</div>
-                <div className={styles.clockFormatRow}>
-                  <span className={styles.clockFormatLabel}>{t('videoRefreshIntervalHint')}</span>
-                  <div className={styles.clockFormatToggle}>
-                    {[
-                      { ms: 30 * 60 * 1000, hours: 0.5 },
-                      { ms: 60 * 60 * 1000, hours: 1 },
-                      { ms: 2 * 60 * 60 * 1000, hours: 2 },
-                      { ms: 4 * 60 * 60 * 1000, hours: 4 },
-                      { ms: 12 * 60 * 60 * 1000, hours: 12 },
-                      { ms: 24 * 60 * 60 * 1000, hours: 24 },
-                    ].map((opt) => (
-                      <button
-                        key={opt.ms}
-                        type="button"
-                        className={`${styles.clockFormatBtn} ${(settings.videoRefreshIntervalMs ?? 2 * 60 * 60 * 1000) === opt.ms ? styles.active : ''}`}
-                        onClick={() => updateVideoRefreshInterval(opt.ms)}
-                      >
-                        {t('videoIntervalFormat', { hours: opt.hours })}
                       </button>
                     ))}
                   </div>

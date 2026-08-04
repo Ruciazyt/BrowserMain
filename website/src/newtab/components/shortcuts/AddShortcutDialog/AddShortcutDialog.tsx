@@ -1,8 +1,11 @@
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import type { Shortcut } from '../../../utils/storage';
 import { getSmartFaviconUrl, getFaviconIcoUrl, getDomainFromUrl, getChromeFaviconUrl } from '../../../utils/storage';
 import { isUrl } from '../../../utils/engines';
 import { useI18n } from '../../../i18n';
+import { ShortcutIcon } from '../ShortcutIcon';
+import GroupDropdown from '../_shared/GroupDropdown';
 import styles from './AddShortcutDialog.module.css';
 
 interface AddShortcutDialogProps {
@@ -159,7 +162,15 @@ export default function AddShortcutDialog({ open, shortcuts, url, title, favicon
     }
   };
 
-  return (
+  // Render into <body> via a portal so the dialog escapes every
+  // ancestor's stacking/compositing context. Without this, the group
+  // cards' `filter: url(#glass-distortion)` (the SVG distortion filter
+  // applied to .glass-card) promotes each card to its own compositing
+  // layer, and the browser's compositor can paint those layers on top
+  // of the dialog regardless of z-index. A portal removes the
+  // ambiguity: the dialog lives at the document root, the group cards
+  // live in the App's tree, and the layer order is unambiguous.
+  return createPortal(
     <div className={styles.overlay} onClick={onClose}>
       <div className={`glass-card ${styles.modal}`} onClick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" aria-label={t('addShortcutDialog')}>
         {/* Top accent bar — child div, NOT ::before, so it doesn't conflict
@@ -177,18 +188,16 @@ export default function AddShortcutDialog({ open, shortcuts, url, title, favicon
 
         {/* Body + Footer (form wraps everything so Enter submits and form attribute connects buttons) */}
         <form id="add-shortcut-form" className={styles.body} onSubmit={(e) => { e.preventDefault(); handleSave(); }} noValidate>
-          {/* Favicon preview — GlobeIcon shown when both Google S2 and favicon.ico fail */}
+          {/* Favicon preview — ShortcutIcon handles its own fallback chain */}
           {(faviconUrl || inputUrl.trim()) && (
             <div className={styles.faviconRow}>
-              {faviconUrl ? (
-                <img src={faviconUrl} alt="" className={styles.faviconImg} onError={handleFaviconError} />
-              ) : (
-                <svg className={styles.faviconGlobe} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="12" cy="12" r="10"/>
-                  <line x1="2" y1="12" x2="22" y2="12"/>
-                  <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
-                </svg>
-              )}
+              <ShortcutIcon
+                url={inputUrl.trim()}
+                favicon={faviconUrl || undefined}
+                title={inputTitle.trim() || domain || '?'}
+                size="sm"
+                className={styles.faviconImg}
+              />
               <div className={styles.faviconTextCol}>
                 <span className={styles.faviconDomain}>{domain || '—'}</span>
                 <span className={styles.faviconHint}>{t('currentPage')}</span>
@@ -257,23 +266,19 @@ export default function AddShortcutDialog({ open, shortcuts, url, title, favicon
             {(pasteHint || fetchingTitle) && <span className={styles.pasteHint}>{fetchingTitle ? t('fetchingTitle') : pasteHint}</span>}
           </div>
 
-          {/* Group field */}
+          {/* Group field — custom dropdown (button + portal popover) so the
+             popover reliably opens on click and shows every existing group,
+             not just typed-prefix matches. See _shared/GroupDropdown.tsx. */}
           <div className={styles.field}>
             <label className={styles.label}>{t('group')}</label>
-            <input
-              className={styles.input}
-              type="text"
+            <GroupDropdown
               value={inputGroup}
-              onChange={(e) => setInputGroup(e.target.value)}
+              onChange={setInputGroup}
+              existingGroups={existingGroups}
               placeholder={t('groupPlaceholder')}
-              list="add-shortcut-group-suggestions"
               maxLength={30}
+              variant="modal"
             />
-            <datalist id="add-shortcut-group-suggestions">
-              {existingGroups.map((g) => (
-                <option key={g} value={g} />
-              ))}
-            </datalist>
             <span className={styles.pasteHint} style={{ fontSize: 10, opacity: 0.7 }}>
               {existingGroups.length > 0
                 ? existingGroups.length > 1
@@ -300,6 +305,7 @@ export default function AddShortcutDialog({ open, shortcuts, url, title, favicon
           </div>
         </form>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

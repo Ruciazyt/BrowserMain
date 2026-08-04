@@ -1,8 +1,42 @@
-import { useMemo, useRef, useState, useEffect } from 'react';
-import Sortable, { type MoveEvent, type SortableEvent } from 'sortablejs';
-import { Shortcut } from '../../../utils/storage';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import {
+  DndContext,
+  DragOverlay,
+  PointerSensor,
+  KeyboardSensor,
+  useSensor,
+  useSensors,
+  useDroppable,
+  pointerWithin,
+  type DragEndEvent,
+  type DragStartEvent,
+  type DragOverEvent,
+  type CollisionDetection,
+  type DropAnimation,
+} from '@dnd-kit/core';
+import {
+  SortableContext,
+  rectSortingStrategy,
+  sortableKeyboardCoordinates,
+  useSortable,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
+import { Shortcut, getDomainFromUrl } from '../../../utils/storage';
 import ShortcutTile from '../ShortcutTile/ShortcutTile';
+import { ShortcutIcon } from '../ShortcutIcon';
 import { useI18n } from '../../../i18n';
+import {
+  DEFAULT_GROUP_NAME,
+  applyDragEnd,
+  buildShortcutGroups,
+  flattenShortcutGroups,
+  groupStorageKey,
+  moveShortcutInFlat,
+  normalizeGroupName,
+  reorderGroups,
+  type DragEndPayload,
+  type ShortcutGroup,
+} from '../../../utils/shortcuts';
 import styles from './ShortcutGrid.module.css';
 
 interface ShortcutGridProps {
@@ -15,60 +49,44 @@ interface ShortcutGridProps {
   onImportShortcuts?: () => void;
 }
 
-type ShortcutGroup = { name: string; shortcuts: Shortcut[] };
+/** Prefix used to namespace group container droppables/sortables so we can
+ *  tell a group id apart from a tile id in the drag handlers. */
+const GROUP_PREFIX = 'group:';
 
-function groupStorageKey(shortcut: Shortcut): string {
-  const group = shortcut.group?.trim();
-  return group ? group : 'Default';
+const isGroupId = (id: string): boolean => id.startsWith(GROUP_PREFIX);
+
+const groupIdOf = (id: string): string => id.slice(GROUP_PREFIX.length);
+
+/** Suffix on group droppables that targets the tiles area (for dropping
+ *  a tile into the group, including an empty group). */
+const TILES_SUFFIX = '::tiles';
+
+const isTilesDropId = (id: string): boolean => id.endsWith(TILES_SUFFIX);
+
+const tilesDropGroupName = (id: string): string => id.slice(GROUP_PREFIX.length, -TILES_SUFFIX.length);
+
+interface SortableTileProps {
+  shortcut: Shortcut;
+  isGlobalEditing: boolean;
+  isDragging: boolean;
+  isGroupPreviewTarget: boolean;
+  globalIndex: number;
+  onDelete: (id: string) => void;
+  onUpdate: (id: string, updates: Partial<Shortcut>) => void;
+  onMoveLeft: (index: number) => void;
+  onMoveRight: (index: number) => void;
+  onMoveUp: (index: number) => void;
+  onMoveDown: (index: number) => void;
+  existingGroups: string[];
+  onEnterEditMode: () => void;
 }
 
-function buildShortcutGroups(shortcuts: Shortcut[]): ShortcutGroup[] {
-  const map = new Map<string, Shortcut[]>();
-  for (const shortcut of shortcuts) {
-    const key = groupStorageKey(shortcut);
-    if (!map.has(key)) map.set(key, []);
-    map.get(key)!.push(shortcut);
-  }
-  for (const list of map.values()) {
-    list.sort((a, b) => a.order - b.order);
-  }
-  const keys = [...map.keys()].sort((a, b) => {
-    const minOf = (key: string) => Math.min(...map.get(key)!.map((item) => item.order));
-    return minOf(a) - minOf(b) || a.localeCompare(b);
-  });
-  return keys.map((name) => ({ name, shortcuts: map.get(name)! }));
-}
-
-function flattenShortcutGroups(groups: ShortcutGroup[]): Shortcut[] {
-  return groups.flatMap((group) => group.shortcuts);
-}
-
-function normalizeGroupName(name?: string): string | undefined {
-  const trimmed = name?.trim();
-  return trimmed ? trimmed : undefined;
-}
-
-function createUniqueGroupName(baseName: string, existingGroups: string[]): string {
-  const normalizedBase = baseName.trim() || 'Group';
-  const used = new Set(existingGroups.map((group) => group.trim().toLowerCase()));
-  if (!used.has(normalizedBase.toLowerCase())) return normalizedBase;
-  let index = 2;
-  while (used.has(`${normalizedBase} ${index}`.toLowerCase())) {
-    index += 1;
-  }
-  return `${normalizedBase} ${index}`;
-}
-
-function moveItem<T>(items: T[], fromIndex: number, toIndex: number): T[] {
-  const next = [...items];
-  const [moved] = next.splice(fromIndex, 1);
-  next.splice(toIndex, 0, moved);
-  return next;
-}
-
-function SortableShortcutWrap({
+function SortableTile({
   shortcut,
-  index,
+  isGlobalEditing,
+  isDragging,
+  isGroupPreviewTarget,
+  globalIndex,
   onDelete,
   onUpdate,
   onMoveLeft,
@@ -76,34 +94,37 @@ function SortableShortcutWrap({
   onMoveUp,
   onMoveDown,
   existingGroups,
-  isGroupPreviewTarget,
-  isGlobalEditing,
   onEnterEditMode,
-}: {
-  shortcut: Shortcut;
-  index: number;
-  onDelete: (id: string) => void;
-  onUpdate: (id: string, updates: Partial<Shortcut>) => void;
-  onMoveLeft?: (index: number) => void;
-  onMoveRight?: (index: number) => void;
-  onMoveUp?: (index: number) => void;
-  onMoveDown?: (index: number) => void;
-  existingGroups: string[];
-  isGroupPreviewTarget?: boolean;
-  isGlobalEditing?: boolean;
-  onEnterEditMode?: () => void;
-}) {
+}: SortableTileProps) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging: isSortableDragging,
+  } = useSortable({ id: shortcut.id });
+
+  const style: React.CSSProperties = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
   return (
     <div
-      className={styles.sortableItem}
+      ref={setNodeRef}
+      style={style}
+      className={`${styles.sortableItem} ${isSortableDragging ? styles.sortableDragging : ''}`}
       data-shortcut-id={shortcut.id}
       data-group-name={shortcut.group || ''}
+      {...attributes}
+      {...listeners}
     >
       <ShortcutTile
         shortcut={shortcut}
         onDelete={onDelete}
         onUpdate={onUpdate}
-        index={index}
+        index={globalIndex}
         onMoveLeft={onMoveLeft}
         onMoveRight={onMoveRight}
         onMoveUp={onMoveUp}
@@ -111,41 +132,56 @@ function SortableShortcutWrap({
         existingGroups={existingGroups}
         isGroupPreviewTarget={isGroupPreviewTarget}
         isGlobalEditing={isGlobalEditing}
+        isDragging={isDragging}
         onEnterEditMode={onEnterEditMode}
       />
     </div>
   );
 }
 
-export default function ShortcutGrid({ shortcuts, onDelete, onUpdate, onReorder, onAdd, onImportBookmarks, onImportShortcuts }: ShortcutGridProps) {
+export default function ShortcutGrid({
+  shortcuts,
+  onDelete,
+  onUpdate,
+  onReorder,
+  onAdd,
+  onImportBookmarks,
+  onImportShortcuts,
+}: ShortcutGridProps) {
   const { t } = useI18n();
   const groups = useMemo(() => buildShortcutGroups(shortcuts), [shortcuts]);
   const flat = useMemo(() => flattenShortcutGroups(groups), [groups]);
+  const groupIds = useMemo(
+    () => groups.map((g) => `${GROUP_PREFIX}${g.name}`),
+    [groups],
+  );
 
   const panelRef = useRef<HTMLDivElement>(null);
-  const groupContainerRefs = useRef<Record<string, HTMLDivElement | null>>({});
-  const sortableInstancesRef = useRef<Sortable[]>([]);
-  const groupIntentTimerRef = useRef<number | null>(null);
-  const groupIntentCandidateRef = useRef<string | null>(null);
-  const dropTargetIdRef = useRef<string | null>(null);
-
   const [containerWidth, setContainerWidth] = useState(600);
   const [activeDragId, setActiveDragId] = useState<string | null>(null);
-  const [groupPreviewTargetId, setGroupPreviewTargetId] = useState<string | null>(null);
-  const [dragActive, setDragActive] = useState(false);
   const [isGlobalEditing, setIsGlobalEditing] = useState(false);
   const [renamingGroupName, setRenamingGroupName] = useState<string | null>(null);
   const [renameInputValue, setRenameInputValue] = useState('');
+  const [hoverGroupName, setHoverGroupName] = useState<string | null>(null);
   const renameInputRef = useRef<HTMLInputElement>(null);
 
-  // Refs for values consumed by SortableJS callbacks — kept in sync so the
-  // Sortable-create effect doesn't need to re-run on every data change.
-  const flatRef = useRef(flat);
-  flatRef.current = flat;
-  const groupsRef = useRef(groups);
-  groupsRef.current = groups;
-  const groupPreviewTargetIdRef = useRef(groupPreviewTargetId);
-  groupPreviewTargetIdRef.current = groupPreviewTargetId;
+  // Records the outcome of the most recent drag. Read on the render that
+  // follows `onDragEnd` (triggered by `setActiveDragId(null)`) to pick
+  // the right drop animation. A ref (not state) because we don't need
+  // to trigger a re-render — the state update from `onDragEnd` already
+  // does that, and by the time the next render runs the ref has the
+  // fresh value.
+  const lastDropSucceededRef = useRef<boolean>(false);
+
+  // Local mirror of the persisted list, ordered the same way the grid
+  // visually renders it. dnd-kit reads/writes this directly during a drag,
+  // then we hand the result to `onReorder` (which persists). Initializing
+  // from `flat` — not the raw `shortcuts` prop — keeps keyboard index math
+  // in sync with the rendered order.
+  const [items, setItems] = useState<Shortcut[]>(flat);
+  useEffect(() => {
+    setItems(flat);
+  }, [flat]);
 
   useEffect(() => {
     const el = panelRef.current;
@@ -161,23 +197,20 @@ export default function ShortcutGrid({ shortcuts, onDelete, onUpdate, onReorder,
   }, []);
 
   const existingGroups = useMemo(
-    () => Array.from(new Set(shortcuts.map((shortcut) => shortcut.group).filter((group): group is string => !!group))).sort(),
-    [shortcuts]
-  );
-
-  // Stable key derived from group structure only (not individual shortcut order
-  // or content). The Sortable-create effect depends on this so it only re-runs
-  // when groups are added/removed/renamed — never on every reorder or update,
-  // which would tear down a live Sortable instance mid-drag and leave a stale
-  // tile in the DOM.
-  const groupStructureKey = useMemo(
-    () => Array.from(new Set(shortcuts.map((s) => s.group?.trim() || 'Default'))).sort().join(''),
-    [shortcuts]
+    () =>
+      Array.from(
+        new Set(
+          shortcuts
+            .map((shortcut) => shortcut.group)
+            .filter((group): group is string => !!group),
+        ),
+      ).sort(),
+    [shortcuts],
   );
 
   const startRenameGroup = (groupName: string) => {
     setRenamingGroupName(groupName);
-    setRenameInputValue(groupName === 'Default' ? '' : groupName);
+    setRenameInputValue(groupName === DEFAULT_GROUP_NAME ? '' : groupName);
     setTimeout(() => renameInputRef.current?.select(), 0);
   };
 
@@ -185,149 +218,284 @@ export default function ShortcutGrid({ shortcuts, onDelete, onUpdate, onReorder,
     setRenamingGroupName(null);
     const trimmed = newName.trim();
     if (!trimmed || trimmed === oldName) return;
-    const target = trimmed === 'Default' ? undefined : trimmed;
-    for (const s of shortcuts) {
-      const g = s.group?.trim() || 'Default';
+    const target = trimmed === DEFAULT_GROUP_NAME ? undefined : trimmed;
+    const renamed = items.map((s) => {
+      const g = groupStorageKey(s);
       if (g === oldName) {
-        onUpdate(s.id, { group: target });
+        return { ...s, group: target };
+      }
+      return s;
+    });
+    onReorder(renamed);
+  };
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: { distance: 4 },
+    }),
+    useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates }),
+  );
+
+  // Custom collision detection.
+  //
+  // dnd-kit's built-in `closestCenter` and `closestCorners` measure the
+  // distance from the **active item's** rect — not from the pointer. For
+  // a cross-group drag, the active item stays in its source group, so
+  // those algorithms always prefer tiles in the source group and the drop
+  // never crosses to a different group (this is the "drag only works from
+  // later groups to the first group" bug).
+  //
+  // We instead:
+  //   1. Try `pointerWithin` first — the pointer is inside a droppable.
+  //      This is the only algorithm that measures from the pointer, so
+  //      it correctly resolves cross-group drops.
+  //   2. Fall back to a custom "closest to pointer" check when the
+  //      pointer is in a gap between tiles (no droppable contains it).
+  //      This still measures from the pointer, so a tile in another
+  //      group is preferred over a tile in the same group if the pointer
+  //      is closer to it.
+  const collisionDetection: CollisionDetection = (args) => {
+    const pointerHits = pointerWithin(args);
+    if (pointerHits.length > 0) return pointerHits;
+    return pointerClosestCenter(args);
+  };
+
+  // dnd-kit has no built-in "closest to pointer" collision detection, so
+  // we write one. It measures the Euclidean distance from the pointer to
+  // each droppable's center and returns the nearest. This is what makes
+  // cross-group drops land correctly: when the active item is in group 1
+  // and the pointer is over group 2, the group 2 tile's center is closer
+  // to the pointer than any group 1 tile's center.
+  function pointerClosestCenter(args: Parameters<CollisionDetection>[0]): ReturnType<CollisionDetection> {
+    const { active, droppableContainers, droppableRects, pointerCoordinates } = args;
+    // dnd-kit types this as `Coordinates | null` for some collisions
+    // (e.g. when the user is keyboard-navigating). Fall back to the
+    // active's center in that case so we always return a sensible target.
+    const px = pointerCoordinates?.x ?? args.active.rect.current.translated?.left ?? 0;
+    const py = pointerCoordinates?.y ?? args.active.rect.current.translated?.top ?? 0;
+    let closestId: string | null = null;
+    let closestDistance = Infinity;
+    for (const container of droppableContainers) {
+      if (container.id === active.id) continue;
+      const rect = droppableRects.get(container.id);
+      if (!rect) continue;
+      const centerX = rect.left + rect.width / 2;
+      const centerY = rect.top + rect.height / 2;
+      const dx = centerX - px;
+      const dy = centerY - py;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+      if (distance < closestDistance) {
+        closestDistance = distance;
+        closestId = String(container.id);
       }
     }
+    if (closestId === null) return [];
+    return [{ id: closestId }];
+  }
+
+  // dnd-kit's default `dropAnimation` flies the overlay from the pointer
+  // back to the active item's *original* position. That reads as "the
+  // tile was put back" for cancelled drops, but for successful drops
+  // it's wrong — the tile is already in its new position, so a "fly back
+  // to origin" animation lands on an empty spot and then disappears.
+  //
+  // For successful drops we use a custom animation: stay at the pointer
+  // and fade + scale down. The tile appears in its new position via
+  // React state, so visually the overlay "lands" where the user
+  // released and then the tile is in its final spot.
+  //
+  // For cancelled drops we keep dnd-kit's default (null) so the overlay
+  // flies back to origin — that's the expected "put back" feedback.
+  const dropAnimation: DropAnimation | null = lastDropSucceededRef.current
+    ? {
+        duration: 180,
+        easing: 'cubic-bezier(0.2, 0, 0, 1)',
+        keyframes: ({ transform: t }) => {
+          // dnd-kit passes `{ initial, final }` transforms. The `final`
+          // transform is the one applied during the drop animation; we
+          // pin the overlay to `initial` (its current pointer offset)
+          // and just fade + scale out.
+          const initial = t.initial;
+          const base = initial
+            ? `translate3d(${initial.x}px, ${initial.y}px, 0) scale(${initial.scaleX})`
+            : 'none';
+          return [
+            { opacity: 1, transform: base },
+            { opacity: 0, transform: `${base} scale(0.9)` },
+          ];
+        },
+      }
+    : null;
+
+  const activeShortcut = activeDragId && !isGroupId(activeDragId)
+    ? items.find((s) => s.id === activeDragId) ?? null
+    : null;
+
+  // For group drags, capture the active group's name and a flat list of
+  // its tile ids so the preview can render a faithful representation.
+  const activeGroupName = activeDragId && isGroupId(activeDragId)
+    ? groupIdOf(activeDragId)
+    : null;
+  const activeGroup = activeGroupName ? groups.find((g) => g.name === activeGroupName) : null;
+
+  const handleDragStart = (event: DragStartEvent) => {
+    setActiveDragId(String(event.active.id));
+    setHoverGroupName(null);
   };
 
-  const clearGroupIntent = () => {
-    if (groupIntentTimerRef.current !== null) {
-      window.clearTimeout(groupIntentTimerRef.current);
-      groupIntentTimerRef.current = null;
+  const handleDragOver = (event: DragOverEvent) => {
+    const { over } = event;
+    if (!over) {
+      setHoverGroupName(null);
+      return;
     }
-    groupIntentCandidateRef.current = null;
-    dropTargetIdRef.current = null;
-    setGroupPreviewTargetId(null);
+    const overId = String(over.id);
+    if (isTilesDropId(overId)) {
+      setHoverGroupName(tilesDropGroupName(overId));
+    } else if (isGroupId(overId)) {
+      setHoverGroupName(groupIdOf(overId));
+    } else {
+      const overShortcut = items.find((s) => s.id === overId);
+      setHoverGroupName(overShortcut ? groupStorageKey(overShortcut) : null);
+    }
   };
 
-  const resetDragState = () => {
-    clearGroupIntent();
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
     setActiveDragId(null);
-    setDragActive(false);
-  };
+    setHoverGroupName(null);
+    // Default to "cancelled" so the drop animation defaults to the
+    // origin-fly-back behaviour. The branches below set the ref to
+    // true when a drop actually changes the state.
+    lastDropSucceededRef.current = false;
+    if (!over) return;
 
-  const buildOrderFromDom = (): string[] => {
-    return groupsRef.current.flatMap((group) => {
-      const container = groupContainerRefs.current[group.name];
-      if (!container) return [];
-      return Array.from(container.querySelectorAll<HTMLElement>('[data-shortcut-id]'))
-        .map((node) => node.dataset.shortcutId || '')
-        .filter(Boolean);
-    });
-  };
+    const activeId = String(active.id);
+    const overId = String(over.id);
 
-  const applyOrderedIds = (orderedIds: string[]) => {
-    if (orderedIds.length !== flatRef.current.length) return;
-    const shortcutMap = new Map(flatRef.current.map((shortcut) => [shortcut.id, shortcut]));
-    const merged = orderedIds.reduce<Shortcut[]>((acc, id, index) => {
-      const shortcut = shortcutMap.get(id);
-      if (!shortcut) return acc;
-      const container = groupsRef.current
-        .map((group) => groupContainerRefs.current[group.name])
-        .find((node) => node?.querySelector(`[data-shortcut-id="${id}"]`));
-      const groupName = container?.dataset.groupName;
-      acc.push({
-        ...shortcut,
-        order: index,
-        group: groupName === 'Default' ? undefined : normalizeGroupName(groupName),
-      });
-      return acc;
-    }, []);
+    if (activeId === overId) return;
 
-    if (merged.length === flatRef.current.length) {
-      onReorder(merged);
+    // ── Group reorder ───────────────────────────────────────────
+    // The group card itself uses `useSortable` with id `group:NAME`. The
+    // group tiles area uses `useDroppable` with id `group:NAME::tiles`.
+    // Only the former is sortable — the latter is purely a drop target
+    // for tiles.
+    if (isGroupId(activeId) && !isTilesDropId(activeId)) {
+      if (!isGroupId(overId) || isTilesDropId(overId)) return;
+      const fromGroup = groupIdOf(activeId);
+      const toGroup = groupIdOf(overId);
+      if (fromGroup === toGroup) return;
+      const currentGroupOrder = groups.map((g) => g.name);
+      const fromIdx = currentGroupOrder.indexOf(fromGroup);
+      const toIdx = currentGroupOrder.indexOf(toGroup);
+      if (fromIdx === -1 || toIdx === -1) return;
+      const nextOrder = [...currentGroupOrder];
+      nextOrder.splice(fromIdx, 1);
+      nextOrder.splice(toIdx, 0, fromGroup);
+      const result = reorderGroups(items, nextOrder);
+      if (result) {
+        setItems(result);
+        onReorder(result);
+        lastDropSucceededRef.current = true;
+      }
+      return;
+    }
+
+    // ── Tile move ───────────────────────────────────────────────
+    const activeShortcut = items.find((s) => s.id === activeId);
+    if (!activeShortcut) return;
+    const sourceGroup = groupStorageKey(activeShortcut);
+
+    let payload: DragEndPayload | null = null;
+
+    if (isTilesDropId(overId)) {
+      // Dropped onto a group's tiles area (possibly empty). Move into
+      // that group; the reducer handles the default-group clearing.
+      const destGroup = tilesDropGroupName(overId);
+      payload = { activeId, overId: null, sourceGroup, destGroup, merge: false };
+    } else {
+      const overShortcut = items.find((s) => s.id === overId);
+      if (!overShortcut) return;
+      const destGroup = groupStorageKey(overShortcut);
+      const isCross = sourceGroup !== destGroup;
+      const isDropOnUngrouped =
+        !normalizeGroupName(overShortcut.group) && !normalizeGroupName(activeShortcut.group);
+      const merge = isCross || isDropOnUngrouped;
+      payload = { activeId, overId, sourceGroup, destGroup, merge };
+    }
+
+    if (!payload) return;
+
+    const result = applyDragEnd(items, payload);
+    if (result) {
+      setItems(result);
+      onReorder(result);
+      lastDropSucceededRef.current = true;
     }
   };
 
-  const applyGroupMerge = (activeId: string, overId: string) => {
-    const activeShortcut = flatRef.current.find((shortcut) => shortcut.id === activeId);
-    const overShortcut = flatRef.current.find((shortcut) => shortcut.id === overId);
-    if (!activeShortcut || !overShortcut) return;
-
-    const targetGroup = normalizeGroupName(overShortcut.group)
-      || createUniqueGroupName(overShortcut.title.trim() || t('defaultGroupName'), existingGroups);
-
-    const orderedIds = buildOrderFromDom();
-    if (orderedIds.length !== flatRef.current.length) return;
-
-    const shortcutMap = new Map(flatRef.current.map((shortcut) => [shortcut.id, shortcut]));
-    const merged = orderedIds.map((id, index) => {
-      const shortcut = shortcutMap.get(id)!;
-      if (id === activeId || id === overId) {
-        return { ...shortcut, order: index, group: targetGroup };
-      }
-      return { ...shortcut, order: index };
-    });
-
-    onReorder(merged);
+  const handleDragCancel = () => {
+    setActiveDragId(null);
+    setHoverGroupName(null);
+    // Cancelled → use the default "fly back to origin" animation.
+    lastDropSucceededRef.current = false;
   };
 
-  const applyKeyboardReorder = (newFlat: Shortcut[], movedId: string, neighbor?: Shortcut) => {
-    const nextGroup = normalizeGroupName(neighbor?.group);
-    onReorder(newFlat.map((shortcut, index) => (
-      shortcut.id === movedId
-        ? { ...shortcut, order: index, group: nextGroup }
-        : { ...shortcut, order: index }
-    )));
+  // ── Keyboard reorder ───────────────────────────────────────
+  const moveBy = (fromIndex: number, toIndex: number) => {
+    if (fromIndex === toIndex) return;
+    if (toIndex < 0 || toIndex >= items.length) return;
+    const next = moveShortcutInFlat(items, fromIndex, toIndex);
+    setItems(next);
+    onReorder(next);
   };
+
+  const groupStartIndices = (() => {
+    const out: Record<string, number> = {};
+    let cursor = 0;
+    for (const group of groups) {
+      out[group.name] = cursor;
+      cursor += group.shortcuts.length;
+    }
+    return out;
+  })();
 
   const handleMoveLeft = (fromIndex: number) => {
-    if (fromIndex <= 0) return;
-    const groupStartIndices = groups.map((group) =>
-      groups.slice(0, groups.indexOf(group)).reduce((acc, item) => acc + item.shortcuts.length, 0)
-    );
-    if (fromIndex === groupStartIndices[0]) return;
-    const isFirstInGroup = groupStartIndices.some((start, index) => fromIndex === start && index > 0);
-    const targetIndex = isFirstInGroup
-      ? groupStartIndices[groupStartIndices.findIndex((start) => start === fromIndex) - 1] + groups[groupStartIndices.findIndex((start) => start === fromIndex) - 1].shortcuts.length - 1
-      : fromIndex - 1;
-    const newFlat = moveItem(flat, fromIndex, targetIndex);
-    applyKeyboardReorder(newFlat, flat[fromIndex].id, newFlat[targetIndex]);
+    const fromGroup = groupStorageKey(items[fromIndex]);
+    const start = groupStartIndices[fromGroup];
+    if (fromIndex === start) {
+      const groupIdx = groups.findIndex((g) => g.name === fromGroup);
+      if (groupIdx <= 0) return;
+      moveBy(fromIndex, start - 1);
+      return;
+    }
+    moveBy(fromIndex, fromIndex - 1);
   };
 
   const handleMoveRight = (fromIndex: number) => {
-    if (fromIndex >= flat.length - 1) return;
-    const groupStartIndices = groups.map((group) =>
-      groups.slice(0, groups.indexOf(group)).reduce((acc, item) => acc + item.shortcuts.length, 0)
-    );
-    const lastGroupStart = groupStartIndices[groups.length - 1];
-    const lastItemIndex = lastGroupStart + groups[groups.length - 1].shortcuts.length - 1;
-    if (fromIndex >= lastItemIndex) return;
-    const isLastInGroup = groupStartIndices
-      .map((start, index) => ({ start, end: start + groups[index].shortcuts.length - 1, idx: index }))
-      .some(({ end, idx }) => fromIndex === end && idx < groups.length - 1);
-    let targetIndex = fromIndex + 1;
-    if (isLastInGroup) {
-      const groupInfo = groupStartIndices
-        .map((start, index) => ({ start, end: start + groups[index].shortcuts.length - 1, idx: index }))
-        .find(({ end, idx }) => fromIndex === end && idx < groups.length - 1)!;
-      targetIndex = groupInfo.start + groups[groupInfo.idx + 1].shortcuts.length;
+    const fromGroup = groupStorageKey(items[fromIndex]);
+    const start = groupStartIndices[fromGroup];
+    const end = start + (groups.find((g) => g.name === fromGroup)?.shortcuts.length ?? 0) - 1;
+    if (fromIndex === end) {
+      const groupIdx = groups.findIndex((g) => g.name === fromGroup);
+      if (groupIdx === -1 || groupIdx === groups.length - 1) return;
+      moveBy(fromIndex, end + 1);
+      return;
     }
-    const newFlat = moveItem(flat, fromIndex, targetIndex);
-    applyKeyboardReorder(newFlat, flat[fromIndex].id, newFlat[targetIndex]);
+    moveBy(fromIndex, fromIndex + 1);
   };
 
   const handleMoveUp = (fromIndex: number) => {
-    const estimatedColumns = Math.max(1, Math.floor(containerWidth / 108));
-    const targetIndex = fromIndex - estimatedColumns;
-    if (targetIndex < 0) return;
-    const newFlat = moveItem(flat, fromIndex, targetIndex);
-    applyKeyboardReorder(newFlat, flat[fromIndex].id, newFlat[targetIndex]);
+    const cols = Math.max(1, Math.floor(containerWidth / 108));
+    moveBy(fromIndex, fromIndex - cols);
   };
 
   const handleMoveDown = (fromIndex: number) => {
-    const estimatedColumns = Math.max(1, Math.floor(containerWidth / 108));
-    const targetIndex = fromIndex + estimatedColumns;
-    if (targetIndex >= flat.length) return;
-    const newFlat = moveItem(flat, fromIndex, targetIndex);
-    applyKeyboardReorder(newFlat, flat[fromIndex].id, newFlat[targetIndex]);
+    const cols = Math.max(1, Math.floor(containerWidth / 108));
+    moveBy(fromIndex, fromIndex + cols);
   };
 
-  const globalIndex = (shortcutId: string) => flat.findIndex((shortcut) => shortcut.id === shortcutId);
+  const globalIndex = (shortcutId: string) => items.findIndex((s) => s.id === shortcutId);
 
   useEffect(() => {
     if (!isGlobalEditing) return;
@@ -338,133 +506,11 @@ export default function ShortcutGrid({ shortcuts, onDelete, onUpdate, onReorder,
     return () => document.removeEventListener('keydown', handler);
   }, [isGlobalEditing]);
 
-  useEffect(() => {
-    // Initialise Sortable instances ONCE per group-structure change. Earlier
-    // versions recreated on every `shortcuts` mutation, which could tear down
-    // an instance mid-drag and produce phantom tiles. Edit-mode enable/disable
-    // is handled by the dedicated effect below so the instances don't need to
-    // be rebuilt when the user toggles edit mode.
-    const cleanup = () => {
-      sortableInstancesRef.current.forEach((instance) => {
-        instance.el.querySelectorAll(`.${styles.sortableGhost}, .${styles.sortableChosen}, .${styles.sortableDrag}`).forEach((el) => {
-          el.classList.remove(styles.sortableGhost, styles.sortableChosen, styles.sortableDrag);
-        });
-        instance.destroy();
-      });
-      sortableInstancesRef.current = [];
-      clearGroupIntent();
-    };
-
-    cleanup();
-
-    groupsRef.current.forEach((group) => {
-      const container = groupContainerRefs.current[group.name];
-      if (!container) return;
-
-      const instance = Sortable.create(container, {
-        group: 'mytab-shortcuts',
-        draggable: '[data-shortcut-id]',
-        handle: '[data-drag-handle="true"]',
-        filter: 'input, textarea',
-        preventOnFilter: false,
-        animation: 180,
-        easing: 'cubic-bezier(0.22, 1, 0.36, 1)',
-        swapThreshold: 0.72,
-        invertSwap: true,
-        emptyInsertThreshold: 16,
-        ghostClass: styles.sortableGhost,
-        chosenClass: styles.sortableChosen,
-        dragClass: styles.sortableDrag,
-        forceFallback: false,
-        // Create in the same state as the current edit-mode toggle so the
-        // dedicated disabled-toggle effect doesn't have to fight a stale
-        // initial value on first mount.
-        disabled: !isGlobalEditing,
-        onStart: (event: SortableEvent) => {
-          const dragged = event.item as HTMLElement;
-          setActiveDragId(dragged.dataset.shortcutId || null);
-          setDragActive(true);
-          clearGroupIntent();
-        },
-        onMove: (event: MoveEvent) => {
-          const dragged = event.dragged as HTMLElement | undefined;
-          const related = event.related as HTMLElement | undefined;
-          const activeId = dragged?.dataset.shortcutId || null;
-          const overId = related?.dataset.shortcutId || null;
-
-          if (!activeId || !overId || activeId === overId) {
-            clearGroupIntent();
-            return true;
-          }
-
-          const activeShortcut = flatRef.current.find((shortcut) => shortcut.id === activeId);
-          const overShortcut = flatRef.current.find((shortcut) => shortcut.id === overId);
-          if (!activeShortcut || !overShortcut) {
-            clearGroupIntent();
-            return true;
-          }
-
-          const activeGroup = normalizeGroupName(activeShortcut.group);
-          const overGroup = normalizeGroupName(overShortcut.group);
-          const canGroup = activeGroup !== overGroup || (!activeGroup && !overGroup);
-          if (!canGroup) {
-            clearGroupIntent();
-            return true;
-          }
-
-          dropTargetIdRef.current = overId;
-          if (groupIntentCandidateRef.current === overId) return true;
-
-          clearGroupIntent();
-          groupIntentCandidateRef.current = overId;
-          dropTargetIdRef.current = overId;
-          groupIntentTimerRef.current = window.setTimeout(() => {
-            setGroupPreviewTargetId(overId);
-          }, 300);
-          return true;
-        },
-        onEnd: (event: SortableEvent) => {
-          // Immediately clean up ghost/chosen/drag classes from all containers
-          document.querySelectorAll(`.${styles.sortableGhost}, .${styles.sortableChosen}, .${styles.sortableDrag}`).forEach((el) => {
-            el.classList.remove(styles.sortableGhost, styles.sortableChosen, styles.sortableDrag);
-          });
-
-          const activeId = (event.item as HTMLElement).dataset.shortcutId || null;
-          const overId = dropTargetIdRef.current;
-
-          // Defer DOM read until Sortable has finished its internal DOM
-          // mutation for this drop. Reading on the same tick as onEnd
-          // occasionally observed the pre-drop order, causing a phantom
-          // revert and a duplicate-looking tile until the next render.
-          window.requestAnimationFrame(() => {
-            if (activeId && groupPreviewTargetIdRef.current && overId === groupPreviewTargetIdRef.current && activeId !== overId) {
-              applyGroupMerge(activeId, overId);
-            } else {
-              const orderedIds = buildOrderFromDom();
-              if (orderedIds.length === flatRef.current.length) {
-                applyOrderedIds(orderedIds);
-              }
-            }
-            resetDragState();
-          });
-        },
-      });
-
-      sortableInstancesRef.current.push(instance);
-    });
-
-    return cleanup;
-  }, [groupStructureKey]);
-
-  // Toggle sortable enabled/disabled when edit mode changes — no destroy/recreate
-  useEffect(() => {
-    sortableInstancesRef.current.forEach((instance) => {
-      instance.option('disabled', !isGlobalEditing);
-    });
-  }, [isGlobalEditing]);
-
   return (
-    <div className={`${styles.panel} ${dragActive ? styles.dragActive : ''}`} ref={panelRef}>
+    <div
+      className={`${styles.panel} ${activeDragId ? styles.dragActive : ''}`}
+      ref={panelRef}
+    >
       {shortcuts.length > 0 && (
         <div className={styles.headerRow}>
           <span className={styles.headerTitle}>{t('shortcutsTitle')}</span>
@@ -475,19 +521,21 @@ export default function ShortcutGrid({ shortcuts, onDelete, onUpdate, onReorder,
           >
             {isGlobalEditing ? (
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <polyline points="20 6 9 17 4 12"/>
+                <polyline points="20 6 9 17 4 12" />
               </svg>
             ) : (
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
-                <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+                <rect x="3" y="3" width="7" height="7" rx="1" />
+                <rect x="14" y="3" width="7" height="7" rx="1" />
+                <rect x="3" y="14" width="7" height="7" rx="1" />
+                <rect x="14" y="14" width="7" height="7" rx="1" />
               </svg>
             )}
             {isGlobalEditing ? t('done') : t('edit')}
           </button>
         </div>
       )}
-      {shortcuts.length === 0 ? (
+      {items.length === 0 ? (
         <div className={styles.container}>
           <div className={styles.empty}>
             <div className={styles.emptyTitle}>{t('noShortcutsTitle')}</div>
@@ -515,81 +563,279 @@ export default function ShortcutGrid({ shortcuts, onDelete, onUpdate, onReorder,
           </div>
         </div>
       ) : (
-        <div className={styles.cardsRow}>
-          {groups.map((group) => (
-            <div key={group.name} className={`glass-card ${styles.groupSection}`}>
-              {groups.length > 1 && (
-                <div className={styles.groupHeader} onClick={() => renamingGroupName !== group.name && startRenameGroup(group.name)}>
-                  {renamingGroupName === group.name ? (
-                    <input
-                      ref={renameInputRef}
-                      className={styles.groupRenameInput}
-                      value={renameInputValue}
-                      onChange={(e) => setRenameInputValue(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') { commitGroupRename(group.name, renameInputValue); }
-                        if (e.key === 'Escape') { setRenamingGroupName(null); }
-                      }}
-                      onBlur={() => commitGroupRename(group.name, renameInputValue)}
-                      onClick={(e) => e.stopPropagation()}
-                      placeholder={t('groupRenamePlaceholder')}
-                      maxLength={30}
-                    />
-                  ) : (
-                    <>
-                      <span className={styles.groupName} title={group.name}>{group.name}</span>
-                      <span className={styles.groupCount}>({group.shortcuts.length})</span>
-                    </>
-                  )}
-                </div>
-              )}
-              <div
-                className={styles.groupTiles}
-                data-group-name={group.name}
-                ref={(node) => {
-                  groupContainerRefs.current[group.name] = node;
-                }}
-              >
-                {group.shortcuts.map((shortcut) => (
-                  <SortableShortcutWrap
-                    key={shortcut.id}
-                    shortcut={shortcut}
-                    index={globalIndex(shortcut.id)}
-                    onDelete={onDelete}
-                    onUpdate={onUpdate}
-                    onMoveLeft={handleMoveLeft}
-                    onMoveRight={handleMoveRight}
-                    onMoveUp={handleMoveUp}
-                    onMoveDown={handleMoveDown}
-                    existingGroups={existingGroups}
-                    isGroupPreviewTarget={groupPreviewTargetId === shortcut.id && activeDragId !== shortcut.id}
-                    isGlobalEditing={isGlobalEditing}
-                    onEnterEditMode={() => setIsGlobalEditing(true)}
-                  />
-                ))}
-                {onAdd && (
-                  <button
-                    className={styles.addTile}
-                    onClick={() => onAdd(group.name === 'Default' ? undefined : group.name)}
-                    onKeyDown={(event) => {
-                      if (event.key === 'Enter' || event.key === ' ') {
-                        event.preventDefault();
-                        onAdd(group.name === 'Default' ? undefined : group.name);
-                      }
-                    }}
-                    tabIndex={0}
-                    aria-label={t('addShortcutAria')}
-                    title={t('addShortcut')}
-                  >
-                    <span className={styles.addTileIcon}>+</span>
-                    <span className={styles.addTileLabel}>{t('addWebsite')}</span>
-                  </button>
-                )}
-              </div>
+        <DndContext
+          sensors={sensors}
+          collisionDetection={collisionDetection}
+          onDragStart={handleDragStart}
+          onDragOver={handleDragOver}
+          onDragEnd={handleDragEnd}
+          onDragCancel={handleDragCancel}
+        >
+          <SortableContext items={groupIds} strategy={rectSortingStrategy}>
+            <div className={styles.cardsRow}>
+              {groups.map((group) => (
+                <GroupSection
+                  key={group.name}
+                  group={group}
+                  showHeader={groups.length > 1}
+                  renamingGroupName={renamingGroupName}
+                  renameInputValue={renameInputValue}
+                  renameInputRef={renameInputRef}
+                  setRenameInputValue={setRenameInputValue}
+                  startRenameGroup={startRenameGroup}
+                  commitGroupRename={commitGroupRename}
+                  setRenamingGroupName={setRenamingGroupName}
+                  isGlobalEditing={isGlobalEditing}
+                  activeDragId={activeDragId}
+                  hoverGroupName={hoverGroupName}
+                  globalIndex={globalIndex}
+                  onDelete={onDelete}
+                  onUpdate={onUpdate}
+                  onMoveLeft={handleMoveLeft}
+                  onMoveRight={handleMoveRight}
+                  onMoveUp={handleMoveUp}
+                  onMoveDown={handleMoveDown}
+                  existingGroups={existingGroups}
+                  onAdd={onAdd}
+                  onEnterEditMode={() => setIsGlobalEditing(true)}
+                  t={t}
+                />
+              ))}
             </div>
-          ))}
+          </SortableContext>
+          <DragOverlay dropAnimation={dropAnimation}>
+            {activeShortcut ? (
+              <TileDragPreview shortcut={activeShortcut} />
+            ) : activeGroup ? (
+              <GroupDragPreview group={activeGroup} />
+            ) : null}
+          </DragOverlay>
+        </DndContext>
+      )}
+    </div>
+  );
+}
+
+// ── Lightweight drag previews ────────────────────────────────────────
+// Rendering the full ShortcutTile inside DragOverlay caused the icon to
+// disappear in some layouts — the tile's aspect-ratio/positioning
+// collapses inside the portal. A purpose-built preview with explicit
+// dimensions always renders correctly.
+
+export function TileDragPreview({ shortcut }: { shortcut: Shortcut }) {
+  return (
+    <div className={styles.dragPreview} data-testid="tile-drag-preview">
+      <div className={styles.dragPreviewInner}>
+        <div className={styles.dragPreviewIconWell}>
+          <ShortcutIcon
+            url={shortcut.url}
+            favicon={shortcut.favicon}
+            title={shortcut.title}
+            size="lg"
+            className={styles.dragPreviewIcon}
+          />
+        </div>
+        <div className={styles.dragPreviewTitle}>{shortcut.title}</div>
+        {!shortcut.group && <div className={styles.dragPreviewDomain}>{getDomainFromUrl(shortcut.url)}</div>}
+      </div>
+    </div>
+  );
+}
+
+export function GroupDragPreview({ group }: { group: ShortcutGroup }) {
+  return (
+    <div className={styles.groupDragPreview} data-testid="group-drag-preview">
+      <div className={styles.groupDragPreviewHeader}>
+        <span className={styles.groupName}>{group.name}</span>
+        <span className={styles.groupCount}>({group.shortcuts.length})</span>
+      </div>
+      <div className={styles.groupDragPreviewTiles}>
+        {group.shortcuts.slice(0, 8).map((s) => (
+          <div key={s.id} className={styles.groupDragPreviewTile}>
+            <ShortcutIcon
+              url={s.url}
+              favicon={s.favicon}
+              title={s.title}
+              size="sm"
+              className={styles.dragPreviewIcon}
+            />
+          </div>
+        ))}
+        {group.shortcuts.length > 8 && (
+          <div className={styles.groupDragPreviewMore}>+{group.shortcuts.length - 8}</div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+interface GroupSectionProps {
+  group: ShortcutGroup;
+  showHeader: boolean;
+  renamingGroupName: string | null;
+  renameInputValue: string;
+  renameInputRef: React.RefObject<HTMLInputElement | null>;
+  setRenameInputValue: (v: string) => void;
+  startRenameGroup: (name: string) => void;
+  commitGroupRename: (old: string, next: string) => void;
+  setRenamingGroupName: (name: string | null) => void;
+  isGlobalEditing: boolean;
+  activeDragId: string | null;
+  hoverGroupName: string | null;
+  globalIndex: (id: string) => number;
+  onDelete: (id: string) => void;
+  onUpdate: (id: string, updates: Partial<Shortcut>) => void;
+  onMoveLeft: (index: number) => void;
+  onMoveRight: (index: number) => void;
+  onMoveUp: (index: number) => void;
+  onMoveDown: (index: number) => void;
+  existingGroups: string[];
+  onAdd?: (group?: string) => void;
+  onEnterEditMode: () => void;
+  t: (key: any, vars?: Record<string, string | number>) => string;
+}
+
+function GroupSection({
+  group,
+  showHeader,
+  renamingGroupName,
+  renameInputValue,
+  renameInputRef,
+  setRenameInputValue,
+  startRenameGroup,
+  commitGroupRename,
+  setRenamingGroupName,
+  isGlobalEditing,
+  activeDragId,
+  hoverGroupName,
+  globalIndex,
+  onDelete,
+  onUpdate,
+  onMoveLeft,
+  onMoveRight,
+  onMoveUp,
+  onMoveDown,
+  existingGroups,
+  onAdd,
+  onEnterEditMode,
+  t,
+}: GroupSectionProps) {
+  const isHover = hoverGroupName === group.name && activeDragId !== null;
+  const ids = useMemo(() => group.shortcuts.map((s) => s.id), [group.shortcuts]);
+
+  // Group card is a sortable item so the whole card can be dragged by its
+  // header. The header is the drag handle — see the JSX below. We use a
+  // plain `useSortable` here (not also `useDroppable` with the same id —
+  // dnd-kit rejects duplicate droppable ids and would silently drop one
+  // registration, breaking either the group reorder or the drop target).
+  const {
+    attributes,
+    listeners,
+    setNodeRef: setSortableRef,
+    transform,
+    transition,
+    isDragging: isGroupDragging,
+  } = useSortable({ id: `${GROUP_PREFIX}${group.name}` });
+
+  // The inner `.groupTiles` area is a separate droppable with its own id
+  // (the group's sortable id is reserved for group reordering). This makes
+  // the empty space of a group — and a group with only one tile — a valid
+  // drop target for a dragged tile. Without this, dragging a tile into an
+  // empty group would only land if the pointer happened to overlap one of
+  // the group's existing tiles.
+  const { setNodeRef: setTilesDropRef, isOver: isTilesDropOver } = useDroppable({
+    id: `${GROUP_PREFIX}${group.name}::tiles`,
+  });
+
+  const groupStyle: React.CSSProperties = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
+
+  return (
+    <div
+      ref={setSortableRef}
+      style={groupStyle}
+      className={`glass-card ${styles.groupSection} ${isHover || isTilesDropOver ? styles.groupSectionOver : ''} ${isGroupDragging ? styles.groupDragging : ''}`}
+      data-group-name={group.name}
+    >
+      {showHeader && (
+        <div
+          className={`${styles.groupHeader} ${styles.groupHeaderHandle}`}
+          onClick={() => renamingGroupName !== group.name && startRenameGroup(group.name)}
+          {...attributes}
+          {...listeners}
+        >
+          {renamingGroupName === group.name ? (
+            <input
+              ref={renameInputRef}
+              className={styles.groupRenameInput}
+              value={renameInputValue}
+              onChange={(e) => setRenameInputValue(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') commitGroupRename(group.name, renameInputValue);
+                if (e.key === 'Escape') setRenamingGroupName(null);
+              }}
+              onBlur={() => commitGroupRename(group.name, renameInputValue)}
+              onClick={(e) => e.stopPropagation()}
+              onPointerDown={(e) => e.stopPropagation()}
+              placeholder={t('groupRenamePlaceholder')}
+              maxLength={30}
+            />
+          ) : (
+            <>
+              <span className={styles.groupName} title={group.name}>{group.name}</span>
+              <span className={styles.groupCount}>({group.shortcuts.length})</span>
+              <span className={styles.groupDragHint} aria-hidden="true">⋮⋮</span>
+            </>
+          )}
         </div>
       )}
+      <SortableContext items={ids} strategy={rectSortingStrategy}>
+        <div
+          ref={setTilesDropRef}
+          className={styles.groupTiles}
+          data-group-name={group.name}
+        >
+          {group.shortcuts.map((shortcut) => (
+            <SortableTile
+              key={shortcut.id}
+              shortcut={shortcut}
+              isGlobalEditing={isGlobalEditing}
+              isDragging={activeDragId === shortcut.id}
+              isGroupPreviewTarget={activeDragId === null && false}
+              globalIndex={globalIndex(shortcut.id)}
+              onDelete={onDelete}
+              onUpdate={onUpdate}
+              onMoveLeft={onMoveLeft}
+              onMoveRight={onMoveRight}
+              onMoveUp={onMoveUp}
+              onMoveDown={onMoveDown}
+              existingGroups={existingGroups}
+              onEnterEditMode={onEnterEditMode}
+            />
+          ))}
+          {onAdd && (
+            <button
+              className={styles.addTile}
+              onClick={() => onAdd(group.name === DEFAULT_GROUP_NAME ? undefined : group.name)}
+              onKeyDown={(event) => {
+                if (event.key === 'Enter' || event.key === ' ') {
+                  event.preventDefault();
+                  onAdd(group.name === DEFAULT_GROUP_NAME ? undefined : group.name);
+                }
+              }}
+              onPointerDown={(e) => e.stopPropagation()}
+              tabIndex={0}
+              aria-label={t('addShortcutAria')}
+              title={t('addShortcut')}
+            >
+              <span className={styles.addTileIcon}>+</span>
+              <span className={styles.addTileLabel}>{t('addWebsite')}</span>
+            </button>
+          )}
+        </div>
+      </SortableContext>
     </div>
   );
 }

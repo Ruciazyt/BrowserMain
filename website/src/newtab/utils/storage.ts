@@ -21,9 +21,6 @@ export interface Settings {
   glassSaturation?: number; // 100–300, default 140 (%)
   glassShadowIntensity?: number; // 0–200, default 100 (%)
   glassTintColor?: string; // hex, default '#ffffff'
-  /** Polling cadence for the 视频监控 tab, in milliseconds.
-   *  Default (when undefined) is 2 hours; see DEFAULT_REFRESH_MS in videoMonitor.ts. */
-  videoRefreshIntervalMs?: number;
 }
 
 export interface BackgroundConfig {

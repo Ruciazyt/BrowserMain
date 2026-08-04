@@ -73,10 +73,15 @@
   min-width: 0;
   overflow: visible;
   transform-origin: center center;
+  cursor: grab;
 }
 
 .sortableItem:active {
   cursor: grabbing;
+}
+
+.sortableItem.sortableDragging {
+  opacity: 0.35;
 }
 
 .wrapper {
@@ -224,38 +229,192 @@
   outline-offset: 2px;
 }
 
-/* ── Drag states ──────────────────────────────────────────── */
-.draggingOver {
-  outline: 2px dashed var(--accent-blue);
-  outline-offset: 2px;
-  border-radius: var(--radius-xs);
+/* ── dnd-kit drag affordances ─────────────────────────────── */
+.dragActive {
+  cursor: grabbing;
 }
 
-.dragging {
+/* Lightweight tile drag preview rendered inside <DragOverlay>. The full
+   ShortcutTile collapsed to 0 size inside the portal; this preview has
+   explicit dimensions and always shows the favicon. The dark glass
+   background makes white/transparent favicons visible (many sites ship
+   white-only favicons that disappear on a light surface). */
+.dragPreview {
+  pointer-events: none;
+  width: 96px;
+  padding: 10px 8px 8px;
+  background: rgba(30, 30, 40, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: var(--radius-md, 8px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.32), 0 4px 10px rgba(0, 0, 0, 0.18);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  transform: rotate(2.5deg);
+  color: #f5f5f7;
+}
+
+.dragPreviewInner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+}
+
+/* Framed icon well — a subtle lighter square behind the favicon so even
+   solid-white or transparent favicons read as a visible shape. */
+.dragPreviewIconWell {
+  width: 52px;
+  height: 52px;
+  border-radius: var(--radius-sm, 6px);
+  background: rgba(255, 255, 255, 0.94);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.04);
+  overflow: hidden;
+}
+
+.dragPreviewIcon {
+  width: 36px;
+  height: 36px;
+  object-fit: contain;
+  display: block;
+  /* `color` is what the avatar fallback's <div> inherits (it uses
+     currentColor via its own background, but we keep the explicit
+     color here for any nested SVGs that might use stroke="currentColor"). */
+  color: #2c2c2e;
+}
+
+/* The avatar fallback renders a <div>, not an <img>. Size it to the
+   icon well. */
+.dragPreviewIconWell > div {
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+}
+
+.dragPreviewTitle {
+  font-size: 11px;
+  font-weight: 500;
+  color: #f5f5f7;
+  text-align: center;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 1.2;
+}
+
+.dragPreviewDomain {
+  font-size: 9px;
+  color: rgba(245, 245, 247, 0.6);
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  line-height: 1.2;
+}
+
+/* Lightweight group drag preview shown while the user reorders groups by
+   dragging the group header. Same dark glass treatment as the tile
+   preview so white/transparent favicons read as visible shapes. */
+.groupDragPreview {
+  pointer-events: none;
+  width: 240px;
+  background: rgba(30, 30, 40, 0.92);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-radius: var(--radius-lg, 10px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.32), 0 4px 10px rgba(0, 0, 0, 0.18);
+  transform: rotate(-1.5deg);
+  overflow: hidden;
+  color: #f5f5f7;
+}
+
+.groupDragPreviewHeader {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.06);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.groupDragPreviewTiles {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  padding: 12px;
+}
+
+.groupDragPreviewTile {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255, 255, 255, 0.94);
+  border-radius: var(--radius-xs, 4px);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.04);
+  color: #2c2c2e;
+}
+
+.groupDragPreviewTile img {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+}
+
+.groupDragPreviewMore {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 600;
+  color: rgba(245, 245, 247, 0.7);
+}
+
+.groupSection {
+  transition: outline-color 120ms ease, background 120ms ease;
+  outline: 2px solid transparent;
+  outline-offset: -2px;
+}
+
+.groupSection.groupSectionOver {
+  outline-color: var(--accent-blue);
+  background: var(--accent-blue-light);
+}
+
+.groupSection.groupDragging {
+  opacity: 0.5;
+}
+
+.groupHeaderHandle {
+  cursor: grab;
+}
+
+.groupHeaderHandle:active {
+  cursor: grabbing;
+}
+
+.groupDragHint {
+  margin-left: auto;
   opacity: 0.35;
+  font-size: 14px;
+  letter-spacing: -1px;
+  user-select: none;
+  transition: opacity 150ms ease;
 }
 
-.sortableGhost {
-  opacity: 0.25 !important;
-  transform: scale(0.92);
-  outline: 2px dashed var(--accent-blue);
-  outline-offset: 2px;
-  border-radius: var(--radius-xs);
-}
-
-.sortableChosen {
-  z-index: 30;
-}
-
-.sortableDrag {
-  opacity: 0.96 !important;
-  transform: rotate(1deg) scale(1.06) !important;
-  box-shadow: var(--shadow-product) !important;
-  border-radius: var(--radius-xs);
-}
-
-.panel.dragActive {
-  border: none;
+.groupHeaderHandle:hover .groupDragHint {
+  opacity: 0.7;
 }
 
 /* ── Cards row (wraps all group cards so they flow into rows) ── */
@@ -332,6 +491,12 @@
   letter-spacing: 0.5px;
   text-transform: uppercase;
   color: var(--glass-text-label);
+  /* Same autofill guard as the dialog input — when Chrome flags the
+     value as "auto-fillable" (any short word like "Work" or "默认"),
+     it would otherwise paint it in --text-primary (a light value
+     tuned for the dark glass surface) and the rename becomes hard
+     to read. */
+  -webkit-text-fill-color: var(--glass-text-label);
   background: transparent;
   border: none;
   outline: none;
@@ -344,13 +509,18 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+.groupRenameInput:-webkit-autofill,
+.groupRenameInput:-webkit-autofill:hover,
+.groupRenameInput:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--glass-text-label) !important;
+  caret-color: var(--glass-text-label);
+  background: transparent !important;
+}
 
-/* Tiles area: exactly 4 columns, rows auto-flow. The flex parent gives it a
-   fixed height = 4 rows of 80px tiles + 3 gaps. If the group has more than
-   16 shortcuts, the extra rows overflow inside the card but the scrollbar is
-   visually hidden (overflow is still scrollable via mousewheel/touch).
-   If fewer than 16, the empty row(s) just stay blank — tiles keep their
-   natural 80x80 size (no compression). */
+/* Tiles area: 4 columns, auto rows. The scrollbar stays visible (was
+   hidden in the prior implementation — that hid overflow tiles and read
+   as a "white screen" once a group had more than 16 shortcuts). The bar
+   is slim and unobtrusive, so it doesn't disrupt the design. */
 .groupTiles {
   --tile-icon-size: 28px;
   display: grid;
@@ -362,13 +532,22 @@
   min-height: 0;
   overflow-y: auto;
   justify-items: center;
-  scrollbar-width: none;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.18) transparent;
 }
 
 .groupTiles::-webkit-scrollbar {
-  width: 0;
-  height: 0;
-  display: none;
+  width: 6px;
+  height: 6px;
+}
+
+.groupTiles::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.groupTiles::-webkit-scrollbar-thumb {
+  background: rgba(0, 0, 0, 0.18);
+  border-radius: 3px;
 }
 
 @media (max-width: 900px) {

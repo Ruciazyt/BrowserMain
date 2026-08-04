@@ -275,7 +275,7 @@ export default function NewsSection({ columns = 2, onManageFeeds }: NewsSectionP
                 <div className={styles.cardError}>{t('rssFeedLoadFailed')}</div>
               ) : (
                 <div className={styles.cardList}>
-                  {group.items.slice(0, 5).map((item) => (
+                  {group.items.map((item) => (
                     <div
                       key={item.id}
                       className={styles.cardItem}

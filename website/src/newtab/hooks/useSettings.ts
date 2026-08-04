@@ -17,7 +17,6 @@ interface SettingsContextValue {
   updateGlassSaturation: (saturation: number) => void;
   updateGlassShadowIntensity: (intensity: number) => void;
   updateGlassTintColor: (color: string) => void;
-  updateVideoRefreshInterval: (ms: number) => Promise<void>;
 }
 
 const SettingsContext = createContext<SettingsContextValue | null>(null);
@@ -127,18 +126,6 @@ function useSettingsState(): SettingsContextValue {
     });
   }, []);
 
-  // Note: this updater intentionally persists outside the setSettings reducer
-  // (unlike the older updateGlass* callbacks above, which call saveSettings
-  // inside the reducer). React 19 StrictMode warns when a reducer performs
-  // side effects, so the new code keeps the reducer pure and persists after.
-  // Re-reads via getSettings() before writing to avoid the same stale-closure
-  // race documented in useShortcuts.ts:16-18.
-  const updateVideoRefreshInterval = useCallback(async (ms: number) => {
-    setSettings((prev) => ({ ...prev, videoRefreshIntervalMs: ms }));
-    const current = await getSettings();
-    await saveSettings({ ...current, videoRefreshIntervalMs: ms });
-  }, []);
-
   return {
     settings,
     loading,
@@ -153,7 +140,6 @@ function useSettingsState(): SettingsContextValue {
     updateGlassSaturation,
     updateGlassShadowIntensity,
     updateGlassTintColor,
-    updateVideoRefreshInterval,
   };
 }
 
