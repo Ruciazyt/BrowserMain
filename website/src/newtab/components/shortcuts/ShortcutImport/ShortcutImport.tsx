@@ -36,13 +36,23 @@ export default function ShortcutImport({ onBack, onImported }: ShortcutImportPro
       </div>
 
       {result === null ? (
-        <div className={styles.resultState} style={{ flexDirection: 'column', gap: 16 }}>
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: 14, color: 'var(--text-bright)', marginBottom: 8 }}>{t('importShortcutsText')}</div>
-            <button className={styles.importBtn} onClick={() => fileInputRef.current?.click()} style={{ width: '100%' }}>
-              📥 {t('importFromJson')}
+        <div className={styles.uploadState}>
+          <div className={styles.uploadSurface}>
+            <div className={styles.uploadIcon} aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 3v12" />
+                <path d="m7 10 5 5 5-5" />
+                <path d="M5 21h14" />
+              </svg>
+            </div>
+            <div className={styles.uploadCopy}>
+              <div className={styles.uploadTitle}>{t('importShortcutsText')}</div>
+              <span className={styles.fileType}>JSON</span>
+            </div>
+            <button className={styles.importBtn} onClick={() => fileInputRef.current?.click()}>
+              {t('importFromJson')}
             </button>
-            <input ref={fileInputRef} type="file" accept=".json,application/json" style={{ display: 'none' }} onChange={handleFileChange} />
+            <input ref={fileInputRef} type="file" accept=".json,application/json" className={styles.fileInput} onChange={handleFileChange} />
           </div>
         </div>
       ) : (

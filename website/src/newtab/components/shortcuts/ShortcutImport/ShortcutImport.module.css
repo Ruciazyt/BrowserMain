@@ -9,3 +9,78 @@
 .resultDetail { composes: resultDetail from '../_shared/ImportShared.module.css'; }
 .doneBtn { composes: doneBtn from '../_shared/ImportShared.module.css'; }
 .importBtn { composes: importBtn from '../_shared/ImportShared.module.css'; }
+
+.uploadState {
+	display: flex;
+	flex: 1;
+	align-items: center;
+	justify-content: center;
+	min-height: 0;
+	padding: 24px 18px;
+}
+
+.uploadSurface {
+	display: flex;
+	width: 100%;
+	max-width: 420px;
+	flex-direction: column;
+	align-items: center;
+	gap: 18px;
+	padding: 32px 24px;
+	text-align: center;
+	background: rgba(255, 255, 255, 0.08);
+	border: 1px solid var(--border-primary);
+	border-radius: var(--radius-lg);
+	box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.42), 0 12px 32px rgba(24, 35, 52, 0.08);
+}
+
+.uploadIcon {
+	display: grid;
+	width: 52px;
+	height: 52px;
+	place-items: center;
+	border-radius: 50%;
+	color: rgba(255, 255, 255, 0.9);
+	background: rgba(255, 255, 255, 0.1);
+	border: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+.uploadIcon svg {
+	width: 24px;
+	height: 24px;
+}
+
+.uploadCopy {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 10px;
+}
+
+.uploadTitle {
+	max-width: 30ch;
+	color: var(--text-primary);
+	font-size: 15px;
+	font-weight: 600;
+	line-height: 1.5;
+}
+
+.fileType {
+	padding: 3px 9px;
+	color: var(--text-secondary);
+	background: rgba(255, 255, 255, 0.1);
+	border: 1px solid var(--border-secondary);
+	border-radius: var(--radius-pill);
+	font-family: var(--font-mono);
+	font-size: 11px;
+	font-weight: 600;
+}
+
+.uploadSurface .importBtn {
+	min-width: 180px;
+	justify-content: center;
+}
+
+.fileInput {
+	display: none;
+}

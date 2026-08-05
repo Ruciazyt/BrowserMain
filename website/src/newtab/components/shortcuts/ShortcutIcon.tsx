@@ -1,5 +1,7 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { getFaviconIcoUrl, getSmartFaviconUrl } from '../../utils/storage';
+
+const FAVICON_ATTEMPT_TIMEOUT_MS = 1500;
 
 interface ShortcutIconProps {
   url: string;
@@ -13,6 +15,7 @@ interface ShortcutIconProps {
   size?: 'sm' | 'md' | 'lg';
   className?: string;
   alt?: string;
+  onResolvedFavicon?: (favicon: string) => void;
 }
 
 /**
@@ -35,18 +38,36 @@ export function ShortcutIcon({
   size = 'md',
   className,
   alt = '',
+  onResolvedFavicon,
 }: ShortcutIconProps) {
-  // Three attempt levels: stored → /favicon.ico → S2. After the third
-  // failure we fall back to the avatar — but only if we have a real
-  // url to extract a domain from. Without a url the avatar renders
-  // immediately.
-  const [attempt, setAttempt] = useState<0 | 1 | 2 | 3>(favicon ? 0 : (url ? 1 : 3));
+  const candidates = Array.from(new Set([
+    favicon,
+    url ? getFaviconIcoUrl(url) : '',
+    url ? getSmartFaviconUrl(url) : '',
+  ].filter((candidate): candidate is string => !!candidate)));
+  const [attempt, setAttempt] = useState(0);
+  const timeoutRef = useRef<number | null>(null);
+  const src = candidates[attempt] ?? null;
 
-  const src =
-    attempt === 0 ? favicon :
-    attempt === 1 ? getFaviconIcoUrl(url) :
-    attempt === 2 ? getSmartFaviconUrl(url) :
-    null;
+  const clearAttemptTimeout = () => {
+    if (timeoutRef.current !== null) {
+      window.clearTimeout(timeoutRef.current);
+      timeoutRef.current = null;
+    }
+  };
+
+  useEffect(() => {
+    clearAttemptTimeout();
+    setAttempt(0);
+  }, [favicon, url]);
+
+  useEffect(() => {
+    if (!src) return;
+    timeoutRef.current = window.setTimeout(() => {
+      setAttempt((current) => current + 1);
+    }, FAVICON_ATTEMPT_TIMEOUT_MS);
+    return clearAttemptTimeout;
+  }, [src]);
 
   if (src) {
     return (
@@ -56,9 +77,12 @@ export function ShortcutIcon({
         className={className}
         draggable={false}
         onError={() => {
-          if (attempt === 0) setAttempt(url ? 1 : 3);
-          else if (attempt === 1) setAttempt(2);
-          else setAttempt(3);
+          clearAttemptTimeout();
+          setAttempt((current) => current + 1);
+        }}
+        onLoad={() => {
+          clearAttemptTimeout();
+          if (src !== favicon) onResolvedFavicon?.(src);
         }}
       />
     );

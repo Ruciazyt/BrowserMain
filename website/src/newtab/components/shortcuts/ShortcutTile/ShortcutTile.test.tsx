@@ -53,6 +53,23 @@ describe('ShortcutTile editor', () => {
   });
 });
 
+describe('ShortcutTile favicon cache', () => {
+  it('persists the fallback URL after it loads successfully', () => {
+    const onUpdate = vi.fn();
+    renderTile({ onUpdate });
+    const tile = screen.getByText('Example').closest<HTMLElement>('[tabindex="0"]')!;
+    const icon = tile.querySelector('img')!;
+
+    fireEvent.error(icon);
+    fireEvent.error(icon);
+    fireEvent.load(icon);
+
+    expect(onUpdate).toHaveBeenCalledWith('shortcut-1', {
+      favicon: 'https://www.google.com/s2/favicons?domain=example.com&sz=64',
+    });
+  });
+});
+
 describe('ShortcutTile group dropdown', () => {
   it('opens a popover listing all existing groups when the chevron is clicked', () => {
     renderTile();

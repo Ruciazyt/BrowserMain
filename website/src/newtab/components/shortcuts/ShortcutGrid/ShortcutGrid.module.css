@@ -547,9 +547,18 @@
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   grid-auto-rows: 1fr;
+  /* Force exactly 3 explicit rows; items 13+ auto-flow past them and
+     scroll. addTile lives inside this region so it scrolls with the
+     rest when a group is full. */
+  grid-template-rows: repeat(3, 1fr);
   gap: 8px;
   padding: 12px;
-  flex: 1;
+  flex: none;
+  height: auto;
+  /* Apple: keep every group card the same height regardless of content.
+     Each tile is `aspect-ratio: 1`, so 3 rows of square tiles ≈ 75% of
+     card width. Empty rows stay visible (consistent spatial rhythm). */
+  aspect-ratio: 4 / 3;
   min-height: 0;
   overflow-y: auto;
   justify-items: center;

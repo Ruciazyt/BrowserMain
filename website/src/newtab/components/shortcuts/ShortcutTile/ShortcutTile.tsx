@@ -479,6 +479,11 @@ export default function ShortcutTile({
             title={shortcut.title}
             size="md"
             className={styles.iconImage}
+            onResolvedFavicon={(resolvedFavicon) => {
+              if (resolvedFavicon !== shortcut.favicon) {
+                onUpdate(shortcut.id, { favicon: resolvedFavicon });
+              }
+            }}
           />
         </div>
         {isGroupPreviewTarget && <div className={styles.groupPreviewBadge}>{t('dropToGroup')}</div>}
