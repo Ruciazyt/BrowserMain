@@ -33,20 +33,26 @@ Two runtime surfaces, both built from `website/src/`:
 The React 19 app rendered in `index.html` (set as `chrome_url_overrides.newtab` in `manifest.json`).
 
 - `index.tsx` — boots React, wraps `App` in `<SettingsProvider>`.
-- `App.tsx` — top-level layout. Composes Sidebar + SearchBar + Weather/Market/News widgets + ShortcutGrid + PixelPet + SettingsPanel + AddShortcutDialog + OnboardingGuide. Owns UI-only state (panels open, sidebar collapsed, nav). Subscribes to `chrome.runtime.onMessage('SHORTCUT_ADDED')` to refresh shortcuts after background-script writes.
-- `hooks/useShortcuts.ts` — read/mutate the shortcut list in `chrome.storage.local`. **Mutations re-read from storage before writing** to avoid stale-closure races when several updates fire back-to-back.
+- `App.tsx` — top-level layout. Composes Sidebar + SearchBar + WeatherWidget + ShortcutGrid + NewsSection + PixelPet + SettingsPanel + AddShortcutDialog + RssFeedManager. Owns UI-only state (panels open, sidebar collapsed, active nav). Subscribes to `chrome.runtime.onMessage('SHORTCUT_ADDED')` to refresh shortcuts after background-script writes. Also clears any stale `browsermain_first_run` storage flag set by older builds.
+- `hooks/useShortcuts.ts` — read/mutate the shortcut list in `chrome.storage.local`. **Mutations re-read from storage before writing** to avoid stale-closure races when several updates fire back-to-back. Also exports `importShortcutsFromJson(file)` for the Settings shortcut-import flow.
+- `hooks/useBookmarkImport.ts` — wraps `chrome.bookmarks.getTree` + `chrome.bookmarks.create`, exposing typed `BMTreeNode` data.
 - `hooks/useSettings.ts` — React Context provider for user settings. Read from `chrome.storage.sync` with a one-time fallback to `local` (migration from an older storage layout). All `update*` callbacks use functional `setSettings(prev => …)` updates for the same race-avoidance reason.
-- `utils/storage.ts` — typed wrappers around `chrome.storage.*` plus favicon resolution helpers (`getFaviconUrl`, `getSmartFaviconUrl` via Google S2, `getChromeFaviconUrl` round-trips the background worker).
-- `utils/engines.ts` — search engine config (Google/Bing/Baidu/DuckDuckGo).
-- `i18n.ts` — locale strings (`'system' | 'zh-CN' | 'en'`).
+- `utils/storage.ts` — typed wrappers around `chrome.storage.*` plus favicon resolution helpers (`getFaviconUrl`, `getSmartFaviconUrl` via Google S2, `getChromeFaviconUrl` round-trips the background worker, `getFaviconIcoUrl` as a last-resort fallback).
+- `utils/engines.ts` — search engine config (Google/Bing/Baidu/DuckDuckGo) plus the `isUrl`/`buildSearchUrl` helpers used by the search bar and the Add dialog.
+- `utils/shortcuts.ts` — pure helpers used by both `useShortcuts.ts` and `ShortcutGrid`: drag-end reducer (`applyDragEnd`), group rename/scoring, flat reorder, drag payload types. No React or chrome.*.
+- `utils/rssFeeds.ts` — shared RSS storage and per-feed host permission helpers used by both `RssFeedManager` and `NewsSection`.
+- `utils/backgrounds.ts` — built-in background presets and `resolveBackgroundImageUrl` (consumed by App.tsx and SettingsPanel).
+- `utils/platform.ts` — `isMac()` for the keyboard shortcut labels.
+- `i18n.ts` — locale strings (`'system' | 'zh-CN' | 'en'`), exports the `useI18n` hook and the `MessageKey` union.
 - `components/` — feature folders, each owning its own CSS module (no shared design-system package):
   - `layout/Sidebar/` — collapsible left nav
   - `search/SearchBar/` — top search input
-  - `shortcuts/{ShortcutGrid,ShortcutTile,AddShortcutDialog,BookmarkImport,ShortcutImport,_shared}/` — drag-to-reorder grid powered by SortableJS, bookmark import via `chrome.bookmarks.getTree`, JSON import/export
-  - `widgets/{Clock,DailyQuote,Greeting,LEDDisplay,MarketIndices,NewsSection,WeatherWidget}/`
-  - `settings/{SettingsPanel,OnboardingGuide,RssFeedManager}/` — slide-in settings panel, onboarding tour, RSS manager
-  - `pet/PixelPet/` — multi-species pixel art pet
-  - Top-level files: `MatrixChatPage.tsx` (Matrix JS SDK client, runs in the newtab page directly), `AIChatTab.tsx`, `PixelPet.tsx`
+  - `shortcuts/{ShortcutGrid,ShortcutTile,ShortcutIcon,AddShortcutDialog,BookmarkImport,ShortcutImport,_shared}/` — drag-to-reorder grid powered by dnd-kit (`ShortcutGrid.test.tsx` covers collision detection across groups). Bookmark import via `chrome.bookmarks.getTree`, JSON import/export, shared `GroupDropdown` and shared `_shared/ImportShared.module.css`
+  - `widgets/{NewsSection,WeatherWidget}/`
+  - `settings/{SettingsPanel,RssFeedManager}/` — slide-in settings panel and an in-page RSS manager that doubles as the dedicated `nav_rss` view when `standalone` is set
+  - `pet/PixelPet/` — multi-species pixel art pet (brown/orange/white/gray)
+  - `ui/Glass/` — `Glass` surface component + `GlassDistortionFilter` SVG (re-exported via `index.ts`)
+  - `EngineIcon.tsx` — small react-icons wrapper for the search engine logos
 - `global.css` + `App.module.css` — base styles. The project uses CSS Modules per component.
 
 ### 2. Background service worker (`src/background/background.js`)
@@ -77,9 +83,8 @@ The background file **duplicates** the favicon helpers from `utils/storage.ts` (
 
 ## Gotchas to Remember
 
-- `tsconfig.json` excludes `src/components`, `src/App.tsx`, `src/App.css`, `src/global.less`, `src/modern-app-env.d.ts`, `src/.eslintrc.json` — these are legacy leftovers from the prior Modern.js scaffold; do not import from them.
+- The legacy `tsconfig.json` excludes a handful of paths (`src/components`, `src/App.tsx`, `src/App.css`, `src/global.less`, `src/modern-app-env.d.ts`, `src/.eslintrc.json`) that belong to the prior Modern.js scaffold. None of these files exist on disk any more — the excludes are inert but kept so an accidental re-introduction wouldn't break the build.
 - TypeScript `strict` is on. `noUnusedLocals`/`noUnusedParameters` are off.
 - All storage mutations must use functional updaters (see comment in `useShortcuts.ts` line 14–16 and `useSettings.ts` line 48–49). New hooks should follow the same pattern.
-- The favicon pipeline is three-stage: `getChromeFaviconUrl` (background) → `getSmartFaviconUrl` (Google S2) → `getFaviconIcoUrl` (host `/favicon.ico`). Callers usually wire all three into an `<img>` with cascading `onError` fallbacks.
-- The Matrix chat client (`matrix-js-sdk`) runs in the newtab page directly — there is no worker-side bridge.
+- The favicon pipeline is four-stage: stored `favicon` → `getFaviconIcoUrl` (host `/favicon.ico`) → `getSmartFaviconUrl` (Google S2) → first-letter avatar fallback. `ShortcutIcon.tsx` owns the chain and cycles attempts in order; `getChromeFaviconUrl` round-trips the background worker for sites that need the chrome.favicons API.
 - `process_images.py` at the repo root is a one-off image-processing script (not part of the build).

@@ -1,16 +1,19 @@
 /* ── Modal overlay ──────────────────────────────────────────── */
 .overlay {
-  position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0, 0, 0, 0.35);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.26);
+  backdrop-filter: blur(10px) saturate(110%);
+  -webkit-backdrop-filter: blur(10px) saturate(110%);
   /* Sit above the entire app — including the group cards (which use
      backdrop-filter and create their own stacking context) and the
      video monitor (z-index 1000). Only the right-click context menu
      (z-index 9999) is higher, which is fine since the two never
      overlap (the dialog is opened from a different gesture). */
   z-index: 2000;
-  display: flex; align-items: center; justify-content: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   padding: 20px;
   /* Apple: cross-fade in (interruptible, unlike @keyframes). */
   opacity: 0;
@@ -39,17 +42,30 @@
   --modal-text-tertiary: #86868b;
   --modal-placeholder: #a1a1a6;
   --modal-border: rgba(0, 0, 0, 0.1);
-  --modal-border-soft: rgba(0, 0, 0, 0.06);
-  /* Slightly higher base opacity than the default glass-card so the form
-     fields remain readable over a busy background. */
-  --glass-card-opacity: 0.78;
-  --glass-card-shadow-intensity: 1.1;
+  --modal-border-soft: rgba(0, 0, 0, 0.08);
+  --modal-field-bg: rgba(118, 118, 128, 0.12);
+  --modal-field-bg-hover: rgba(118, 118, 128, 0.16);
+  --modal-accent: #0071e3;
+  /* A modal is a light, high-hierarchy material: keep the background
+     translucent enough to retain context, but opaque enough for type to
+     remain stable over photographs and gradients. */
+  --glass-card-opacity: 0.92;
+  --glass-card-blur: 24px;
+  --glass-card-saturation: 180%;
+  --glass-card-shadow-intensity: 1.35;
 
   position: relative;
   width: 100%;
-  max-width: 360px;
-  border-radius: var(--radius-lg);
+  max-width: 380px;
+  border-radius: 20px;
   overflow: hidden;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(246, 247, 249, 0.88));
+  border: 1px solid rgba(255, 255, 255, 0.72);
+  box-shadow:
+    0 24px 70px rgba(0, 0, 0, 0.22),
+    0 4px 14px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.82);
+  color-scheme: light;
   /* Apple spring scale + fade in (interruptible; can be reversed mid-flight
      by toggling .open off — the transition runs from the current value). */
   transform: scale(0.94) translateY(8px);
@@ -66,21 +82,15 @@
   opacity: 1;
 }
 
-/* Top accent bar — child element so it doesn't collide with the
-   .glass-card::before / ::after color-correction and noise layers. */
-.topAccent {
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 2px;
-  background: var(--accent-blue);
-  z-index: 5;
-  pointer-events: none;
-}
+/* The modal's depth and hierarchy come from its material, not decoration. */
+.topAccent { display: none; }
 
 /* ── Header ──────────────────────────────────────────────────── */
 .header {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 14px 16px 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px 14px;
   border-bottom: 1px solid var(--modal-border-soft);
 }
 .headerTitle {
@@ -91,27 +101,31 @@
   font-family: var(--font-display);
 }
 .closeBtn {
-  width: 28px; height: 28px; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  background: transparent;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(118, 118, 128, 0.12);
   color: var(--modal-text-secondary);
   cursor: pointer;
   transition: background var(--dur-fast), color var(--dur-fast), transform 100ms var(--ease-spring);
   border: none;
 }
-.closeBtn:hover { background: rgba(0, 0, 0, 0.06); color: var(--modal-text-primary); }
+.closeBtn:hover { background: rgba(118, 118, 128, 0.2); color: var(--modal-text-primary); }
 .closeBtn:active { transform: scale(0.92); }
 .closeBtn:focus-visible {
-  outline: 2px solid var(--accent-blue);
+  outline: 2px solid var(--modal-accent);
   outline-offset: 2px;
 }
 
 /* ── Body ────────────────────────────────────────────────────── */
 .body {
-  padding: 12px 16px;
+  padding: 16px 20px 0;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 14px;
   /* `color` is intentionally not set here — it cascades from .modal
      which overrides --text-primary to the light value. */
 }
@@ -119,16 +133,15 @@
 /* ── Favicon row ─────────────────────────────────────────────── */
 .faviconRow {
   display: flex; align-items: center; gap: 8px;
-  padding: 8px 12px; min-height: 36px;
-  background: var(--surface-secondary);
+  padding: 9px 12px; min-height: 38px;
+  background: rgba(118, 118, 128, 0.08);
   border: 1px solid var(--modal-border-soft);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
 }
 .faviconImg { width: 18px; height: 18px; object-fit: contain; border-radius: 4px; flex-shrink: 0; color: var(--modal-text-primary); }
 /* ShortcutIcon's avatar fallback renders a <div>; size it to the
    favicon slot. */
 .faviconImg:global(div) { font-size: 11px; }
-.faviconGlobe { width: 18px; height: 18px; color: var(--modal-text-tertiary); flex-shrink: 0; }
 .faviconHint { font-size: 11px; color: var(--modal-text-secondary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .faviconDomain { font-size: 13px; color: var(--modal-text-primary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 600; display: block; }
 .faviconTextCol { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
@@ -144,12 +157,12 @@
   letter-spacing: 0;
 }
 .input {
-  padding: 8px 12px;
-  border-radius: var(--radius-sm);
+  padding: 9px 12px;
+  border-radius: var(--radius-md);
   font-size: var(--text-md);
   font-family: var(--font-ui);
-  background: var(--surface-secondary);
-  border: 1px solid var(--modal-border);
+  background: var(--modal-field-bg);
+  border: 1px solid transparent;
   /* `color` inherits from .modal which sets it to the light --text-primary
      above. No !important needed — the modal scope wins via the cascade. */
   color: var(--modal-text-primary);
@@ -160,12 +173,17 @@
      (group names "Work" / "默认", titles, etc.). */
   -webkit-text-fill-color: var(--modal-text-primary) !important;
   outline: none;
-  transition: border-color var(--dur-fast), box-shadow var(--dur-fast);
+  transition: background var(--dur-fast), border-color var(--dur-fast), box-shadow var(--dur-fast);
   width: 100%;
-  min-height: 34px;
+  min-height: 38px;
 }
+.input:hover:not(:focus) { background: var(--modal-field-bg-hover); }
 .input::placeholder { color: var(--modal-placeholder); opacity: 1; }
-.input:focus { border-color: var(--accent-blue); box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.12); }
+.input:focus {
+  background: rgba(255, 255, 255, 0.92);
+  border-color: var(--modal-accent);
+  box-shadow: 0 0 0 3px rgba(0, 113, 227, 0.16);
+}
 /* Autofill state — explicitly neutralise Chrome's yellow autofill
    background by painting over it with a same-color inset shadow. The
    box-shadow trick doesn't need !important (the autofill background
@@ -176,8 +194,8 @@
 .input:-internal-autofill-selected {
   -webkit-text-fill-color: var(--modal-text-primary) !important;
   caret-color: var(--modal-text-primary);
-  background: var(--surface-secondary);
-  box-shadow: 0 0 0px 1000px var(--surface-secondary) inset;
+  background: var(--modal-field-bg);
+  box-shadow: 0 0 0px 1000px var(--modal-field-bg) inset;
 }
 
 /* URL input wrapper — positions the status dot inside the field */
@@ -207,45 +225,85 @@
 
 /* ── Footer ──────────────────────────────────────────────────── */
 .footer {
-  display: flex; align-items: center; justify-content: flex-end;
-  gap: 8px; padding: 10px 16px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  margin: 4px -20px 0;
+  padding: 14px 20px 18px;
   border-top: 1px solid var(--modal-border-soft);
+  background: rgba(118, 118, 128, 0.035);
 }
 .cancelBtn {
-  min-height: 32px;
-  padding: 6px 14px;
+  min-height: 36px;
+  padding: 7px 15px;
   border-radius: var(--radius-md);
   font-size: var(--text-md);
   font-weight: 500;
   color: var(--modal-text-secondary);
-  border: 1px solid var(--modal-border);
-  background: transparent;
+  border: 1px solid rgba(118, 118, 128, 0.24);
+  background: rgba(118, 118, 128, 0.07);
   cursor: pointer;
   transition: background var(--dur-fast), border-color var(--dur-fast), color var(--dur-fast), transform 100ms var(--ease-spring);
 }
-.cancelBtn:hover { background: rgba(0, 0, 0, 0.04); color: var(--modal-text-primary); border-color: var(--accent-blue); }
+.cancelBtn:hover { background: rgba(118, 118, 128, 0.14); color: var(--modal-text-primary); border-color: rgba(118, 118, 128, 0.32); }
 .cancelBtn:active { transform: scale(0.97); }
 .cancelBtn:disabled { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
 
 .saveBtn {
-  min-height: 32px;
-  padding: 6px 16px;
+  min-height: 36px;
+  padding: 7px 17px;
   border-radius: var(--radius-md);
   font-size: var(--text-md);
   font-weight: 600;
   color: #ffffff;
-  background: var(--accent-blue);
+  background: var(--modal-accent);
   border: none;
   cursor: pointer;
-  transition: background var(--dur-fast), transform 100ms var(--ease-spring);
+  box-shadow: 0 1px 2px rgba(0, 72, 145, 0.2);
+  transition: background var(--dur-fast), box-shadow var(--dur-fast), transform 100ms var(--ease-spring);
 }
 .saveBtn:hover:not(:disabled) {
-  background: var(--accent-blue-focus);
+  background: #0077ed;
+  box-shadow: 0 3px 8px rgba(0, 113, 227, 0.24);
 }
 .saveBtn:active:not(:disabled) {
   transform: scale(0.97);
+  box-shadow: none;
 }
-.saveBtn:disabled { opacity: 0.42; cursor: not-allowed; pointer-events: none; }
+.saveBtn:disabled {
+  background: rgba(0, 113, 227, 0.42);
+  opacity: 1;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.groupHint {
+  display: block;
+  margin-top: 1px;
+  color: var(--modal-text-tertiary);
+  font-size: var(--text-xs);
+  line-height: 1.3;
+}
+
+@media (prefers-reduced-transparency: reduce) {
+  .overlay {
+    background: rgba(15, 23, 42, 0.34);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+  .modal {
+    background: #f7f7f9;
+    border-color: rgba(0, 0, 0, 0.14);
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+}
+
+@media (prefers-contrast: more) {
+  .modal { border-color: rgba(0, 0, 0, 0.3); }
+  .input { border-color: rgba(0, 0, 0, 0.24); }
+}
 
 /* ── Success / paste hint ───────────────────────────────────── */
 .successMsg {
@@ -256,7 +314,7 @@
 }
 .pasteHint {
   font-size: var(--text-xs);
-  color: var(--accent-blue);
+  color: var(--modal-accent);
   margin-top: 1px;
   animation: fadeIn 200ms ease;
 }

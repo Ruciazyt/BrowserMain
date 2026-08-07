@@ -8,7 +8,9 @@
   z-index: 200;
   opacity: 0;
   pointer-events: none;
-  transition: opacity var(--dur-spring) var(--ease-smooth);
+  /* Match the panel's slower, more deliberate cadence so the overlay
+     fade keeps pace with the slide-in rather than snapping up first. */
+  transition: opacity 600ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 .overlay.open { opacity: 1; pointer-events: all; }
 
@@ -53,9 +55,25 @@
   position: fixed; top: 16px; right: 16px; bottom: 16px;
   width: 360px; max-width: calc(100vw - 32px);
   z-index: 201;
-  /* Drawer enter: spring-eased slide from the right. */
-  transform: translateX(110%);
-  transition: transform var(--dur-spring) var(--ease-spring-out);
+  /* Pure cross-fade — the user wants a "fade in/out" effect, not a
+     slide. The earlier transform-based slide was fragile: the
+     `transform` change competed with the .glass-card / .wrapper
+     `transition: all 0.4s` cascade and with React's commit timing,
+     and the user kept reporting the panel appeared directly. With
+     only `opacity` on the transition list, the .open class toggle
+     fires a clean cross-fade every time.
+
+     `pointer-events: none` while the panel is closed is critical:
+     the panel is fixed at top:16 / right:16 / bottom:16 with width
+     360px, so it overlays a large rectangle of the home page even
+     when its opacity is 0. Without the guard, the invisible panel
+     captures clicks meant for the engine selector in the search bar,
+     the news-section refresh button, and the PixelPet. The guard
+     is flipped back to `auto` on `.panel.open` so the panel
+     itself remains clickable when shown. */
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 700ms cubic-bezier(0.4, 0, 0.2, 1);
   display: flex; flex-direction: column;
   border-radius: var(--radius-xl);
   color: var(--text-primary);
@@ -68,7 +86,7 @@
   -webkit-backdrop-filter: blur(max(18px, var(--glass-card-blur, 3px))) saturate(135%);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12), 0 2px 6px rgba(0, 0, 0, 0.06);
 }
-.panel.open { transform: translateX(0); }
+.panel.open { opacity: 1; pointer-events: auto; }
 /* Top accent bar — uses a child element via .topAccent so the .glass-card
    color-correction ::before layer is preserved. */
 .topAccent {
@@ -160,59 +178,7 @@
 .engineName { font-size: var(--text-md); color: var(--glass-text-primary); flex: 1; font-weight: 500; }
 .checkmark { color: var(--glass-text-accent); font-size: var(--text-md); }
 
-/* ── Background type grid ──────────────────────────────────── */
-.bgTypeGrid { display: grid; grid-template-columns: repeat(3,1fr); gap: 6px; }
-.bgTypeBtn {
-  min-height: 32px;
-  padding: 6px 4px;
-  border-radius: var(--radius-md);
-  text-align: center;
-  font-size: var(--text-md);
-  font-weight: 500;
-  color: var(--text-secondary);
-  border: 1px solid var(--divider-soft);
-  cursor: pointer;
-  transition: background var(--dur-fast), border-color var(--dur-fast), color var(--dur-fast), transform 100ms var(--ease-spring);
-  background: transparent;
-}
-.bgTypeBtn:hover { border-color: var(--accent-blue); color: var(--accent-blue); }
-.bgTypeBtn:active { transform: scale(0.97); }
-.bgTypeBtn.active {
-  background: var(--accent-blue-light);
-  border-color: rgba(var(--accent-blue-rgb), 0.3);
-  color: var(--accent-blue);
-  font-weight: 600;
-}
-
-/* ── Color / gradient controls ────────────────────────────── */
-.colorRow { display: flex; align-items: center; gap: 10px; margin-top: 10px; }
-.colorLabel { font-size: var(--text-md); color: var(--text-tertiary); min-width: 48px; }
-.gradientSection { margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
-.directionRow { display: flex; gap: 6px; }
-.directionBtn {
-  flex: 1;
-  min-height: 32px;
-  padding: 6px 4px;
-  border-radius: var(--radius-md);
-  text-align: center;
-  font-size: var(--text-md);
-  font-weight: 500;
-  color: var(--text-secondary);
-  border: 1px solid var(--divider-soft);
-  cursor: pointer;
-  transition: background var(--dur-fast), border-color var(--dur-fast), color var(--dur-fast), transform 100ms var(--ease-spring);
-  background: transparent;
-  line-height: 1;
-}
-.directionBtn:hover { border-color: var(--accent-blue); color: var(--accent-blue); }
-.directionBtn:active { transform: scale(0.97); }
-.directionBtn.active {
-  background: var(--accent-blue-light);
-  border-color: rgba(var(--accent-blue-rgb), 0.3);
-  color: var(--accent-blue);
-  font-weight: 600;
-}
-
+/* ── Image section (built-in presets + upload) ──────────── */
 .imageSection { margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
 .imageHelpText {
   font-size: var(--text-md);
@@ -280,41 +246,12 @@
   white-space: nowrap;
   font-weight: 500;
 }
-.rssHint {
-  font-size: var(--text-md);
-  color: var(--text-secondary);
-  line-height: 1.5;
-  margin-bottom: 8px;
-}
 .imageActionRow {
   display: flex;
   align-items: center;
   gap: 8px;
 }
-.imageRow { display: flex; align-items: center; gap: 6px; position: relative; }
-.imageInputWrapper { flex: 1; position: relative; display: flex; align-items: center; min-width: 0; }
-.imageInput {
-  flex: 1; padding: 7px 32px 7px 10px; border-radius: var(--radius-md);
-  font-size: var(--text-md);
-  background: rgba(0, 0, 0, 0.03); border: 1px solid var(--divider-soft);
-  color: var(--text-primary); outline: none;
-  transition: border-color var(--dur-fast);
-}
-.imageInput::placeholder { color: var(--text-tertiary); }
-.imageInput:focus { border-color: var(--accent-blue); }
-.clearImageBtn {
-  position: absolute; right: 8px;
-  width: 18px; height: 18px; border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  background: rgba(0, 0, 0, 0.04); color: var(--text-secondary);
-  border: none; cursor: pointer; font-size: var(--text-sm); line-height: 1;
-  transition: all var(--dur-fast); padding: 0;
-}
-.clearImageBtn:hover { background: rgba(0, 0, 0, 0.08); color: var(--text-primary); }
-
-.applyBtn, .uploadBtn {
-  /* Inherits the global .btn shape; here we only override the visual
-     treatment so it reads on the panel's glass surface. */
+.uploadBtn {
   min-height: 32px;
   padding: 6px 14px;
   border-radius: var(--radius-md);
@@ -327,21 +264,11 @@
   transition: background var(--dur-fast), border-color var(--dur-fast), color var(--dur-fast), transform 100ms var(--ease-spring);
   white-space: nowrap;
 }
-.applyBtn:hover, .uploadBtn:hover {
+.uploadBtn:hover {
   background: rgba(0, 0, 0, 0.05);
   border-color: var(--accent-blue);
 }
-.applyBtn:active, .uploadBtn:active { transform: scale(0.97); }
-.applyBtnDirty {
-  background: var(--accent-blue) !important;
-  border-color: var(--accent-blue) !important;
-  color: #ffffff !important;
-  font-weight: 600;
-}
-.applyBtnDirty:hover {
-  background: var(--accent-blue-focus) !important;
-  border-color: var(--accent-blue-focus) !important;
-}
+.uploadBtn:active { transform: scale(0.97); }
 .emptyBackgroundState {
   padding: 14px;
   border-radius: var(--radius-md);
@@ -353,16 +280,6 @@
 }
 .imagePreviewArea { border-radius: var(--radius-md); overflow: hidden; border: 1px solid var(--divider-soft); height: 54px; position: relative; }
 .imagePreviewArea img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.removeImageBtn {
-  position: absolute; top: 6px; right: 6px;
-  padding: 4px 8px; border-radius: var(--radius-md);
-  font-size: var(--text-xs); font-weight: 600;
-  color: var(--danger);
-  border: 1px solid rgba(var(--danger-rgb), 0.3);
-  background: rgba(var(--danger-rgb), 0.08);
-  cursor: pointer; transition: all var(--dur-fast);
-}
-.removeImageBtn:hover { background: rgba(var(--danger-rgb), 0.16); border-color: rgba(var(--danger-rgb), 0.5); }
 .removeImageBtnInline {
   min-height: 32px;
   padding: 6px 14px;
@@ -381,38 +298,30 @@
   border-color: rgba(var(--danger-rgb), 0.5);
 }
 .removeImageBtnInline:active { transform: scale(0.97); }
-.colorInput {
-  width: 36px; height: 28px; border: none; border-radius: var(--radius-sm);
-  cursor: pointer; padding: 2px; background: rgba(0, 0, 0, 0.03);
-}
-.colorInput::-webkit-color-swatch-wrapper { padding: 0; }
-.colorInput::-webkit-color-swatch { border: 1px solid var(--divider-soft); border-radius: 4px; }
 
-/* ── Display Name ─────────────────────────────────────────── */
-.displayNameRow {
-  display: flex; align-items: center; gap: 10px;
-  margin-bottom: 12px;
-}
-.displayNameLabel {
-  font-size: var(--text-md); color: var(--text-secondary);
-  min-width: 80px; flex-shrink: 0;
-}
-.displayNameInput {
-  flex: 1; padding: 7px 12px;
-  border-radius: var(--radius-md);
-  font-size: var(--text-md);
-  background: rgba(0, 0, 0, 0.03);
+/* ── Glass tint colour picker ────────────────────────────── */
+.colorInput {
+  width: 36px;
+  height: 28px;
+  padding: 0;
   border: 1px solid var(--divider-soft);
-  color: var(--text-primary); outline: none;
-  transition: border-color var(--dur-fast);
-  min-width: 0;
-  word-break: break-word;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  background: none;
+  -webkit-appearance: none;
+  appearance: none;
 }
-.displayNameInput::placeholder { color: var(--text-tertiary); }
-.displayNameInput:focus { border-color: var(--accent-blue); }
+
+.colorInput::-webkit-color-swatch-wrapper {
+  padding: 2px;
+}
+
+.colorInput::-webkit-color-swatch {
+  border: none;
+  border-radius: 3px;
+}
 
 /* ── About ────────────────────────────────────────────────── */
-.aboutSection { text-align: center; padding: 14px 0 6px; color: var(--text-tertiary); font-size: var(--text-xs); }
 .aboutVersion {
   padding: 10px 12px;
   border-radius: var(--radius-md);
@@ -443,14 +352,6 @@
   border-color: var(--accent-blue);
 }
 .importBtn:active { transform: scale(0.97); }
-
-/* ── Footer ───────────────────────────────────────────────── */
-.footer {
-  display: flex; align-items: center; justify-content: space-between;
-  gap: 10px; padding: 12px 24px;
-  border-top: 1px solid var(--divider-soft); flex-shrink: 0;
-}
-.selectedCount { font-size: var(--text-md); color: var(--text-tertiary); flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; text-align: left; }
 
 /* ── Bookmark import ──────────────────────────────────────── */
 .loadingState, .emptyState, .errorState, .resultState {

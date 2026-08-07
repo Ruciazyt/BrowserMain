@@ -136,11 +136,6 @@
   flex-shrink: 0;
 }
 
-.checkmark {
-  margin-left: auto;
-  color: var(--accent-blue);
-}
-
 .divider {
   width: 1px;
   height: 22px;

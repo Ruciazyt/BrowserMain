@@ -3,6 +3,45 @@
    Apple Design Language
    ============================================ */
 
+/* --- Typed CSS variables (@property) ---
+   Registering the glass-* variables as typed custom properties tells the
+   browser to track them as <length> / <percentage> / <color> values. Two
+   benefits:
+     1. Animatable: a value change triggers a re-evaluation, even when the
+        value flows through a chain of derived variables (--_blur etc.).
+     2. No fallback quirks: the browser no longer treats them as opaque
+        "guaranteed-invalid" tokens that it has to re-resolve every frame.
+   This is the real reason the home page cards' blur stopped syncing with
+   the settings — without @property the browser was free to cache the
+   composited backdrop-filter layer and skip the re-evaluation.
+   Browser support: Chrome 85+, Edge 85+, Safari 16.4+, Firefox 128+.
+   The fallback transition on .glass-card covers older browsers. */
+@property --glass-card-blur {
+  syntax: '<length>';
+  inherits: true;
+  initial-value: 3px;
+}
+@property --glass-card-saturation {
+  syntax: '<percentage>';
+  inherits: true;
+  initial-value: 140%;
+}
+@property --glass-card-opacity {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 1;
+}
+@property --glass-card-shadow-intensity {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 1;
+}
+@property --glass-card-tint-color {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #ffffff;
+}
+
 /* --- CSS Variables --- */
 :root {
   /* Background — Apple pure white/parchment system */
@@ -133,14 +172,25 @@
   --space-md: 17px;
   --space-lg: 24px;
 
-  /* Transitions — Apple spring/cubic-bezier feel */
-  --dur-fast: 150ms ease-out;
-  --dur-mid: 250ms ease-out;
-  --dur-spring: 320ms cubic-bezier(0.32, 0.72, 0, 1);    /* enter/exit for sheets & modals */
+  /* Transitions — Apple spring/cubic-bezier feel. Durations and easings
+     are kept as separate tokens: a `--dur-*` token is *only* a time
+     value (e.g. `150ms`), and an `--ease-*` token is *only* a timing
+     function. Earlier versions combined them into a single
+     `--dur-fast: 150ms ease-out` token, but the transition shorthand
+     parses by walking the substituted text — a compound token like
+     `var(--dur-fast)` got ambiguous results across browsers when the
+     surrounding shorthand already supplied its own easing (e.g.
+     `transition: opacity var(--dur-spring) var(--ease-smooth)`),
+     and in some configurations it dropped the animation entirely.
+     Keep them split so callers can compose `var(--dur-foo)` and
+     `var(--ease-bar)` without the parser guessing. */
+  --dur-fast: 150ms;
+  --dur-mid: 250ms;
+  --dur-spring: 640ms;                                     /* enter/exit for sheets & modals — slow enough that the slide-in reads as deliberate motion, not a snap */
   --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
-  --ease-spring: cubic-bezier(0.32, 0.72, 0, 1);          /* default for everything that pops */
-  --ease-spring-out: cubic-bezier(0.2, 0.9, 0.3, 1);      /* elements arriving from off-screen */
-  --ease-spring-in: cubic-bezier(0.4, 0, 0.2, 1);         /* elements leaving the screen */
+  --ease-spring: cubic-bezier(0.32, 0.72, 0, 1);           /* default for everything that pops */
+  --ease-spring-out: cubic-bezier(0.2, 0.9, 0.3, 1);     /* elements arriving from off-screen */
+  --ease-spring-in: cubic-bezier(0.4, 0, 0.2, 1);        /* elements leaving the screen */
 
   /* Border Radius — Apple standard */
   --radius-xs: 5px;
@@ -373,6 +423,27 @@ input:-webkit-autofill:active {
     0 calc(4px * var(--_si)) calc(8px * var(--_si)) rgba(0, 0, 0, calc(0.08 * var(--_si))),
     0 0 calc(12px * var(--_si)) rgba(0, 0, 0, calc(0.04 * var(--_si)));
   overflow: hidden;
+  /* The transition is a defensive belt-and-suspenders alongside the
+     @property declarations above. On browsers that don't support
+     @property (older Safari, older Firefox), the `transition` alone
+     is enough to force the browser to track backdrop-filter changes
+     and re-evaluate the compositing layer when the variable flips.
+     On modern browsers @property already handles smooth interpolation
+     of the typed variables, so the `transition` is mostly belt-and-
+     suspenders for the variable propagation.
+
+     On first paint this transition is suppressed by the
+     `[data-hydrated="false"] .glass-card { transition: none }` rule
+     further down — otherwise the cards would interpolate from the
+     `@property` defaults to the user's settings the moment the
+     cascade values land. After App.tsx flips `data-hydrated` to
+     `"true"` via `useLayoutEffect` the suppression releases and
+     settings changes (slider drags) animate as designed. */
+  transition:
+    backdrop-filter 220ms var(--ease-smooth),
+    -webkit-backdrop-filter 220ms var(--ease-smooth),
+    background 220ms var(--ease-smooth),
+    box-shadow 220ms var(--ease-smooth);
 }
 
 /* ============================================
@@ -568,13 +639,19 @@ input:-webkit-autofill:active {
    ============================================ */
 
 @media (prefers-reduced-motion: reduce) {
-  /* Replace slides/springs with a short cross-fade. Keep colour/scale
-     changes that aid comprehension (Apple: a gentler, non-vestibular
-     equivalent — not "no feedback at all"). */
+  /* Honor the user's "reduce motion" preference by killing keyframe
+     animations (the active-motion source most likely to trigger
+     vestibular disorders). Transitions are kept running at their
+     declared duration so cross-fades and color/size changes still
+     give feedback — Apple HIG: "Replace slides/springs with a short
+     cross-fade. Keep colour/scale changes that aid comprehension —
+     not 'no feedback at all'." The previous version of this block
+     also zeroed `transition-duration`, which silently killed
+     state-change feedback (e.g. the settings-panel cross-fade the
+     user explicitly asked for). */
   *, *::before, *::after {
     animation-duration: 0.001ms !important;
     animation-iteration-count: 1 !important;
-    transition-duration: 0.001ms !important;
     scroll-behavior: auto !important;
   }
   .btn:active:not(:disabled) { transform: none; }

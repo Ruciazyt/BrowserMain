@@ -46,20 +46,42 @@
 
 /* ── Platform card grid ───────────────────────────────────── */
 .grid {
-  --news-cols: 2;
   display: grid;
-  grid-template-columns: repeat(var(--news-cols), 1fr);
-  gap: 10px;
-}
-
-@media (max-width: 520px) {
-  .grid {
-    --news-cols: 1 !important;
-  }
+  /* Match the shortcut .cardsRow: `auto-fit, minmax(300px, 1fr)` so
+     the news cards fill the available row width. With the user having
+     2 RSS feeds this resolves to 2 columns of 1fr each (the same as
+     the previous hard-coded `--news-cols: 2`), but the grid now
+     adapts automatically — if the user adds/removes feeds, or the
+     row narrows, the layout adjusts without a media query. */
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  /* Unify with the shortcut .cardsRow gap (16px) so the two rows
+     feel like one grid system. The previous 10px was tighter than
+     the shortcut row, which read as visually inconsistent. */
+  gap: 16px;
+  /* `contain: layout` isolates the grid's internal layout from the page so
+     skeleton→real swaps, item-text rewrap, and drag-reorder ghost moves do
+     not trigger reflow on the surrounding .main flex column. The grid's
+     own box still participates in the parent's layout (we want the page
+     to size around the cards) — `contain: strict` would be wrong here. */
+  contain: layout;
 }
 
 .card {
   border-radius: var(--radius-lg);
+  /* `contain: layout paint` on each card keeps the expensive `backdrop-filter`
+     compositing layer scoped to the card. The card's size still drives the
+     grid (we want rows to size to content), but text reflow inside a card
+     (skeleton→real, hover, drag) no longer invalidates the page layout. */
+  contain: layout paint;
+  /* Dedicated compositing layer for the backdrop-filter. Without this hint,
+     a shared ancestor layer can hide the page background from the
+     backdrop-filter's view, making the cards look painted-on. */
+  will-change: backdrop-filter;
+  /* No max-width / justify-self here. The .grid above uses
+     `repeat(auto-fit, minmax(300px, 1fr))` so each news card
+     stretches to fill its column and the row always fills the
+     available width. Matches the shortcut .groupSection behavior
+     for a single consistent card-sizing system. */
 }
 
 .cardHeader {

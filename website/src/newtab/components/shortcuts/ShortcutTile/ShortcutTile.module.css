@@ -57,12 +57,6 @@
   z-index: 10;
 }
 
-.container.dropBefore,
-.container.dropAfter {
-  outline: 2px solid var(--accent-blue);
-  outline-offset: -2px;
-}
-
 /* ── Icon ─────────────────────────────────────────────────── */
 .iconWrapper {
   width: var(--tile-icon-size, 28px);
@@ -97,12 +91,6 @@
 .iconWrapper > div {
   width: var(--tile-icon-size, 28px);
   height: var(--tile-icon-size, 28px);
-}
-
-.iconFallback {
-  width: var(--tile-icon-size, 28px);
-  height: var(--tile-icon-size, 28px);
-  color: var(--text-tertiary);
 }
 
 /* ── Title ────────────────────────────────────────────────── */
@@ -418,16 +406,4 @@
 
 .container.globalEditing .deleteBtn {
   opacity: 1;
-}
-
-.editModeHint {
-  position: absolute;
-  bottom: -20px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: var(--text-xxs);
-  color: var(--text-secondary);
-  white-space: nowrap;
-  pointer-events: none;
-  z-index: 20;
 }

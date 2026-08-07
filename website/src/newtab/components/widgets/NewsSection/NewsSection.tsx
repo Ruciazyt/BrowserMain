@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import Sortable from 'sortablejs';
 import { useI18n } from '../../../i18n';
-import { FEEDS_KEY, loadFeeds, fetchFeedGroups, type NewsGroup } from '../../../utils/rssFeeds';
+import { FEEDS_KEY, loadFeeds, fetchFeedGroups, type NewsGroup, type RssFeed } from '../../../utils/rssFeeds';
 import styles from './NewsSection.module.css';
 
 const CACHE_TTL = 10 * 60 * 1000;
@@ -20,11 +20,10 @@ interface CachedData {
 
 let memoryCache: CachedData | null = null;
 
-async function fetchNews(): Promise<NewsResult> {
+async function fetchNews(enabled: RssFeed[]): Promise<NewsResult> {
   if (memoryCache && Date.now() - memoryCache.updatedAt < CACHE_TTL) {
     return memoryCache.result;
   }
-  const enabled = (await loadFeeds()).filter((f) => f.enabled);
   const results = await Promise.allSettled(enabled.map(fetchFeedGroups));
   const groups: NewsGroup[] = [];
   enabled.forEach((feed, i) => {
@@ -92,6 +91,10 @@ export default function NewsSection({ columns = 2, onManageFeeds }: NewsSectionP
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
   const [empty, setEmpty] = useState(false);
+  // Default to 2 — the most common case. Avoids a 0-skeleton flash on the
+  // first render before loadFeeds() resolves, and matches no-reflow for the
+  // typical 2-feed user.
+  const [skeletonCount, setSkeletonCount] = useState(2);
   const [hiddenPlatforms, setHiddenPlatforms] = useState<string[]>([]);
   const timerRef = useRef<number | null>(null);
   const gridRef = useRef<HTMLDivElement | null>(null);
@@ -102,9 +105,25 @@ export default function NewsSection({ columns = 2, onManageFeeds }: NewsSectionP
     setError(false);
     setEmpty(false);
     try {
-      const [news, order, hidden] = await Promise.all([fetchNews(), loadOrder(), loadHidden()]);
+      // Read feed config first so the skeleton count matches the eventual
+      // layout. Without this, the grid would reflow when 6 skeleton cards
+      // collapse to however many feeds the user actually has enabled
+      // (commonly 2–4). By the time the network-bound news fetch returns,
+      // the grid has already reserved the right number of rows.
+      const feeds = await loadFeeds();
+      const enabled = feeds.filter((f) => f.enabled);
+      setSkeletonCount(enabled.length);
+      if (enabled.length === 0) {
+        setEmpty(true);
+        setLoading(false);
+        return;
+      }
+      const [news, order, hidden] = await Promise.all([
+        fetchNews(enabled),
+        loadOrder(),
+        loadHidden(),
+      ]);
       setHiddenPlatforms(hidden);
-      setEmpty(news.enabledCount === 0);
       setGroups(sortByOrder(news.groups, order).filter((g) => !hidden.includes(g.platform)));
     } catch {
       setError(true);
@@ -212,7 +231,7 @@ export default function NewsSection({ columns = 2, onManageFeeds }: NewsSectionP
 
       {loading && groups.length === 0 ? (
         <div className={styles.grid} style={{ '--news-cols': columns } as React.CSSProperties}>
-          {Array.from({ length: 6 }).map((_, i) => (
+          {Array.from({ length: skeletonCount }).map((_, i) => (
             <div key={i} className={`glass-card ${styles.card}`}>
               <div className={`${styles.skeleton} ${styles.skeletonGroupTitle}`} />
               <div className={styles.cardList}>

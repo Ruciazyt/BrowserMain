@@ -51,7 +51,17 @@ export function mockChromeStorage(seed: { shortcuts?: Shortcut[]; settings?: unk
   // both shapes via `Array.isArray(keys) ? keys : [keys]`. Good.
 
   (globalThis as any).chrome = {
-    storage: { local: localApi, sync: syncApi },
+    storage: {
+      local: localApi,
+      sync: syncApi,
+      // NewsSection subscribes to storage.onChanged to live-refresh when
+      // the feed list changes. The mock just records listeners; tests
+      // that care about cross-component reactivity can call them directly.
+      onChanged: {
+        addListener: vi.fn(),
+        removeListener: vi.fn(),
+      },
+    },
     runtime: {
       // Chrome's runtime.sendMessage is overloaded: legacy callers pass a
       // callback (the mock in storage.ts does this for GET_FAVICON); MV3

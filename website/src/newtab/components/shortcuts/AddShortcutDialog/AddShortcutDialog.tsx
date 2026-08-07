@@ -279,13 +279,13 @@ export default function AddShortcutDialog({ open, shortcuts, url, title, favicon
               maxLength={30}
               variant="modal"
             />
-            <span className={styles.pasteHint} style={{ fontSize: 10, opacity: 0.7 }}>
-              {existingGroups.length > 0
-                ? existingGroups.length > 1
-                  ? t('groupsAvailablePlural', { count: existingGroups.length })
-                  : t('groupsAvailable', { count: existingGroups.length })
-                : t('noGroupsYetShort')}
-            </span>
+              <span className={styles.groupHint}>
+                {existingGroups.length > 0
+                  ? existingGroups.length > 1
+                    ? t('groupsAvailablePlural', { count: existingGroups.length })
+                    : t('groupsAvailable', { count: existingGroups.length })
+                  : t('noGroupsYetShort')}
+              </span>
           </div>
 
           {/* Footer */}

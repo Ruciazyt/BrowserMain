@@ -6,10 +6,9 @@
 }
 
 .panel::before {
-  display: none;
-}
-
-.cardTitle {
+  /* Hide the .glass-card ::before accent bar that the global utility paints
+     on top of every card — ShortcutGrid renders its own header inside
+     .headerRow and would otherwise get a stray coloured underline. */
   display: none;
 }
 
@@ -88,11 +87,6 @@
 
 .sortableItem.sortableDragging {
   opacity: 0.35;
-}
-
-.wrapper {
-  width: 100%;
-  padding: 0;
 }
 
 .container {
@@ -438,8 +432,20 @@
 /* ── Cards row (wraps all group cards so they flow into rows) ── */
 .cardsRow {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 14px;
+  /* Responsive grid: as many ≥300px columns as fit, each expanding
+     to 1fr so the row always fills its container. `auto-fit` (not
+     `auto-fill`) collapses empty tracks, so when the user has 3
+     groups the row becomes 3 equal-width cards instead of 3
+     quarter-width cards plus a blank 4th column. minmax(300px, 1fr)
+     keeps cards readable on narrow viewports — below 300px
+     per-column the grid would scroll horizontally rather than
+     squish the cards below legibility. */
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  /* The user wanted the gap between shortcut cards to feel tighter;
+     16px gives a clear visual separation without the "spread out"
+     feel of a larger value. The news grid below uses the same 16px
+     so both rows read as a single consistent grid system. */
+  gap: 16px;
 }
 
 /* ── Group section (one card per group, 4×4 grid of tiles) ────── */
@@ -451,6 +457,21 @@
   padding: 0;
   border-radius: var(--radius-lg);
   overflow: hidden;
+  /* Tell the browser to keep a dedicated compositing layer for the
+     backdrop-filter on these cards. Without this hint, the browser is
+     free to share a layer with an ancestor and the backdrop-filter ends
+     up blurring only what's inside that shared layer — which for a home
+     page card is nothing. The hint is scoped to home page cards only
+     (not the global .glass-card) so the cost stays bounded. */
+  will-change: backdrop-filter;
+  /* No max-width / justify-self here. The .cardsRow above uses
+     `repeat(auto-fit, minmax(300px, 1fr))`, so each card stretches
+     to fill its column and the row always fills the available width.
+     An earlier version capped the card at 360px to keep tiles from
+     growing when the sidebar collapsed, but the user reported
+     "为什么没有填满" (cards weren't filling the row). Letting the
+     grid size the cards and capping at the row edge via minmax is
+     the right answer for both concerns. */
 }
 
 /* ── Responsive: fewer columns when space is tight ───────────── */
@@ -596,12 +617,4 @@
   .groupTiles {
     grid-template-columns: repeat(2, 1fr);
   }
-}
-
-.count {
-  display: none;
-}
-
-.hint {
-  display: none;
 }

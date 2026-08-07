@@ -132,7 +132,7 @@ export default function App() {
 
   if (shortcutsLoading || settingsLoading) {
     return (
-      <div className={styles.page}>
+      <div className={styles.page} style={glassStyle as React.CSSProperties}>
         <div className="loading-dots"><span /><span /><span /></div>
       </div>
     );
